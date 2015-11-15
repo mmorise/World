@@ -1,0 +1,17 @@
+WORLD follows the Google C++ Style Guide
+Japanese:
+http://www.textdrop.net/google-styleguide-ja/cppguide.xml
+English:
+http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
+
+However, there are several exceptions about variable names.
+Since these names are generally used in the acoutsic signal processing,
+I employed these names as the variable names.
+(1) x represents the input signal.
+(2) y represents the signal after processing.
+(3) fs represents sampling frequency.
+(4) f0 represents fundamental frequency (including f0 contour).
+(5) t0 represents fundamental period.
+(6) vuv represents voiced/unvoiced information.
+(7) tmp_* represents temporal value. In WORLD, 
+    "temporal" is used as another meaning.

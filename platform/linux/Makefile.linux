@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+#
+# Makefile for Linux system
+
+CC := g++
+CFLAGS := -g -O2 -Wall -I.
+
+all: test
+
+clean:
+	rm -f *.o
+	rm -f test
+
+TEST_OBJS = common.o dio.o synthesis.o matlabfunctions.o \
+            cheaptrick.o stonemask.o d4c.o fft.o test.o
+
+test: $(TEST_OBJS)
+	$(CC) $(CFLAGS) -o $@ $(TEST_OBJS)
+
+# This is a very stupid style.
+# Please teach me an elegant style.
+common.o: ../../src/common.cpp
+	$(CC) $(CFLAGS) -c ../../src/common.cpp
+dio.o: ../../src/dio.cpp
+	$(CC) $(CFLAGS) -c ../../src/dio.cpp
+synthesis.o: ../../src/synthesis.cpp
+	$(CC) $(CFLAGS) -c ../../src/synthesis.cpp
+matlabfunctions.o: ../../src/matlabfunctions.cpp
+	$(CC) $(CFLAGS) -c ../../src/matlabfunctions.cpp
+cheaptrick.o: ../../src/cheaptrick.cpp
+	$(CC) $(CFLAGS) -c ../../src/cheaptrick.cpp
+stonemask.o: ../../src/stonemask.cpp
+	$(CC) $(CFLAGS) -c ../../src/stonemask.cpp
+d4c.o: ../../src/d4c.cpp
+	$(CC) $(CFLAGS) -c ../../src/d4c.cpp
+fft.o: ../../src/fft.cpp
+	$(CC) $(CFLAGS) -c ../../src/fft.cpp
+test.o: ../../test/test.cpp
+	$(CC) $(CFLAGS) -c ../../test/test.cpp
