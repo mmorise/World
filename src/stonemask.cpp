@@ -115,6 +115,8 @@ double GetTentativeF0(double *power_spectrum, double *numerator_i,
     tmp1 += power_list[i] * fixp_list[i] / (i + 1);
     tmp2 += power_list[i];
   }
+  // block division by zero which will cause segmentatin fault.
+  if (tmp2 == 0) return 0;
   f0_initial = tmp1 / tmp2;
 
   for (int i = 0; i < 6; ++i) {
