@@ -10,6 +10,28 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\cheaptrick.cpp" />
+    <ClCompile Include="..\..\src\common.cpp" />
+    <ClCompile Include="..\..\src\d4c.cpp" />
+    <ClCompile Include="..\..\src\dio.cpp" />
+    <ClCompile Include="..\..\src\fft.cpp" />
+    <ClCompile Include="..\..\src\matlabfunctions.cpp" />
+    <ClCompile Include="..\..\src\stonemask.cpp" />
+    <ClCompile Include="..\..\src\synthesis.cpp" />
+    <ClCompile Include="..\..\test\test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\cheaptrick.h" />
+    <ClInclude Include="..\..\src\common.h" />
+    <ClInclude Include="..\..\src\constantnumbers.h" />
+    <ClInclude Include="..\..\src\d4c.h" />
+    <ClInclude Include="..\..\src\dio.h" />
+    <ClInclude Include="..\..\src\fft.h" />
+    <ClInclude Include="..\..\src\matlabfunctions.h" />
+    <ClInclude Include="..\..\src\stonemask.h" />
+    <ClInclude Include="..\..\src\synthesis.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C8E986F2-2C3E-4003-86E5-8B19D2C05E11}</ProjectGuid>
     <RootNamespace>win</RootNamespace>
@@ -63,28 +85,6 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\cheaptrick.cpp" />
-    <ClCompile Include="..\..\..\src\common.cpp" />
-    <ClCompile Include="..\..\..\src\d4c.cpp" />
-    <ClCompile Include="..\..\..\src\dio.cpp" />
-    <ClCompile Include="..\..\..\src\fft.cpp" />
-    <ClCompile Include="..\..\..\src\matlabfunctions.cpp" />
-    <ClCompile Include="..\..\..\src\stonemask.cpp" />
-    <ClCompile Include="..\..\..\src\synthesis.cpp" />
-    <ClCompile Include="..\..\..\test\test.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\src\cheaptrick.h" />
-    <ClInclude Include="..\..\..\src\common.h" />
-    <ClInclude Include="..\..\..\src\constantnumbers.h" />
-    <ClInclude Include="..\..\..\src\d4c.h" />
-    <ClInclude Include="..\..\..\src\dio.h" />
-    <ClInclude Include="..\..\..\src\fft.h" />
-    <ClInclude Include="..\..\..\src\matlabfunctions.h" />
-    <ClInclude Include="..\..\..\src\stonemask.h" />
-    <ClInclude Include="..\..\..\src\synthesis.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
