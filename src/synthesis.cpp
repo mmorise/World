@@ -185,13 +185,13 @@ void GetTemporalParametersForTimeBase(double *f0, int f0_length, int fs,
     double *coarse_time_axis, double *coarse_f0, double *coarse_vuv) {
   for (int i = 0; i < y_length; ++i)
     time_axis[i] = i / static_cast<double>(fs);
-  for (int i = 0; i < f0_length + 1; ++i)
+  for (int i = 0; i < f0_length; ++i)
     coarse_time_axis[i] = i * frame_period;
-  for (int i = 0; i < f0_length + 1; ++i)
+  for (int i = 0; i < f0_length; ++i)
     coarse_f0[i] = f0[i];
   coarse_f0[f0_length] = coarse_f0[f0_length - 1] * 2 -
     coarse_f0[f0_length - 2];
-  for (int i = 0; i < f0_length + 1; ++i)
+  for (int i = 0; i < f0_length; ++i)
     coarse_vuv[i] = f0[i] == 0.0 ? 0.0 : 1.0;
   coarse_vuv[f0_length] = coarse_vuv[f0_length - 1] * 2 -
     coarse_vuv[f0_length - 2];
