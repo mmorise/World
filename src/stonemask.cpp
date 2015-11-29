@@ -22,22 +22,20 @@ namespace {
 // length of the input signal, it must be modified appropriately.
 //-----------------------------------------------------------------------------
 void GetIndexRaw(double current_time, double *base_time, int base_time_length,
-    int fs, double center_location, int *index_raw) {
+    int fs, int *index_raw) {
   for (int i = 0; i < base_time_length; ++i)
-    index_raw[i] = matlab_round((current_time + base_time[i] +
-        center_location) * fs);
+    index_raw[i] = matlab_round((current_time + base_time[i]) * fs);
 }
 
 //-----------------------------------------------------------------------------
 // GetMainWindow() generates the window function.
 //-----------------------------------------------------------------------------
 void GetMainWindow(double current_time, int *index_raw,
-    int base_time_length, int fs, double center_location,
-    double window_length_in_time, double *main_window) {
+    int base_time_length, int fs, double window_length_in_time,
+    double *main_window) {
   double tmp = 0.0;
   for (int i = 0; i < base_time_length; ++i) {
-    tmp = static_cast<double>(index_raw[i] - 1.0) /
-      fs - current_time - center_location;
+    tmp = static_cast<double>(index_raw[i] - 1.0) / fs - current_time;
     main_window[i] = 0.42 +
       0.5 * cos(2.0 * world::kPi * tmp / window_length_in_time) +
       0.08 * cos(4.0 * world::kPi * tmp / window_length_in_time);
@@ -132,6 +130,7 @@ double GetTentativeF0(double *power_spectrum, double *numerator_i,
 
   return tmp1 / tmp2;
 }
+
 //-----------------------------------------------------------------------------
 // GetMeanF0() calculates the instantaneous frequency.
 //-----------------------------------------------------------------------------
@@ -154,25 +153,18 @@ double GetMeanF0(double *x, int x_length, int fs, double current_time,
   double *main_window = new double[base_time_length];
   double *diff_window = new double[base_time_length];
 
-  double center_location_list[2];
-  center_location_list[0] = (1.0 / 4.0 - 0.5) / f0_initial;
-  center_location_list[1] = (3.0 / 4.0 - 0.5) / f0_initial;
+  GetIndexRaw(current_time, base_time, base_time_length, fs, index_raw);
+  GetMainWindow(current_time, index_raw, base_time_length, fs,
+      window_length_in_time, main_window);
+  GetDiffWindow(main_window, base_time_length, diff_window);
+  GetSpectra(x, x_length, fft_size, index_raw, main_window, diff_window,
+      base_time_length, &forward_real_fft, main_spectrum, diff_spectrum);
 
-  for (int i = 0; i < 2; i++) {
-    GetIndexRaw(current_time, base_time, base_time_length, fs,
-        center_location_list[i], index_raw);
-    GetMainWindow(current_time, index_raw, base_time_length, fs,
-        center_location_list[i], window_length_in_time, main_window);
-    GetDiffWindow(main_window, base_time_length, diff_window);
-    GetSpectra(x, x_length, fft_size, index_raw, main_window, diff_window,
-        base_time_length, &forward_real_fft, main_spectrum, diff_spectrum);
-
-    for (int j = 0; j <= fft_size / 2; ++j) {
-      numerator_i[j] += main_spectrum[j][0] * diff_spectrum[j][1] -
-        main_spectrum[j][1] * diff_spectrum[j][0];
-      power_spectrum[j] += main_spectrum[j][0] * main_spectrum[j][0] +
-        main_spectrum[j][1] * main_spectrum[j][1];
-    }
+  for (int j = 0; j <= fft_size / 2; ++j) {
+    numerator_i[j] += main_spectrum[j][0] * diff_spectrum[j][1] -
+      main_spectrum[j][1] * diff_spectrum[j][0];
+    power_spectrum[j] += main_spectrum[j][0] * main_spectrum[j][0] +
+      main_spectrum[j][1] * main_spectrum[j][1];
   }
 
   double tentative_f0 = GetTentativeF0(power_spectrum, numerator_i,
@@ -199,8 +191,7 @@ double GetRefinedF0(double *x, int x_length, int fs, double current_time,
   if (current_f0 == 0.0)
     return 0.0;
 
-  double f0_initial = MyMax(world::kFloorF0,
-      MyMin(world::kCeilF0, current_f0));
+  double f0_initial = current_f0; // bug fix 2015/11/29
   int half_window_length = static_cast<int>(3.0 * static_cast<double>(fs)
     / f0_initial / 2.0 + 1.0);
   double window_length_in_time = (2.0 *
