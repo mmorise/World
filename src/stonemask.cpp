@@ -14,6 +14,8 @@
 #include "./fft.h"
 #include "./matlabfunctions.h"
 
+#include <stdio.h>
+
 namespace {
 
 //-----------------------------------------------------------------------------
@@ -113,6 +115,7 @@ double GetTentativeF0(double *power_spectrum, double *numerator_i,
     tmp1 += power_list[i] * fixp_list[i] / (i + 1);
     tmp2 += power_list[i];
   }
+
   // block division by zero which will cause segmentatin fault.
   if (tmp2 == 0) return 0;
   f0_initial = tmp1 / tmp2;
@@ -142,13 +145,6 @@ double GetMeanF0(double *x, int x_length, int fs, double current_time,
   fft_complex *main_spectrum = new fft_complex[fft_size];
   fft_complex *diff_spectrum = new fft_complex[fft_size];
 
-  double *power_spectrum = new double[fft_size];
-  double *numerator_i = new double[fft_size];
-  for (int i = 0; i <= fft_size / 2; ++i) {
-    power_spectrum[i] = 0.0;
-    numerator_i[i] = 0.0;
-  }
-
   int *index_raw = new int[base_time_length];
   double *main_window = new double[base_time_length];
   double *diff_window = new double[base_time_length];
@@ -160,10 +156,12 @@ double GetMeanF0(double *x, int x_length, int fs, double current_time,
   GetSpectra(x, x_length, fft_size, index_raw, main_window, diff_window,
       base_time_length, &forward_real_fft, main_spectrum, diff_spectrum);
 
+  double *power_spectrum = new double[fft_size / 2 + 1];
+  double *numerator_i = new double[fft_size / 2 + 1];
   for (int j = 0; j <= fft_size / 2; ++j) {
-    numerator_i[j] += main_spectrum[j][0] * diff_spectrum[j][1] -
+    numerator_i[j] = main_spectrum[j][0] * diff_spectrum[j][1] -
       main_spectrum[j][1] * diff_spectrum[j][0];
-    power_spectrum[j] += main_spectrum[j][0] * main_spectrum[j][0] +
+    power_spectrum[j] = main_spectrum[j][0] * main_spectrum[j][0] +
       main_spectrum[j][1] * main_spectrum[j][1];
   }
 
@@ -188,7 +186,8 @@ double GetMeanF0(double *x, int x_length, int fs, double current_time,
 //-----------------------------------------------------------------------------
 double GetRefinedF0(double *x, int x_length, int fs, double current_time,
     double current_f0) {
-  if (current_f0 == 0.0)
+  // A safeguard was added (2015/12/02).
+  if (current_f0 <= 0.0 || current_f0 > fs / 12.0)
     return 0.0;
 
   double f0_initial = current_f0; // bug fix 2015/11/29
