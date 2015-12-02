@@ -124,6 +124,9 @@ double GetTentativeF0(double *power_spectrum, double *numerator_i,
       numerator_i[index] / power_spectrum[index] * fs / 2.0 / world::kPi;
     power_list[i] = sqrt(power_spectrum[index]);
   }
+  // A minor bug was fixed (2015/12/02)
+  tmp1 = 0.0;
+  tmp2 = 0.0;
   for (int i = 0; i < 6; ++i) {
     tmp1 += power_list[i] * fixp_list[i];
     tmp2 += power_list[i] * (i + 1);
@@ -188,7 +191,7 @@ double GetRefinedF0(double *x, int x_length, int fs, double current_time,
   if (current_f0 <= 0.0 || current_f0 > fs / 12.0)
     return 0.0;
 
-  double f0_initial = current_f0; // bug fix 2015/11/29
+  double f0_initial = current_f0;  // bug fix 2015/11/29
   int half_window_length = static_cast<int>(3.0 * static_cast<double>(fs)
     / f0_initial / 2.0 + 1.0);
   double window_length_in_time = (2.0 *
