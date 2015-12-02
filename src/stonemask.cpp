@@ -14,8 +14,6 @@
 #include "./fft.h"
 #include "./matlabfunctions.h"
 
-#include <stdio.h>
-
 namespace {
 
 //-----------------------------------------------------------------------------
