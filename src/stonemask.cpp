@@ -91,48 +91,45 @@ void GetSpectra(double *x, int x_length, int fft_size, int *index_raw,
 }
 
 //-----------------------------------------------------------------------------
-// GetTentativeF0() calculates the F0 based on the instantaneous frequency.
-// Calculated value is tentative because it is fixed as needed.
+// FixF0() fixed the F0 by instantaneous frequency.
 //-----------------------------------------------------------------------------
-double GetTentativeF0(double *power_spectrum, double *numerator_i,
-    int fft_size, int fs, double f0_initial) {
-  double power_list[6];
-  double fixp_list[6];
+double FixF0(double *power_spectrum, double *numerator_i,
+    int fft_size, int fs, double f0_initial, int number_of_harmonics) {
+  double *power_list = new double[number_of_harmonics];
+  double *fixp_list = new double[number_of_harmonics];
   int index;
-  for (int i = 0; i < 2; ++i) {
-    index = matlab_round(f0_initial * fft_size / fs * (i + 1));
-
-    fixp_list[i] = static_cast<double>(index) * fs / fft_size +
-      numerator_i[index] / power_spectrum[index] * fs / 2.0 / world::kPi;
-    power_list[i] = power_spectrum[index];
-  }
-
-  double tmp1 = 0.0;
-  double tmp2 = 0.0;
-  for (int i = 0; i < 2; ++i) {
-    tmp1 += power_list[i] * fixp_list[i] / (i + 1);
-    tmp2 += power_list[i];
-  }
-
-  // block division by zero which will cause segmentatin fault.
-  if (tmp2 == 0) return 0;
-  f0_initial = tmp1 / tmp2;
-
-  for (int i = 0; i < 6; ++i) {
+  for (int i = 0; i < number_of_harmonics; ++i) {
     index = matlab_round(f0_initial * fft_size / fs * (i + 1));
     fixp_list[i] = static_cast<double>(index) * fs / fft_size +
       numerator_i[index] / power_spectrum[index] * fs / 2.0 / world::kPi;
     power_list[i] = sqrt(power_spectrum[index]);
   }
-  // A minor bug was fixed (2015/12/02)
-  tmp1 = 0.0;
-  tmp2 = 0.0;
-  for (int i = 0; i < 6; ++i) {
-    tmp1 += power_list[i] * fixp_list[i];
-    tmp2 += power_list[i] * (i + 1);
+  double denominator = 0.0;
+  double numerator = 0.0;
+  for (int i = 0; i < number_of_harmonics; ++i) {
+    denominator += power_list[i] * fixp_list[i];
+    numerator += power_list[i] * (i + 1);
   }
+  delete[] power_list;
+  delete[] fixp_list;
+  return denominator / (numerator + world::kMySafeGuardMinimum);
+}
 
-  return tmp1 / tmp2;
+//-----------------------------------------------------------------------------
+// GetTentativeF0() calculates the F0 based on the instantaneous frequency.
+// Calculated value is tentative because it is fixed as needed.
+// Note: The sixth argument in FixF0() is not optimized.
+//-----------------------------------------------------------------------------
+double GetTentativeF0(double *power_spectrum, double *numerator_i,
+    int fft_size, int fs, double f0_initial) {
+  double tentative_f0 =
+    FixF0(power_spectrum, numerator_i, fft_size, fs, f0_initial, 2);
+
+  // If the fixed value is too large, the result will be rejected.
+  if (tentative_f0 <= 0.0 || tentative_f0 > f0_initial * 2)
+    return 0.0;
+
+  return FixF0(power_spectrum, numerator_i, fft_size, fs, tentative_f0, 6);
 }
 
 //-----------------------------------------------------------------------------
