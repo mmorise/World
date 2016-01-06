@@ -107,12 +107,12 @@ double FixF0(double *power_spectrum, double *numerator_i,
   double denominator = 0.0;
   double numerator = 0.0;
   for (int i = 0; i < number_of_harmonics; ++i) {
-    denominator += power_list[i] * fixp_list[i];
-    numerator += power_list[i] * (i + 1);
+    numerator += power_list[i] * fixp_list[i];
+    denominator += power_list[i] * (i + 1);
   }
   delete[] power_list;
   delete[] fixp_list;
-  return denominator / (numerator + world::kMySafeGuardMinimum);
+  return numerator / (denominator + world::kMySafeGuardMinimum);
 }
 
 //-----------------------------------------------------------------------------
