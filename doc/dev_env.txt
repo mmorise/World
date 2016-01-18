@@ -3,4 +3,4 @@ CPU 	: Core i7-3540M 3.0 GHz
 RAM 	: 16 GB
 
 Software
-Microsoft Visual Studio Professional 2012
+Microsoft Visual Studio 2015

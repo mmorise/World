@@ -19,7 +19,7 @@ I willingly accept your kind indication on my English text.
 
 3. License
 WORLD is free software, and you can redistribute it and 
-modify it under the terms of the BSD License.
+modify it under the terms of the modified BSD License.
 Please see copying.txt for more information.
 You can use this program for business, while I hope that 
 you contact me after you developed software with WORLD.
