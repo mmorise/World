@@ -5,6 +5,10 @@
 #ifndef WORLD_CHEAPTRICK_H_
 #define WORLD_CHEAPTRICK_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 //-----------------------------------------------------------------------------
 // Struct for CheapTrick
 //-----------------------------------------------------------------------------
@@ -47,5 +51,7 @@ void InitializeCheapTrickOption(CheapTrickOption *option);
 //   FFT size
 //-----------------------------------------------------------------------------
 int GetFFTSizeForCheapTrick(int fs);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_CHEAPTRICK_H_
