@@ -581,7 +581,7 @@ void DioGeneralBody(double *x, int x_length, int fs, double frame_period,
     boundary_f0_list[i] = f0_floor * pow(2.0, (i + 1) / channels_in_octave);
 
   // normalization
-  int decimation_ratio = MyMax(MyMin(speed, 12), 1);
+  int decimation_ratio = MyMaxInt(MyMinInt(speed, 12), 1);
   int y_length = (1 + static_cast<int>(x_length / decimation_ratio));
   double actual_fs = static_cast<double>(fs) / decimation_ratio;
   int fft_size = GetSuitableFFTSize(y_length +
