@@ -65,7 +65,7 @@ void GetSpectra(double *x, int x_length, int fft_size, int *index_raw,
   int *index = new int[base_time_length];
 
   for (int i = 0; i < base_time_length; ++i)
-    index[i] = MyMax(0, MyMin(x_length - 1, index_raw[i] - 1));
+    index[i] = MyMaxInt(0, MyMinInt(x_length - 1, index_raw[i] - 1));
   for (int i = 0; i < base_time_length; ++i)
     forward_real_fft->waveform[i] = x[index[i]] * main_window[i];
   for (int i = base_time_length; i < fft_size; ++i)
