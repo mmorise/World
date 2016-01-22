@@ -5,7 +5,11 @@
 #ifndef WORLD_MATLABFUNCTIONS_H_
 #define WORLD_MATLABFUNCTIONS_H_
 
+#include "macrodefinitions.h"
+
 #include "./common.h"
+
+WORLD_BEGIN_C_DECLS
 
 //-----------------------------------------------------------------------------
 // fftshift() swaps the left and right halves of input vector.
@@ -165,5 +169,7 @@ void wavwrite(double *x, int x_length, int fs, int nbit, char *filename);
 //   Output .wav file (double *)
 //-----------------------------------------------------------------------------
 double *wavread(char* filename, int *fs, int *nbit, int *wav_length);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_MATLABFUNCTIONS_H_
