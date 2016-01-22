@@ -5,6 +5,10 @@
 #ifndef WORLD_STONEMASK_H_
 #define WORLD_STONEMASK_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 //-----------------------------------------------------------------------------
 // StoneMask() refines the estimated F0 by Dio()
 // Input:
@@ -19,5 +23,7 @@
 //-----------------------------------------------------------------------------
 void StoneMask(double *x, int x_length, int fs, double *time_axis, double *f0,
     int f0_length, double *refined_f0);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_STONEMASK_H_
