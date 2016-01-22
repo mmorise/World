@@ -5,6 +5,10 @@
 #ifndef WORLD_SYNTHESIS_H_
 #define WORLD_SYNTHESIS_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 //-----------------------------------------------------------------------------
 // Synthesis() synthesize the voice based on f0, spectrogram and
 // aperiodicity (not excitation signal).
@@ -24,5 +28,7 @@
 void Synthesis(double *f0, int f0_length, double **spectrogram,
     double **aperiodicity, int fft_size, double frame_period, int fs,
     int y_length, double *y);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_SYNTHESIS_H_
