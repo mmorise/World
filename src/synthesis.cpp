@@ -104,9 +104,9 @@ void GetSpectralEnvelope(double current_time, double frame_period,
     int f0_length, double **spectrogram, int fft_size,
     double *spectral_envelope) {
   int current_frame_floor =
-    MyMin(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
+    MyMinInt(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
   int current_frame_ceil =
-    MyMin(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
+    MyMinInt(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
   if (current_frame_floor == current_frame_ceil) {
@@ -124,9 +124,9 @@ void GetAperiodicRatio(double current_time, double frame_period,
     int f0_length, double **aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
   int current_frame_floor =
-    MyMin(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
+    MyMinInt(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
   int current_frame_ceil =
-    MyMin(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
+    MyMinInt(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
   if (current_frame_floor == current_frame_ceil) {
@@ -294,7 +294,7 @@ void Synthesis(double *f0, int f0_length, double **spectrogram,
   int noise_size;
 
   for (int i = 0; i < number_of_pulses; ++i) {
-    noise_size = pulse_locations_index[MyMin(number_of_pulses - 1, i + 1)] -
+    noise_size = pulse_locations_index[MyMinInt(number_of_pulses - 1, i + 1)] -
       pulse_locations_index[i];
 
     GetOneFrameSegment(interpolated_vuv[pulse_locations_index[i]], noise_size,
@@ -304,8 +304,8 @@ void Synthesis(double *f0, int f0_length, double **spectrogram,
 
     int index = 0;
     for (int j = 0; j < fft_size; ++j) {
-      index = MyMin(y_length - 1,
-        MyMax(0, j + pulse_locations_index[i] - fft_size / 2 + 1));
+      index = MyMinInt(y_length - 1,
+        MyMaxInt(0, j + pulse_locations_index[i] - fft_size / 2 + 1));
         y[index] += impulse_response[j];
     }
   }
