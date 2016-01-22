@@ -5,6 +5,10 @@
 #ifndef WORLD_D4C_H_
 #define WORLD_D4C_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 //-----------------------------------------------------------------------------
 // Struct for D4C
 //-----------------------------------------------------------------------------
@@ -36,5 +40,7 @@ void D4C(double *x, int x_length, int fs, double *time_axis, double *f0,
 //   option   : Struct for the optional parameter.
 //-----------------------------------------------------------------------------
 void InitializeD4COption(D4COption *option);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_D4C_H_
