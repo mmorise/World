@@ -91,7 +91,7 @@ void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
   for (int i = -half_window_length; i <= half_window_length; ++i)
     base_index[i + half_window_length] = i;
   for (int i = 0; i <= half_window_length * 2; ++i)
-    index[i] = MyMin(x_length - 1, MyMax(0,
+    index[i] = MyMinInt(x_length - 1, MyMaxInt(0,
         matlab_round(temporal_position * fs + base_index[i])));
 
   // Designing of the window function
