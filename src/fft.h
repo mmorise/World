@@ -8,6 +8,10 @@
 #ifndef WORLD_FFT_H_
 #define WORLD_FFT_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 // Commands for FFT (This is the same as FFTW)
 #define FFT_FORWARD 1
 #define FFT_BACKWARD 2
@@ -37,5 +41,7 @@ fft_plan fft_plan_dft_r2c_1d(int n, double *in, fft_complex *out,
   unsigned int flags);
 void fft_execute(fft_plan p);
 void fft_destroy_plan(fft_plan p);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_FFT_H_
