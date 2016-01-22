@@ -197,14 +197,14 @@ void WaveformSynthesis(double *f0, int f0_length, double **spectrogram,
 int main(int argc, char *argv[]) {
   if (argc != 2 && argc != 3 && argc != 4 && argc != 5) {
     printf("error\n");
-    return 0;
+    return -2;
   }
   int fs, nbit, x_length;
   double *x = wavread(argv[1], &fs, &nbit, &x_length);
 
   if (CheckLoadedFile(x, fs, nbit, x_length) == false) {
     printf("error: File not found.\n");
-    return 0;
+    return -1;
   }
 
   // Allocate memories
