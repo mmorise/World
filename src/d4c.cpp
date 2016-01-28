@@ -24,7 +24,7 @@ void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
   for (int i = -half_window_length; i <= half_window_length; ++i)
     base_index[i + half_window_length] = i;
   for (int i = 0; i <= half_window_length * 2; ++i)
-    index[i] = MyMin(x_length - 1, MyMax(0,
+    index[i] = MyMinInt(x_length - 1, MyMaxInt(0,
         matlab_round(temporal_position * fs + base_index[i])));
 
   // Designing of the window function
@@ -249,7 +249,7 @@ void D4CGeneralBody(double *x, int x_length, int fs, double current_f0,
 
   // Revision of the result based on the F0
   for (int i = 0; i < number_of_aperiodicities; ++i)
-    coarse_aperiodicity[i] = MyMin(0.0,
+    coarse_aperiodicity[i] = MyMinDouble(0.0,
         coarse_aperiodicity[i] + (current_f0 - 100) / 50.0);
   delete[] static_centroid;
   delete[] smoothed_power_spectrum;
@@ -266,7 +266,7 @@ void D4C(double *x, int x_length, int fs, double *time_axis, double *f0,
   InitializeForwardRealFFT(fft_size_d4c, &forward_real_fft);
 
   int number_of_aperiodicities =
-    static_cast<int>(MyMin(world::kUpperLimit, fs / 2.0 -
+    static_cast<int>(MyMinDouble(world::kUpperLimit, fs / 2.0 -
       world::kFrequencyInterval) / world::kFrequencyInterval);
   // Since the window function is common in D4CGeneralBody(),
   // it is designed here to speed up.
@@ -292,7 +292,7 @@ void D4C(double *x, int x_length, int fs, double *time_axis, double *f0,
       for (int j = 0; j <= fft_size / 2; ++j) aperiodicity[i][j] = 0.0;
       continue;
     }
-    D4CGeneralBody(x, x_length, fs, MyMax(f0[i], world::kFloorF0),
+    D4CGeneralBody(x, x_length, fs, MyMaxDouble(f0[i], world::kFloorF0),
         fft_size_d4c, time_axis[i], number_of_aperiodicities, window,
         window_length, &forward_real_fft, &coarse_aperiodicity[1]);
     // Linear interpolation to convert the coarse aperiodicity into its

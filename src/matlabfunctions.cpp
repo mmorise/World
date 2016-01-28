@@ -448,8 +448,8 @@ void wavwrite(double *x, int x_length, int fs, int nbit, char *filename) {
 
   int16_t tmp_signal;
   for (int i = 0; i < x_length; ++i) {
-    tmp_signal = static_cast<int16_t>(MyMax(-32768,
-        MyMin(32767, static_cast<int>(x[i] * 32767))));
+    tmp_signal = static_cast<int16_t>(MyMaxInt(-32768,
+        MyMinInt(32767, static_cast<int>(x[i] * 32767))));
     fwrite(&tmp_signal, 2, 1, fp);
   }
 

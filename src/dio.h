@@ -5,6 +5,10 @@
 #ifndef WORLD_DIO_H_
 #define WORLD_DIO_H_
 
+#include "macrodefinitions.h"
+
+WORLD_BEGIN_C_DECLS
+
 //-----------------------------------------------------------------------------
 // Struct for DIO
 //-----------------------------------------------------------------------------
@@ -49,5 +53,7 @@ void InitializeDioOption(DioOption *option);
 //   The number of samples required to store the results of Dio()
 //-----------------------------------------------------------------------------
 int GetSamplesForDIO(int fs, int x_length, double frame_period);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_DIO_H_

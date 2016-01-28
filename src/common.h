@@ -4,7 +4,11 @@
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
 
+#include "macrodefinitions.h"
+
 #include "./fft.h"
+
+WORLD_BEGIN_C_DECLS
 
 //-----------------------------------------------------------------------------
 // Structs on FFT
@@ -50,16 +54,16 @@ int GetSuitableFFTSize(int sample);
 // These four functions are simple max() and min() function
 // for "int" and "double" type.
 //-----------------------------------------------------------------------------
-inline int MyMax(int x, int y) {
+inline int MyMaxInt(int x, int y) {
   return x > y ? x : y;
 }
-inline double MyMax(double x, double y) {
+inline double MyMaxDouble(double x, double y) {
   return x > y ? x : y;
 }
-inline int MyMin(int x, int y) {
+inline int MyMinInt(int x, int y) {
   return x < y ? x : y;
 }
-inline double MyMin(double x, double y) {
+inline double MyMinDouble(double x, double y) {
   return x < y ? x : y;
 }
 
@@ -91,5 +95,7 @@ void InitializeMinimumPhaseAnalysis(int fft_size,
   MinimumPhaseAnalysis *minimum_phase);
 void GetMinimumPhaseSpectrum(MinimumPhaseAnalysis *minimum_phase);
 void DestroyMinimumPhaseAnalysis(MinimumPhaseAnalysis *minimum_phase);
+
+WORLD_END_C_DECLS
 
 #endif  // WORLD_COMMON_H_
