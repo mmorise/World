@@ -10,8 +10,8 @@ LIBS =
 default: $(OUT_DIR)/libworld.a
 test: $(OUT_DIR)/test
 
-$(OUT_DIR)/test: $(OUT_DIR)/libworld.a test/test.cpp
-	$(LINK) $(CFLAGS) -o $(OUT_DIR)/test test/test.cpp $(OUT_DIR)/libworld.a -lm
+$(OUT_DIR)/test: $(OUT_DIR)/libworld.a test/test.cpp test/audioio.cpp
+	$(LINK) $(CFLAGS) -o $(OUT_DIR)/test test/test.cpp test/audioio.cpp $(OUT_DIR)/libworld.a -lm
 
 $(OUT_DIR)/libworld.a: $(OBJS)
 	$(AR) $(ARFLAGS) $(OUT_DIR)/libworld.a $(OBJS) $(LIBS)
