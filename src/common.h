@@ -1,12 +1,12 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012-2015 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
+//-----------------------------------------------------------------------------
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
 
-#include "macrodefinitions.h"
-
 #include "./fft.h"
+#include "./macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 

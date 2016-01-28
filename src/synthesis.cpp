@@ -103,10 +103,10 @@ void GetPeriodicResponse(int fft_size, double *spectrum,
 void GetSpectralEnvelope(double current_time, double frame_period,
     int f0_length, double **spectrogram, int fft_size,
     double *spectral_envelope) {
-  int current_frame_floor =
-    MyMinInt(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
-  int current_frame_ceil =
-    MyMinInt(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
+  int current_frame_floor = MyMinInt(f0_length - 1,
+      static_cast<int>(floor(current_time / frame_period)));
+  int current_frame_ceil = MyMinInt(f0_length - 1,
+      static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
   if (current_frame_floor == current_frame_ceil) {
@@ -123,10 +123,10 @@ void GetSpectralEnvelope(double current_time, double frame_period,
 void GetAperiodicRatio(double current_time, double frame_period,
     int f0_length, double **aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
-  int current_frame_floor =
-    MyMinInt(f0_length - 1, static_cast<int>(floor(current_time / frame_period)));
-  int current_frame_ceil =
-    MyMinInt(f0_length - 1, static_cast<int>(ceil(current_time / frame_period)));
+  int current_frame_floor = MyMinInt(f0_length - 1,
+      static_cast<int>(floor(current_time / frame_period)));
+  int current_frame_ceil = MyMinInt(f0_length - 1,
+      static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
   if (current_frame_floor == current_frame_ceil) {

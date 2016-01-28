@@ -8,7 +8,7 @@
 #ifndef WORLD_FFT_H_
 #define WORLD_FFT_H_
 
-#include "macrodefinitions.h"
+#include "./macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 
