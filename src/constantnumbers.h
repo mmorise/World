@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
 // This header file only defines constant numbers used for several function.

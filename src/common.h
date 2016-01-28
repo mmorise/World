@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //-----------------------------------------------------------------------------
 #ifndef WORLD_COMMON_H_
@@ -57,12 +57,15 @@ int GetSuitableFFTSize(int sample);
 inline int MyMaxInt(int x, int y) {
   return x > y ? x : y;
 }
+
 inline double MyMaxDouble(double x, double y) {
   return x > y ? x : y;
 }
+
 inline int MyMinInt(int x, int y) {
   return x < y ? x : y;
 }
+
 inline double MyMinDouble(double x, double y) {
   return x < y ? x : y;
 }

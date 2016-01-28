@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
 // F0 estimation based on DIO (Distributed Inline-filter Operation).

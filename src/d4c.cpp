@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
 // Band-aperiodicity estimation on the basis of the idea of D4C.

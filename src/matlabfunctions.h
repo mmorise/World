@@ -1,13 +1,12 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //-----------------------------------------------------------------------------
 #ifndef WORLD_MATLABFUNCTIONS_H_
 #define WORLD_MATLABFUNCTIONS_H_
 
-#include "macrodefinitions.h"
-
 #include "./common.h"
+#include "./macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 
@@ -143,32 +142,6 @@ void fast_fftfilt(double *x, int x_length, double *h, int h_length,
 //   Calculated standard deviation
 //-----------------------------------------------------------------------------
 double matlab_std(double *x, int x_length);
-
-//-----------------------------------------------------------------------------
-// wavwrite() write a .wav file.
-// Input:
-//   x          : Input signal
-//   waveLength : Signal length of x [sample]
-//   fs         : Sampling frequency [Hz]
-//   Nbit       : Quantization bit [bit]
-//   filename   : Name of the output signal.
-// Caution:
-//   The variable nbit is not used in this function.
-//   This function only supports the 16 bit.
-//-----------------------------------------------------------------------------
-void wavwrite(double *x, int x_length, int fs, int nbit, char *filename);
-
-//-----------------------------------------------------------------------------
-// wavread() read a .wav file. We cannot recoment to use this function.
-// Input:
-//   filename     : Filename to write a file.
-//   fs           : Sampling frequency [Hz]
-//   nbit         : Quantization bit [bit]
-//   waveLength   : Signal length of the output signal [sample].
-// Output:
-//   Output .wav file (double *)
-//-----------------------------------------------------------------------------
-double *wavread(char* filename, int *fs, int *nbit, int *wav_length);
 
 WORLD_END_C_DECLS
 

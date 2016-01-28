@@ -1,4 +1,5 @@
-// Copyright 2012-2015 Masanori Morise. All Rights Reserved.
+//-----------------------------------------------------------------------------
+// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
 // Test program for WORLD 0.1.2 (2012/08/19)
@@ -10,12 +11,15 @@
 // Test program for WORLD 0.2.0_2 (2015/06/06)
 // Test program for WORLD 0.2.0_3 (2015/07/28)
 // Test program for WORLD 0.2.0_4 (2015/11/15)
+// Test program for WORLD in GitHub (2015/11/16-)
+// Latest update: 2016/01/28
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
 // output.wav : Output file
 // f0         : F0 scaling (a positive number)
 // spec       : Formant scaling (a positive number)
+//-----------------------------------------------------------------------------
 
 #include <math.h>
 #include <stdlib.h>
@@ -33,6 +37,10 @@
 #include <sys/time.h>
 #endif
 
+// For .wav input/output functions.
+#include "./audioio.h"
+
+// WORLD core functions.
 #include "./../src/d4c.h"
 #include "./../src/dio.h"
 #include "./../src/matlabfunctions.h"
@@ -57,17 +65,12 @@ DWORD timeGetTime() {
 #endif
 
 namespace {
-bool CheckLoadedFile(double *x, int fs, int nbit, int x_length) {
-  if (x == NULL) {
-    printf("error: File not found.\n");
-    return false;
-  }
 
+void DisplayInformation(double *x, int fs, int nbit, int x_length) {
   printf("File information\n");
   printf("Sampling : %d Hz %d Bit\n", fs, nbit);
   printf("Length %d [sample]\n", x_length);
   printf("Length %f [sec]\n", static_cast<double>(x_length) / fs);
-  return true;
 }
 
 void F0Estimation(double *x, int x_length, int fs, int f0_length, double *f0,
@@ -111,7 +114,7 @@ void SpectralEnvelopeEstimation(double *x, int x_length, int fs,
   double *time_axis, double *f0, int f0_length, double **spectrogram) {
   CheapTrickOption option;
   InitializeCheapTrickOption(&option);  // Initialize the option
-  option.q1 = -0.15; // This value may be better one for HMM speech synthesis.
+  option.q1 = -0.15;  // This value may be better one for HMM speech synthesis.
 
   DWORD elapsed_time = timeGetTime();
   CheapTrick(x, x_length, fs, time_axis, f0, f0_length, &option, spectrogram);
@@ -200,12 +203,22 @@ int main(int argc, char *argv[]) {
     return -2;
   }
   int fs, nbit, x_length;
-  double *x = wavread(argv[1], &fs, &nbit, &x_length);
 
-  if (CheckLoadedFile(x, fs, nbit, x_length) == false) {
-    printf("error: File not found.\n");
+  // 2016/01/28: Important modification.
+  // Memory allocation is carried out in advanse.
+  // This is for compatibility with C language.
+  x_length = GetAudioLength(argv[1]);
+  if (x_length <= 0) {
+    if (x_length == 0)
+      printf("error: File not found.\n");
+    else
+      printf("error: The file is not .wav format.\n");
     return -1;
   }
+  double *x = new double[x_length];
+  // wavread() must be called after GetAudioLength().
+  wavread(argv[1], &fs, &nbit, x);
+  DisplayInformation(x, fs, nbit, x_length);
 
   // Allocate memories
   // The number of samples for F0
