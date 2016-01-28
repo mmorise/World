@@ -118,6 +118,7 @@
     <ClCompile Include="..\..\src\matlabfunctions.cpp" />
     <ClCompile Include="..\..\src\stonemask.cpp" />
     <ClCompile Include="..\..\src\synthesis.cpp" />
+    <ClCompile Include="..\..\test\audioio.cpp" />
     <ClCompile Include="..\..\test\test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -127,9 +128,11 @@
     <ClInclude Include="..\..\src\d4c.h" />
     <ClInclude Include="..\..\src\dio.h" />
     <ClInclude Include="..\..\src\fft.h" />
+    <ClInclude Include="..\..\src\macrodefinitions.h" />
     <ClInclude Include="..\..\src\matlabfunctions.h" />
     <ClInclude Include="..\..\src\stonemask.h" />
     <ClInclude Include="..\..\src\synthesis.h" />
+    <ClInclude Include="..\..\test\audioio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -38,6 +38,9 @@
     <ClCompile Include="..\..\src\synthesis.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\test\audioio.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\cheaptrick.h">
@@ -66,6 +69,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\synthesis.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\macrodefinitions.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\audioio.h">
+      <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
