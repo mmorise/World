@@ -24,6 +24,9 @@ $(OUT_DIR)/libworld.a: $(OBJS)
 	$(AR) $(ARFLAGS) $(OUT_DIR)/libworld.a $(OBJS) $(LIBS)
 	@echo Done.
 
+$(OUT_DIR)/objs/test/audioio.o : test/audioio.h
+$(OUT_DIR)/objs/test/test.o : test/audioio.h src/d4c.h src/dio.h src/matlabfunctions.h src/cheaptrick.h src/stonemask.h src/synthesis.h src/common.h src/fft.h src/macrodefinitions.h
+$(OUT_DIR)/objs/test/ctest.o : test/audioio.h src/d4c.h src/dio.h src/matlabfunctions.h src/cheaptrick.h src/stonemask.h src/synthesis.h src/common.h src/fft.h src/macrodefinitions.h
 $(OUT_DIR)/objs/cheaptrick.o : src/cheaptrick.h src/common.h src/constantnumbers.h src/matlabfunctions.h src/macrodefinitions.h
 $(OUT_DIR)/objs/common.o : src/common.h src/constantnumbers.h src/matlabfunctions.h src/macrodefinitions.h
 $(OUT_DIR)/objs/d4c.o : src/d4c.h src/common.h src/constantnumbers.h src/matlabfunctions.h src/macrodefinitions.h
