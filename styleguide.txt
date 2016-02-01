@@ -15,3 +15,5 @@ I employed these names as the variable names.
 (6) vuv represents voiced/unvoiced information.
 (7) tmp_* represents temporal value. In WORLD, 
     "temporal" is used as another meaning.
+
+I prioritized compatibility with C language over the style guide.
