@@ -8,5 +8,7 @@ This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
 Future work(s):
+
 1. Modification of the test script (test.cpp)
+
 2. Introduction of a safeguard to avoid unwanted error.
