@@ -1,9 +1,9 @@
 CXX = g++
-CC = gcc
+C99 = gcc -std=c99
 LINK = g++
 AR = ar
-CFLAGS = -O1 -g -Wall -fPIC
-CXXFLAGS = $(CFLAGS)
+CXXFLAGS = -O1 -g -Wall -fPIC
+CFLAGS = $(CXXFLAGS)
 ARFLAGS = -rv
 OUT_DIR = ./build
 OBJS = $(OUT_DIR)/objs/cheaptrick.o $(OUT_DIR)/objs/common.o $(OUT_DIR)/objs/d4c.o $(OUT_DIR)/objs/dio.o $(OUT_DIR)/objs/fft.o $(OUT_DIR)/objs/matlabfunctions.o $(OUT_DIR)/objs/stonemask.o $(OUT_DIR)/objs/synthesis.o
@@ -38,11 +38,11 @@ $(OUT_DIR)/objs/synthesis.o : src/synthesis.h src/common.h src/constantnumbers.h
 
 $(OUT_DIR)/objs/test/%.o : test/%.c
 	mkdir -p $(OUT_DIR)/objs/test
-	$(CC) $(CFLAGS) -o "$@" -c "$<"
+	$(C99) $(CFLAGS) -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/%.o : src/%.c
 	mkdir -p $(OUT_DIR)/objs
-	$(CC) $(CFLAGS) -o "$@" -c "$<"
+	$(C99) $(CFLAGS) -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/test/%.o : test/%.cpp
 	mkdir -p $(OUT_DIR)/objs/test
