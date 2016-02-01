@@ -27,7 +27,7 @@ namespace {
 // SetParametersForLinearSmoothing() is used in LinearSmoothing()
 //-----------------------------------------------------------------------------
 void SetParametersForLinearSmoothing(int boundary, int fft_size, int fs,
-    double width, double *power_spectrum, double *mirroring_spectrum,
+    double width, const double *power_spectrum, double *mirroring_spectrum,
     double *mirroring_segment, double *frequency_axis) {
   for (int i = 0; i < boundary; ++i)
     mirroring_spectrum[i] = power_spectrum[boundary - i];
@@ -60,7 +60,7 @@ int GetSuitableFFTSize(int sample) {
 // general signal does not contain the DC (Direct Current) component.
 // It is used in CheapTrick() and D4C().
 //-----------------------------------------------------------------------------
-void DCCorrection(double *input, double current_f0, int fs, int fft_size,
+void DCCorrection(const double *input, double current_f0, int fs, int fft_size,
     double *output) {
   int upper_limit = 1 +
     static_cast<int>(1.2 * current_f0 * fft_size / fs);
@@ -86,7 +86,7 @@ void DCCorrection(double *input, double current_f0, int fs, int fft_size,
 // LinearSmoothing() carries out the spectral smoothing by rectangular window
 // whose length is width Hz and is used in CheapTrick() and D4C().
 //-----------------------------------------------------------------------------
-void LinearSmoothing(double *input, double width, int fs, int fft_size,
+void LinearSmoothing(const double *input, double width, int fs, int fft_size,
     double *output) {
   int boundary = static_cast<int>(width * fft_size / fs) + 1;
 
@@ -147,7 +147,7 @@ void InitializeForwardRealFFT(int fft_size, ForwardRealFFT *forward_real_fft) {
       forward_real_fft->waveform, forward_real_fft->spectrum, FFT_ESTIMATE);
 }
 
-void DestroyForwardRealFFT(ForwardRealFFT *forward_real_fft) {
+void DestroyForwardRealFFT(const ForwardRealFFT *forward_real_fft) {
   fft_destroy_plan(forward_real_fft->forward_fft);
   delete[] forward_real_fft->spectrum;
   delete[] forward_real_fft->waveform;
@@ -161,7 +161,7 @@ void InitializeInverseRealFFT(int fft_size, InverseRealFFT *inverse_real_fft) {
       inverse_real_fft->spectrum, inverse_real_fft->waveform, FFT_ESTIMATE);
 }
 
-void DestroyInverseRealFFT(InverseRealFFT *inverse_real_fft) {
+void DestroyInverseRealFFT(const InverseRealFFT *inverse_real_fft) {
   fft_destroy_plan(inverse_real_fft->inverse_fft);
   delete[] inverse_real_fft->spectrum;
   delete[] inverse_real_fft->waveform;
@@ -180,7 +180,7 @@ void InitializeMinimumPhaseAnalysis(int fft_size,
       FFT_FORWARD, FFT_ESTIMATE);
 }
 
-void GetMinimumPhaseSpectrum(MinimumPhaseAnalysis *minimum_phase) {
+void GetMinimumPhaseSpectrum(const MinimumPhaseAnalysis *minimum_phase) {
   // Mirroring
   for (int i = minimum_phase->fft_size / 2 + 1;
       i < minimum_phase->fft_size; ++i)
@@ -220,7 +220,7 @@ void GetMinimumPhaseSpectrum(MinimumPhaseAnalysis *minimum_phase) {
   }
 }
 
-void DestroyMinimumPhaseAnalysis(MinimumPhaseAnalysis *minimum_phase) {
+void DestroyMinimumPhaseAnalysis(const MinimumPhaseAnalysis *minimum_phase) {
   fft_destroy_plan(minimum_phase->forward_fft);
   fft_destroy_plan(minimum_phase->inverse_fft);
   delete[] minimum_phase->cepstrum;

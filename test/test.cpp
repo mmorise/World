@@ -12,7 +12,7 @@
 // Test program for WORLD 0.2.0_3 (2015/07/28)
 // Test program for WORLD 0.2.0_4 (2015/11/15)
 // Test program for WORLD in GitHub (2015/11/16-)
-// Latest update: 2016/01/28
+// Latest update: 2016/02/01
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
@@ -50,6 +50,8 @@
 
 // Frame shift [msec]
 #define FRAMEPERIOD 5.0
+// F0_floor used for CheapTrick and D4C [Hz]
+#define F0_FLOOR 71
 
 #if (defined (__linux__) || defined(__CYGWIN__) || defined(__APPLE__))
 // Linux porting section: implement timeGetTime() by gettimeofday(),
@@ -73,26 +75,23 @@ void DisplayInformation(double *x, int fs, int nbit, int x_length) {
   printf("Length %f [sec]\n", static_cast<double>(x_length) / fs);
 }
 
-void F0Estimation(double *x, int x_length, int fs, int f0_length, double *f0,
-    double *time_axis) {
+void F0Estimation(double *x, int x_length, int fs, int f0_length,
+    DioOption *option, double *f0, double *time_axis) {
   double *refined_f0 = new double[f0_length];
-
-  DioOption option;
-  InitializeDioOption(&option);  // Initialize the option
   // Modification of the option
-  option.frame_period = FRAMEPERIOD;
+  option->frame_period = FRAMEPERIOD;
   // Valuable option.speed represents the ratio for downsampling.
   // The signal is downsampled to fs / speed Hz.
   // If you want to obtain the accurate result, speed should be set to 1.
-  option.speed = 1;
+  option->speed = 1;
   // You should not set option.f0_floor to under world::kFloorF0.
   // If you want to analyze such low F0 speech, please change world::kFloorF0.
   // Processing speed may sacrify, provided that the FFT length changes.
-  option.f0_floor = 71.0;
+  option->f0_floor = 71.0;
   // You can give a positive real number as the threshold.
   // Most strict value is 0, but almost all results are counted as unvoiced.
   // The value from 0.02 to 0.2 would be reasonable.
-  option.allowed_range = 0.1;
+  option->allowed_range = 0.1;
 
   printf("\nAnalysis\n");
   DWORD elapsed_time = timeGetTime();
@@ -111,32 +110,31 @@ void F0Estimation(double *x, int x_length, int fs, int f0_length, double *f0,
 }
 
 void SpectralEnvelopeEstimation(double *x, int x_length, int fs,
-  double *time_axis, double *f0, int f0_length, double **spectrogram) {
-  CheapTrickOption option;
-  InitializeCheapTrickOption(&option);  // Initialize the option
-  option.q1 = -0.15;  // This value may be better one for HMM speech synthesis.
+    double *time_axis, double *f0, int f0_length, CheapTrickOption *option,
+    double **spectrogram) {
+  option->q1 = -0.15;  // This value may be better one for HMM speech synthesis.
 
   DWORD elapsed_time = timeGetTime();
-  CheapTrick(x, x_length, fs, time_axis, f0, f0_length, &option, spectrogram);
+  CheapTrick(x, x_length, fs, time_axis, f0, f0_length, option, spectrogram);
   printf("CheapTrick: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
 void AperiodicityEstimation(double *x, int x_length, int fs, double *time_axis,
-    double *f0, int f0_length, int fft_size, double **aperiodicity) {
-  D4COption option;
-  InitializeD4COption(&option);  // Initialize the option
+    double *f0, int f0_length, int fft_size, D4COption *option,
+    double **aperiodicity) {
+//  D4COption option;
+//  InitializeD4COption(&option);  // Initialize the option
 
   DWORD elapsed_time = timeGetTime();
   // option is not implemented in this version. This is for future update.
   // We can use "NULL" as the argument.
-  D4C(x, x_length, fs, time_axis, f0, f0_length, fft_size, &option,
+  D4C(x, x_length, fs, time_axis, f0, f0_length, fft_size, option,
       aperiodicity);
   printf("D4C: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
-void ParameterModification(int argc, char *argv[], int fs, double *f0,
-    int f0_length, double **spectrogram) {
-  int fft_size = GetFFTSizeForCheapTrick(fs);
+void ParameterModification(int argc, char *argv[], int fs, int f0_length,
+    int fft_size, double *f0, double **spectrogram) {
   // F0 scaling
   if (argc >= 4) {
     double shift = atof(argv[3]);
@@ -225,9 +223,23 @@ int main(int argc, char *argv[]) {
   int f0_length = GetSamplesForDIO(fs, x_length, FRAMEPERIOD);
   double *f0 = new double[f0_length];
   double *time_axis = new double[f0_length];
+  DioOption dio_option;
+  InitializeDioOption(&dio_option);  // Initialize the option
+  // F0 estimation
+  F0Estimation(x, x_length, fs, f0_length, &dio_option, f0, time_axis);
 
-  // FFT size for CheapTrick
-  int fft_size = GetFFTSizeForCheapTrick(fs);
+  CheapTrickOption cheaptrick_option;
+  InitializeCheapTrickOption(&cheaptrick_option);  // Initialize the option
+  // FFT size for CheapTrick and D4C
+  // Important notice (2016/02/01)
+  // You can control a parameter used for the lowest F0 in speech.
+  // You must not set the f0_floor to 0.
+  // You must not change the f0_floor after setting fft_size.
+  // It will cause a fatal error because fft_size indicates the infinity.
+  // You should check the fft_size before excucing the analysis/synthesis.
+  cheaptrick_option.f0_floor = F0_FLOOR;
+  int fft_size = GetFFTSizeForCheapTrick(fs, &cheaptrick_option);
+  printf("FFT_SIZE: %d [sample]\n", fft_size);
   double **spectrogram = new double *[f0_length];
   double **aperiodicity = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i) {
@@ -235,19 +247,18 @@ int main(int argc, char *argv[]) {
     aperiodicity[i] = new double[fft_size / 2 + 1];
   }
 
-  // F0 estimation
-  F0Estimation(x, x_length, fs, f0_length, f0, time_axis);
-
   // Spectral envelope estimation
   SpectralEnvelopeEstimation(x, x_length, fs, time_axis, f0, f0_length,
-      spectrogram);
+      &cheaptrick_option, spectrogram);
 
   // Aperiodicity estimation by D4C
+  D4COption d4c_option;
+  InitializeD4COption(&d4c_option);  // Initialize the option
   AperiodicityEstimation(x, x_length, fs, time_axis, f0, f0_length,
-      fft_size, aperiodicity);
+      fft_size, &d4c_option, aperiodicity);
 
   // Note that F0 must not be changed until all parameters are estimated.
-  ParameterModification(argc, argv, fs, f0, f0_length, spectrogram);
+  ParameterModification(argc, argv, fs, f0_length, fft_size, f0, spectrogram);
 
   // The length of the output waveform
   int y_length =

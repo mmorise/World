@@ -73,11 +73,11 @@ inline double MyMinDouble(double x, double y) {
 //-----------------------------------------------------------------------------
 // These functions are used in at least two different .cpp files
 // DCCorrection is used in CheapTrick() and D4C().
-void DCCorrection(double *input, double current_f0, int fs, int fft_size,
+void DCCorrection(const double *input, double current_f0, int fs, int fft_size,
     double *output);
 
 // LinearSmoothing is used in CheapTrick() and D4C().
-void LinearSmoothing(double *input, double width, int fs, int fft_size,
+void LinearSmoothing(const double *input, double width, int fs, int fft_size,
     double *output);
 
 // NuttallWindow is used in Dio() and D4C().
@@ -87,17 +87,17 @@ void NuttallWindow(int y_length, double *y);
 // These functions are used to speed up the processing.
 // Forward FFT
 void InitializeForwardRealFFT(int fft_size, ForwardRealFFT *forward_real_fft);
-void DestroyForwardRealFFT(ForwardRealFFT *forward_real_fft);
+void DestroyForwardRealFFT(const ForwardRealFFT *forward_real_fft);
 
 // Inverse FFT
 void InitializeInverseRealFFT(int fft_size, InverseRealFFT *inverse_real_fft);
-void DestroyInverseRealFFT(InverseRealFFT *inverse_real_fft);
+void DestroyInverseRealFFT(const InverseRealFFT *inverse_real_fft);
 
 // Minimum phase analysis (This analysis uses FFT)
 void InitializeMinimumPhaseAnalysis(int fft_size,
   MinimumPhaseAnalysis *minimum_phase);
-void GetMinimumPhaseSpectrum(MinimumPhaseAnalysis *minimum_phase);
-void DestroyMinimumPhaseAnalysis(MinimumPhaseAnalysis *minimum_phase);
+void GetMinimumPhaseSpectrum(const MinimumPhaseAnalysis *minimum_phase);
+void DestroyMinimumPhaseAnalysis(const MinimumPhaseAnalysis *minimum_phase);
 
 WORLD_END_C_DECLS
 

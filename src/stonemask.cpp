@@ -21,8 +21,8 @@ namespace {
 // Since the result includes negative value and the value that exceeds the
 // length of the input signal, it must be modified appropriately.
 //-----------------------------------------------------------------------------
-void GetIndexRaw(double current_time, double *base_time, int base_time_length,
-    int fs, int *index_raw) {
+void GetIndexRaw(double current_time, const double *base_time,
+    int base_time_length, int fs, int *index_raw) {
   for (int i = 0; i < base_time_length; ++i)
     index_raw[i] = matlab_round((current_time + base_time[i]) * fs);
 }
@@ -30,7 +30,7 @@ void GetIndexRaw(double current_time, double *base_time, int base_time_length,
 //-----------------------------------------------------------------------------
 // GetMainWindow() generates the window function.
 //-----------------------------------------------------------------------------
-void GetMainWindow(double current_time, int *index_raw,
+void GetMainWindow(double current_time, const int *index_raw,
     int base_time_length, int fs, double window_length_in_time,
     double *main_window) {
   double tmp = 0.0;
@@ -46,7 +46,7 @@ void GetMainWindow(double current_time, int *index_raw,
 // GetDiffWindow() generates the differentiated window.
 // Diff means differential.
 //-----------------------------------------------------------------------------
-void GetDiffWindow(double *main_window, int base_time_length,
+void GetDiffWindow(const double *main_window, int base_time_length,
     double *diff_window) {
   diff_window[0] = -main_window[1] / 2.0;
   for (int i = 1; i < base_time_length - 1; ++i)
@@ -58,10 +58,10 @@ void GetDiffWindow(double *main_window, int base_time_length,
 // GetSpectra() calculates two spectra of the waveform windowed by windows
 // (main window and diff window).
 //-----------------------------------------------------------------------------
-void GetSpectra(double *x, int x_length, int fft_size, int *index_raw,
-    double *main_window, double *diff_window, int base_time_length,
-    ForwardRealFFT *forward_real_fft, fft_complex *main_spectrum,
-    fft_complex *diff_spectrum) {
+void GetSpectra(const double *x, int x_length, int fft_size,
+    const int *index_raw, const double *main_window, const double *diff_window,
+    int base_time_length, const ForwardRealFFT *forward_real_fft,
+    fft_complex *main_spectrum, fft_complex *diff_spectrum) {
   int *index = new int[base_time_length];
 
   for (int i = 0; i < base_time_length; ++i)
@@ -93,7 +93,7 @@ void GetSpectra(double *x, int x_length, int fft_size, int *index_raw,
 //-----------------------------------------------------------------------------
 // FixF0() fixed the F0 by instantaneous frequency.
 //-----------------------------------------------------------------------------
-double FixF0(double *power_spectrum, double *numerator_i,
+double FixF0(const double *power_spectrum, const double *numerator_i,
     int fft_size, int fs, double f0_initial, int number_of_harmonics) {
   double *power_list = new double[number_of_harmonics];
   double *fixp_list = new double[number_of_harmonics];
@@ -120,7 +120,7 @@ double FixF0(double *power_spectrum, double *numerator_i,
 // Calculated value is tentative because it is fixed as needed.
 // Note: The sixth argument in FixF0() is not optimized.
 //-----------------------------------------------------------------------------
-double GetTentativeF0(double *power_spectrum, double *numerator_i,
+double GetTentativeF0(const double *power_spectrum, const double *numerator_i,
     int fft_size, int fs, double f0_initial) {
   double tentative_f0 =
     FixF0(power_spectrum, numerator_i, fft_size, fs, f0_initial, 2);
@@ -135,9 +135,9 @@ double GetTentativeF0(double *power_spectrum, double *numerator_i,
 //-----------------------------------------------------------------------------
 // GetMeanF0() calculates the instantaneous frequency.
 //-----------------------------------------------------------------------------
-double GetMeanF0(double *x, int x_length, int fs, double current_time,
+double GetMeanF0(const double *x, int x_length, int fs, double current_time,
     double f0_initial, int fft_size, double window_length_in_time,
-    double *base_time, int base_time_length) {
+    const double *base_time, int base_time_length) {
   ForwardRealFFT forward_real_fft = {0};
   InitializeForwardRealFFT(fft_size, &forward_real_fft);
   fft_complex *main_spectrum = new fft_complex[fft_size];
@@ -182,7 +182,7 @@ double GetMeanF0(double *x, int x_length, int fs, double current_time,
 // GetRefinedF0() fixes the F0 estimated by Dio(). This function uses
 // instantaneous frequency.
 //-----------------------------------------------------------------------------
-double GetRefinedF0(double *x, int x_length, int fs, double current_time,
+double GetRefinedF0(const double *x, int x_length, int fs, double current_time,
     double current_f0) {
   // A safeguard was added (2015/12/02).
   if (current_f0 <= 0.0 || current_f0 > fs / 12.0)
@@ -215,8 +215,8 @@ double GetRefinedF0(double *x, int x_length, int fs, double current_time,
 
 }  // namespace
 
-void StoneMask(double *x, int x_length, int fs, double *time_axis, double *f0,
-    int f0_length, double *refined_f0) {
+void StoneMask(const double *x, int x_length, int fs, const double *time_axis,
+    const double *f0, int f0_length, double *refined_f0) {
   for (int i = 0; i < f0_length; i++)
     refined_f0[i] = GetRefinedF0(x, x_length, fs, time_axis[i], f0[i]);
 }

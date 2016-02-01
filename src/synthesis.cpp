@@ -16,7 +16,7 @@
 namespace {
 
 void GetNoiseSpectrum(int noise_size, int fft_size,
-    ForwardRealFFT *forward_real_fft) {
+    const ForwardRealFFT *forward_real_fft) {
   double average = 0.0;
   for (int i = 0; i < noise_size; ++i) {
     forward_real_fft->waveform[i] = randn();
@@ -35,10 +35,10 @@ void GetNoiseSpectrum(int noise_size, int fft_size,
 // GetAperiodicResponse() calculates an aperiodic response.
 //-----------------------------------------------------------------------------
 void GetAperiodicResponse(int noise_size, int fft_size,
-    double *spectrum, double *aperiodic_ratio, double current_vuv,
-    ForwardRealFFT *forward_real_fft,
-    InverseRealFFT *inverse_real_fft, MinimumPhaseAnalysis *minimum_phase,
-    double *aperiodic_response) {
+    const double *spectrum, const double *aperiodic_ratio, double current_vuv,
+    const ForwardRealFFT *forward_real_fft,
+    const InverseRealFFT *inverse_real_fft,
+    const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response) {
   GetNoiseSpectrum(noise_size, fft_size, forward_real_fft);
 
   if (current_vuv != 0.0) {
@@ -75,10 +75,10 @@ void GetAperiodicResponse(int noise_size, int fft_size,
 //-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates an aperiodic response.
 //-----------------------------------------------------------------------------
-void GetPeriodicResponse(int fft_size, double *spectrum,
-    double *aperiodic_ratio, double current_vuv,
-    InverseRealFFT *inverse_real_fft, MinimumPhaseAnalysis *minimum_phase,
-    double *periodic_response) {
+void GetPeriodicResponse(int fft_size, const double *spectrum,
+    const double *aperiodic_ratio, double current_vuv,
+    const InverseRealFFT *inverse_real_fft,
+    const MinimumPhaseAnalysis *minimum_phase, double *periodic_response) {
   if (current_vuv <= 0.5) {
     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
     return;
@@ -101,7 +101,7 @@ void GetPeriodicResponse(int fft_size, double *spectrum,
 }
 
 void GetSpectralEnvelope(double current_time, double frame_period,
-    int f0_length, double **spectrogram, int fft_size,
+    int f0_length, double **const spectrogram, int fft_size,
     double *spectral_envelope) {
   int current_frame_floor = MyMinInt(f0_length - 1,
       static_cast<int>(floor(current_time / frame_period)));
@@ -121,7 +121,7 @@ void GetSpectralEnvelope(double current_time, double frame_period,
 }
 
 void GetAperiodicRatio(double current_time, double frame_period,
-    int f0_length, double **aperiodicity, int fft_size,
+    int f0_length, double **const aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
   int current_frame_floor = MyMinInt(f0_length - 1,
       static_cast<int>(floor(current_time / frame_period)));
@@ -145,10 +145,11 @@ void GetAperiodicRatio(double current_time, double frame_period,
 // GetOneFrameSegment() calculates a periodic and aperiodic response at a time.
 //-----------------------------------------------------------------------------
 void GetOneFrameSegment(double current_vuv, int noise_size,
-    double **spectrogram, int fft_size, double **aperiodicity, int f0_length,
-    double frame_period, double current_time, int fs,
-    ForwardRealFFT *forward_real_fft, InverseRealFFT *inverse_real_fft,
-    MinimumPhaseAnalysis *minimum_phase, double *response) {
+    double **const spectrogram, int fft_size, double **const aperiodicity,
+    int f0_length, double frame_period, double current_time, int fs,
+    const ForwardRealFFT *forward_real_fft,
+    const InverseRealFFT *inverse_real_fft,
+    const MinimumPhaseAnalysis *minimum_phase, double *response) {
   double *aperiodic_response = new double[fft_size];
   double *periodic_response = new double[fft_size];
 
@@ -180,7 +181,7 @@ void GetOneFrameSegment(double current_vuv, int noise_size,
   delete[] aperiodic_response;
 }
 
-void GetTemporalParametersForTimeBase(double *f0, int f0_length, int fs,
+void GetTemporalParametersForTimeBase(const double *f0, int f0_length, int fs,
     int y_length, double frame_period, double *time_axis,
     double *coarse_time_axis, double *coarse_f0, double *coarse_vuv) {
   for (int i = 0; i < y_length; ++i)
@@ -198,8 +199,8 @@ void GetTemporalParametersForTimeBase(double *f0, int f0_length, int fs,
 }
 
 
-int GetPulseLocationsForTimeBase(double *interpolated_f0, double *time_axis,
-    int y_length, int fs, double *pulse_locations,
+int GetPulseLocationsForTimeBase(const double *interpolated_f0,
+    const double *time_axis, int y_length, int fs, double *pulse_locations,
     int *pulse_locations_index) {
 
   double *total_phase = new double[y_length];
@@ -233,7 +234,7 @@ int GetPulseLocationsForTimeBase(double *interpolated_f0, double *time_axis,
   return number_of_pulses;
 }
 
-int GetTimeBase(double *f0, int f0_length, int fs,
+int GetTimeBase(const double *f0, int f0_length, int fs,
     double frame_period, int y_length, double *pulse_locations,
     int *pulse_locations_index, double *interpolated_vuv) {
   double *time_axis = new double[y_length];
@@ -269,8 +270,8 @@ int GetTimeBase(double *f0, int f0_length, int fs,
 
 }  // namespace
 
-void Synthesis(double *f0, int f0_length, double **spectrogram,
-    double **aperiodicity, int fft_size, double frame_period, int fs,
+void Synthesis(const double *f0, int f0_length, double **const spectrogram,
+    double **const aperiodicity, int fft_size, double frame_period, int fs,
     int y_length, double *y) {
   double *impulse_response = new double[fft_size];
 

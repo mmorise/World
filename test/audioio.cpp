@@ -111,7 +111,8 @@ int GetParameters(FILE *fp, int *fs, int *nbit, int *wav_length) {
 
 }  // namespace
 
-void wavwrite(double *x, int x_length, int fs, int nbit, char *filename) {
+void wavwrite(const double *x, int x_length, int fs, int nbit,
+    const char *filename) {
   FILE *fp = fopen(filename, "wb");
   if (NULL == fp) {
     printf("File cannot be opened.\n");
@@ -167,7 +168,7 @@ void wavwrite(double *x, int x_length, int fs, int nbit, char *filename) {
   fclose(fp);
 }
 
-int GetAudioLength(char *filename) {
+int GetAudioLength(const char *filename) {
   FILE *fp = fopen(filename, "rb");
   if (NULL == fp) {
     return 0;
@@ -212,7 +213,7 @@ int GetAudioLength(char *filename) {
   return wav_length;
 }
 
-void wavread(char* filename, int *fs, int *nbit, double *x) {
+void wavread(const char* filename, int *fs, int *nbit, double *x) {
   FILE *fp = fopen(filename, "rb");
   if (NULL == fp) {
     printf("File not found.\n");

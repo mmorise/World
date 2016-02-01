@@ -30,8 +30,9 @@ typedef struct {
 // Output:
 //   aperiodicity  : Aperiodicity estimated by D4C.
 //-----------------------------------------------------------------------------
-void D4C(double *x, int x_length, int fs, double *time_axis, double *f0,
-  int f0_length, int fft_size, D4COption *option, double **aperiodicity);
+void D4C(const double *x, int x_length, int fs, const double *time_axis,
+  const double *f0, int f0_length, int fft_size, const D4COption *option,
+  double **aperiodicity);
 
 //-----------------------------------------------------------------------------
 // InitializeD4COption allocates the memory to the struct and sets the

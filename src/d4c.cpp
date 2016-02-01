@@ -19,8 +19,8 @@ namespace {
 // SetParametersForGetWindowedWaveform()
 //-----------------------------------------------------------------------------
 void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
-    double temporal_position, int fs, double current_f0, int *base_index,
-    int *index, int window_type, double *window) {
+    double temporal_position, int fs, double current_f0, int window_type,
+    int *base_index, int *index, double *window) {
   for (int i = -half_window_length; i <= half_window_length; ++i)
     base_index[i + half_window_length] = i;
   for (int i = 0; i <= half_window_length * 2; ++i)
@@ -48,9 +48,9 @@ void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
 // GetWindowedWaveform() windows the waveform by F0-adaptive window
 // In the variable window_type, 1: hanning, 2: blackman
 //-----------------------------------------------------------------------------
-void GetWindowedWaveform(double *x, int x_length, int fs, double current_f0,
-    double temporal_position, int window_type, double window_length_ratio,
-    double *waveform) {
+void GetWindowedWaveform(const double *x, int x_length, int fs,
+    double current_f0, double temporal_position, int window_type,
+    double window_length_ratio, double *waveform) {
   int half_window_length =
     matlab_round(window_length_ratio * fs / current_f0 / 2.0);
 
@@ -59,7 +59,7 @@ void GetWindowedWaveform(double *x, int x_length, int fs, double current_f0,
   double *window  = new double[half_window_length * 2 + 1];
 
   SetParametersForGetWindowedWaveform(half_window_length, x_length,
-      temporal_position, fs, current_f0, base_index, index, window_type,
+      temporal_position, fs, current_f0, window_type, base_index, index,
       window);
 
   // F0-adaptive windowing
@@ -86,9 +86,9 @@ void GetWindowedWaveform(double *x, int x_length, int fs, double current_f0,
 // GetCentroid() calculates the energy centroid (see the book, time-frequency
 // analysis written by L. Cohen).
 //-----------------------------------------------------------------------------
-void GetCentroid(double *x, int x_length, int fs, double current_f0,
-    int fft_size, double temporal_position, ForwardRealFFT *forward_real_fft,
-    double *centroid) {
+void GetCentroid(const double *x, int x_length, int fs, double current_f0,
+    int fft_size, double temporal_position,
+    const ForwardRealFFT *forward_real_fft, double *centroid) {
   for (int i = 0; i < fft_size; ++i) forward_real_fft->waveform[i] = 0.0;
   GetWindowedWaveform(x, x_length, fs, current_f0,
       temporal_position, world::kBlackman, 4.0, forward_real_fft->waveform);
@@ -121,9 +121,9 @@ void GetCentroid(double *x, int x_length, int fs, double current_f0,
 // GetStaticCentroid() calculates the temporally static energy centroid.
 // Basic idea was proposed by H. Kawahara.
 //-----------------------------------------------------------------------------
-void GetStaticCentroid(double *x, int x_length, int fs, double current_f0,
-    int fft_size, double temporal_position, ForwardRealFFT *forward_real_fft,
-    double *static_centroid) {
+void GetStaticCentroid(const double *x, int x_length, int fs,
+    double current_f0, int fft_size, double temporal_position,
+    const ForwardRealFFT *forward_real_fft, double *static_centroid) {
   double *centroid1 = new double[fft_size / 2 + 1];
   double *centroid2 = new double[fft_size / 2 + 1];
 
@@ -144,9 +144,9 @@ void GetStaticCentroid(double *x, int x_length, int fs, double current_f0,
 // GetSmoothedPowerSpectrum() calculates the smoothed power spectrum.
 // The parameters used for smoothing are optimized in davance.
 //-----------------------------------------------------------------------------
-void GetSmoothedPowerSpectrum(double *x, int x_length, int fs,
+void GetSmoothedPowerSpectrum(const double *x, int x_length, int fs,
     double current_f0, int fft_size, double temporal_position,
-    ForwardRealFFT *forward_real_fft, double *smoothed_power_spectrum) {
+    const ForwardRealFFT *forward_real_fft, double *smoothed_power_spectrum) {
   for (int i = 0; i < fft_size; ++i) forward_real_fft->waveform[i] = 0.0;
   GetWindowedWaveform(x, x_length, fs, current_f0,
       temporal_position, world::kHanning, 4.0, forward_real_fft->waveform);
@@ -167,8 +167,8 @@ void GetSmoothedPowerSpectrum(double *x, int x_length, int fs,
 // GetStaticGroupDelay() calculates the temporally static group delay.
 // This is the fundamental parameter in D4C.
 //-----------------------------------------------------------------------------
-void GetStaticGroupDelay(double *static_centroid,
-    double *smoothed_power_spectrum, int fs, double current_f0,
+void GetStaticGroupDelay(const double *static_centroid,
+    const double *smoothed_power_spectrum, int fs, double current_f0,
     int fft_size, double *static_group_delay) {
   for (int i = 0; i <= fft_size / 2; ++i)
     static_group_delay[i] = static_centroid[i] / smoothed_power_spectrum[i];
@@ -189,10 +189,10 @@ void GetStaticGroupDelay(double *static_centroid,
 // GetCoarseAperiodicity() calculates the aperiodicity in multiples of 3 kHz.
 // The upper limit is given based on the sampling frequency.
 //-----------------------------------------------------------------------------
-void GetCoarseAperiodicity(double *static_group_delay, int fs,
+void GetCoarseAperiodicity(const double *static_group_delay, int fs,
     double current_f0, int fft_size, int number_of_aperiodicities,
-    double *window, int window_length, ForwardRealFFT *forward_real_fft,
-    double *coarse_aperiodicity) {
+    const double *window, int window_length,
+    const ForwardRealFFT *forward_real_fft, double *coarse_aperiodicity) {
   int boundary =
     matlab_round(fft_size * 8.0 / window_length);
   int half_window_length = static_cast<int>(window_length / 2);
@@ -228,11 +228,10 @@ void GetCoarseAperiodicity(double *static_group_delay, int fs,
 // Caution:
 //   forward_fft is allocated in advance to speed up the processing.
 //-----------------------------------------------------------------------------
-void D4CGeneralBody(double *x, int x_length, int fs, double current_f0,
+void D4CGeneralBody(const double *x, int x_length, int fs, double current_f0,
     int fft_size, double temporal_position, int number_of_aperiodicities,
-    double *window, int window_length, ForwardRealFFT *forward_real_fft,
-    double *coarse_aperiodicity) {
-
+    const double *window, int window_length,
+    const ForwardRealFFT *forward_real_fft, double *coarse_aperiodicity) {
   double *static_centroid = new double[fft_size / 2 + 1];
   double *smoothed_power_spectrum = new double[fft_size / 2 + 1];
   double *static_group_delay = new double[fft_size / 2 + 1];
@@ -257,8 +256,9 @@ void D4CGeneralBody(double *x, int x_length, int fs, double current_f0,
 }
 }  // namespace
 
-void D4C(double *x, int x_length, int fs, double *time_axis, double *f0,
-    int f0_length, int fft_size, D4COption *option, double **aperiodicity) {
+void D4C(const double *x, int x_length, int fs, const double *time_axis,
+    const double *f0, int f0_length, int fft_size, const D4COption *option,
+    double **aperiodicity) {
   int fft_size_d4c = static_cast<int>(pow(2.0, 1.0 +
       static_cast<int>(log(4.0 * fs / world::kFloorF0 + 1) / world::kLog2)));
 
