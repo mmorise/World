@@ -46,7 +46,7 @@ void SetParametersForLinearSmoothing(int boundary, int fft_size, int fs,
     frequency_axis[i] = static_cast<double>(i) / fft_size *
     fs - width / 2.0;
 }
-}
+}  // namespace
 
 //-----------------------------------------------------------------------------
 // Fundamental functions
