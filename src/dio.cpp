@@ -36,7 +36,7 @@ namespace {
 //-----------------------------------------------------------------------------
 // DesignLowCutFilter() calculates the coefficients the filter.
 //-----------------------------------------------------------------------------
-void DesignLowCutFilter(int N, int fft_size, double *low_cut_filter) {
+static void DesignLowCutFilter(int N, int fft_size, double *low_cut_filter) {
   for (int i = 1; i <= N; ++i)
     low_cut_filter[i - 1] = 0.5 - 0.5 * cos(i * 2.0 * world::kPi / (N + 1));
   for (int i = N; i < fft_size; ++i) low_cut_filter[i] = 0.0;
@@ -56,7 +56,7 @@ void DesignLowCutFilter(int N, int fft_size, double *low_cut_filter) {
 // This function carries out downsampling to speed up the estimation process
 // and calculates the spectrum of the downsampled signal.
 //-----------------------------------------------------------------------------
-void GetSpectrumForEstimation(const double *x, int x_length, int y_length,
+static void GetSpectrumForEstimation(const double *x, int x_length, int y_length,
     double actual_fs, int fft_size, int decimation_ratio,
     fft_complex *y_spectrum) {
   double *y = new double[fft_size];
@@ -108,7 +108,7 @@ void GetSpectrumForEstimation(const double *x, int x_length, int y_length,
 // GetBestF0Contour() calculates the best f0 contour based on stabilities of
 // all candidates. The F0 whose stability is minimum is selected.
 //-----------------------------------------------------------------------------
-void GetBestF0Contour(int f0_length, double **const f0_candidate_map,
+static void GetBestF0Contour(int f0_length, double **const f0_candidate_map,
     double **const f0_stability_map, int number_of_bands,
     double *best_f0_contour) {
   double tmp;
@@ -128,7 +128,7 @@ void GetBestF0Contour(int f0_length, double **const f0_candidate_map,
 // FixStep1() is the 1st step of the postprocessing.
 // This function eliminates the unnatural change of f0 based on allowed_range.
 //-----------------------------------------------------------------------------
-void FixStep1(const double *best_f0_contour, int f0_length,
+static void FixStep1(const double *best_f0_contour, int f0_length,
     int voice_range_minimum, double allowed_range, double *f0_step1) {
   double *f0_base = new double[f0_length];
   // Initialization
@@ -152,7 +152,7 @@ void FixStep1(const double *best_f0_contour, int f0_length,
 // FixStep2() is the 2nd step of the postprocessing.
 // This function eliminates the suspected f0 in the anlaut and auslaut.
 //-----------------------------------------------------------------------------
-void FixStep2(const double *f0_step1, int f0_length, int voice_range_minimum,
+static void FixStep2(const double *f0_step1, int f0_length, int voice_range_minimum,
     double *f0_step2) {
   for (int i = 0; i < f0_length; ++i) f0_step2[i] = f0_step1[i];
 
@@ -170,7 +170,7 @@ void FixStep2(const double *f0_step1, int f0_length, int voice_range_minimum,
 //-----------------------------------------------------------------------------
 // CountNumberOfVoicedSections() counts the number of voiced sections.
 //-----------------------------------------------------------------------------
-void CountNumberOfVoicedSections(const double *f0_step2, int f0_length,
+static void CountNumberOfVoicedSections(const double *f0_step2, int f0_length,
     int *positive_index, int *negative_index, int *positive_count,
     int *negative_count) {
   *positive_count = *negative_count = 0;
@@ -188,7 +188,7 @@ void CountNumberOfVoicedSections(const double *f0_step2, int f0_length,
 // SelectOneF0() corrects the f0[current_index] based on
 // f0[current_index + sign].
 //-----------------------------------------------------------------------------
-double SelectBestF0(double current_f0, double past_f0,
+static double SelectBestF0(double current_f0, double past_f0,
     double **const f0_candidates, int number_of_candidates, int target_index,
     double allowed_range) {
   double reference_f0 = (current_f0 * 3.0 - past_f0) / 2.0;
@@ -213,7 +213,7 @@ double SelectBestF0(double current_f0, double past_f0,
 // FixStep3() is the 3rd step of the postprocessing.
 // This function corrects the f0 candidates from backward to forward.
 //-----------------------------------------------------------------------------
-void FixStep3(const double *f0_step2, int f0_length,
+static void FixStep3(const double *f0_step2, int f0_length,
     double **const f0_candidates, int number_of_candidates,
     double allowed_range, const int *negative_index, int negative_count,
     double *f0_step3) {
@@ -235,7 +235,7 @@ void FixStep3(const double *f0_step2, int f0_length,
 // BackwardCorrection() is the 4th step of the postprocessing.
 // This function corrects the f0 candidates from forward to backward.
 //-----------------------------------------------------------------------------
-void FixStep4(const double *f0_step3, int f0_length,
+static void FixStep4(const double *f0_step3, int f0_length,
     double **const f0_candidates, int number_of_candidates,
     double allowed_range, const int *positive_index, int positive_count,
     double *f0_step4) {
@@ -257,7 +257,7 @@ void FixStep4(const double *f0_step3, int f0_length,
 // FixF0Contour() calculates the definitive f0 contour based on all f0
 // candidates. There are four steps.
 //-----------------------------------------------------------------------------
-void FixF0Contour(double frame_period, int number_of_candidates,
+static void FixF0Contour(double frame_period, int number_of_candidates,
     int fs, double **const f0_candidates, const double *best_f0_contour,
     int f0_length, double f0_floor, double allowed_range,
     double *fixed_f0_contour) {
@@ -294,7 +294,7 @@ void FixF0Contour(double frame_period, int number_of_candidates,
 // input signal and low-pass filter.
 // This function is only used in RawEventByDio()
 //-----------------------------------------------------------------------------
-void GetFilteredSignal(int half_average_length, int fft_size,
+static void GetFilteredSignal(int half_average_length, int fft_size,
     const fft_complex *y_spectrum, int y_length, double *filtered_signal) {
   double *low_pass_filter = new double[fft_size];
   // Nuttall window is used as a low-pass filter.
@@ -347,7 +347,7 @@ void GetFilteredSignal(int half_average_length, int fft_size,
 // CheckEvent() returns 1, provided that the input value is over 1.
 // This function is for RawEventByDio().
 //-----------------------------------------------------------------------------
-inline int CheckEvent(int x) {
+static inline int CheckEvent(int x) {
   return x > 0 ? 1 : 0;
 }
 
@@ -355,7 +355,7 @@ inline int CheckEvent(int x) {
 // ZeroCrossingEngine() calculates the zero crossing points from positive to
 // negative. Thanks to Custom.Maid http://custom-made.seesaa.net/ (2012/8/19)
 //-----------------------------------------------------------------------------
-int ZeroCrossingEngine(const double *filtered_signal, int y_length, double fs,
+static int ZeroCrossingEngine(const double *filtered_signal, int y_length, double fs,
     double *interval_locations, double *intervals) {
   int *negative_going_points = new int[y_length];
 
@@ -400,7 +400,7 @@ int ZeroCrossingEngine(const double *filtered_signal, int y_length, double fs,
 // (3) Peak, and (4) dip. (3) and (4) are calculated from the zero-crossings of
 // the differential of waveform.
 //-----------------------------------------------------------------------------
-void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
+static void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
     double actual_fs, ZeroCrossings *zero_crossings) {
   // x_length / 4 (old version) is fixed at 2013/07/14
   const int kMaximumNumber = y_length;
@@ -439,7 +439,7 @@ void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
 // GetF0CandidatesSub() calculates the f0 candidates and deviations.
 // This is the sub-function of GetF0Candidates() and assumes the calculation.
 //-----------------------------------------------------------------------------
-void GetF0CandidatesSub(double **const interpolated_f0_set,
+static void GetF0CandidatesSub(double **const interpolated_f0_set,
     int time_axis_length, double f0_floor, double f0_ceil, double boundary_f0,
     double *f0_candidates, double *f0_deviations) {
   for (int i = 0; i < time_axis_length; ++i) {
@@ -469,7 +469,7 @@ void GetF0CandidatesSub(double **const interpolated_f0_set,
 // GetF0Candidates() calculates the F0 candidates based on the zero-crossings.
 // Calculation of F0 candidates is carried out in GetF0CandidatesSub().
 //-----------------------------------------------------------------------------
-void GetF0Candidates(const ZeroCrossings *zero_crossings, double boundary_f0,
+static void GetF0Candidates(const ZeroCrossings *zero_crossings, double boundary_f0,
     double f0_floor, double f0_ceil, const double *time_axis,
     int time_axis_length, double *f0_candidates, double *f0_deviations) {
   if (0 == CheckEvent(zero_crossings->number_of_negatives - 2) *
@@ -510,7 +510,7 @@ void GetF0Candidates(const ZeroCrossings *zero_crossings, double boundary_f0,
 //-----------------------------------------------------------------------------
 // DestroyZeroCrossings() frees the memory of array in the struct
 //-----------------------------------------------------------------------------
-void DestroyZeroCrossings(ZeroCrossings *zero_crossings) {
+static void DestroyZeroCrossings(ZeroCrossings *zero_crossings) {
   delete[] zero_crossings->negative_interval_locations;
   delete[] zero_crossings->positive_interval_locations;
   delete[] zero_crossings->peak_interval_locations;
@@ -524,7 +524,7 @@ void DestroyZeroCrossings(ZeroCrossings *zero_crossings) {
 //-----------------------------------------------------------------------------
 // RawEventByDio() calculates the zero-crossings.
 //-----------------------------------------------------------------------------
-void CalculateRawEvent(double boundary_f0, double fs,
+static void CalculateRawEvent(double boundary_f0, double fs,
     const fft_complex *y_spectrum, int y_length, int fft_size, double f0_floor,
     double f0_ceil, const double *time_axis, int time_axis_length,
     double *f0_deviations, double *f0_candidates) {
@@ -547,7 +547,7 @@ void CalculateRawEvent(double boundary_f0, double fs,
 // GetF0CandidateAndStabilityMap() calculates all f0 candidates and
 // their stabilities.
 //-----------------------------------------------------------------------------
-void GetF0CandidateAndStabilityMap(double *boundary_f0_list,
+static void GetF0CandidateAndStabilityMap(double *boundary_f0_list,
     int number_of_bands, double actual_fs, int y_length,
     double *time_axis, int f0_length, fft_complex *y_spectrum,
     int fft_size, double f0_floor, double f0_ceil,
@@ -576,7 +576,7 @@ void GetF0CandidateAndStabilityMap(double *boundary_f0_list,
 // DioGeneralBody() estimates the F0 based on Distributed Inline-filter
 // Operation.
 //-----------------------------------------------------------------------------
-void DioGeneralBody(double *x, int x_length, int fs, double frame_period,
+static void DioGeneralBody(double *x, int x_length, int fs, double frame_period,
     double f0_floor, double f0_ceil, double channels_in_octave, int speed,
     double allowed_range, double *time_axis, double *f0) {
   int number_of_bands = 1 + static_cast<int>(log(f0_ceil / f0_floor) /

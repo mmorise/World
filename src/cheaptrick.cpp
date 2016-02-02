@@ -18,7 +18,7 @@ namespace {
 // SmoothingWithRecovery() carries out the spectral smoothing and spectral
 // recovery on the Cepstrum domain.
 //-----------------------------------------------------------------------------
-void SmoothingWithRecovery(double current_f0, int fs, int fft_size, double q1,
+static void SmoothingWithRecovery(double current_f0, int fs, int fft_size, double q1,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft, double *spectral_envelope) {
 // We can control q1 as the parameter. 2015/9/22 by M. Morise
@@ -62,7 +62,7 @@ void SmoothingWithRecovery(double current_f0, int fs, int fft_size, double q1,
 // DC stands for Direct Current. In this case, the component from 0 to F0 Hz
 // is corrected.
 //-----------------------------------------------------------------------------
-void GetPowerSpectrum(int fs, double current_f0, int fft_size,
+static void GetPowerSpectrum(int fs, double current_f0, int fft_size,
     const ForwardRealFFT *forward_real_fft) {
   int half_window_length = matlab_round(1.5 * fs / current_f0);
 
@@ -85,7 +85,7 @@ void GetPowerSpectrum(int fs, double current_f0, int fft_size,
 //-----------------------------------------------------------------------------
 // SetParametersForGetWindowedWaveform()
 //-----------------------------------------------------------------------------
-void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
+static void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
     double temporal_position, int fs, double current_f0, int *base_index,
     int *index, double *window) {
   for (int i = -half_window_length; i <= half_window_length; ++i)
@@ -110,7 +110,7 @@ void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
 //-----------------------------------------------------------------------------
 // GetWindowedWaveform() windows the waveform by F0-adaptive window
 //-----------------------------------------------------------------------------
-void GetWindowedWaveform(const double *x, int x_length, int fs,
+static void GetWindowedWaveform(const double *x, int x_length, int fs,
     double current_f0, double temporal_position,
     const ForwardRealFFT *forward_real_fft) {
   int half_window_length = matlab_round(1.5 * fs / current_f0);
@@ -147,7 +147,7 @@ void GetWindowedWaveform(const double *x, int x_length, int fs,
 // Caution:
 //   forward_fft is allocated in advance to speed up the processing.
 //-----------------------------------------------------------------------------
-void CheapTrickGeneralBody(const double *x, int x_length, int fs,
+static void CheapTrickGeneralBody(const double *x, int x_length, int fs,
     double current_f0, int fft_size, double temporal_position, double q1,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft, double *spectral_envelope) {

@@ -15,7 +15,7 @@
 
 namespace {
 
-void GetNoiseSpectrum(int noise_size, int fft_size,
+static void GetNoiseSpectrum(int noise_size, int fft_size,
     const ForwardRealFFT *forward_real_fft) {
   double average = 0.0;
   for (int i = 0; i < noise_size; ++i) {
@@ -34,7 +34,7 @@ void GetNoiseSpectrum(int noise_size, int fft_size,
 //-----------------------------------------------------------------------------
 // GetAperiodicResponse() calculates an aperiodic response.
 //-----------------------------------------------------------------------------
-void GetAperiodicResponse(int noise_size, int fft_size,
+static void GetAperiodicResponse(int noise_size, int fft_size,
     const double *spectrum, const double *aperiodic_ratio, double current_vuv,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
@@ -75,7 +75,7 @@ void GetAperiodicResponse(int noise_size, int fft_size,
 //-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates an aperiodic response.
 //-----------------------------------------------------------------------------
-void GetPeriodicResponse(int fft_size, const double *spectrum,
+static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, double *periodic_response) {
@@ -100,7 +100,7 @@ void GetPeriodicResponse(int fft_size, const double *spectrum,
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
 }
 
-void GetSpectralEnvelope(double current_time, double frame_period,
+static void GetSpectralEnvelope(double current_time, double frame_period,
     int f0_length, double **const spectrogram, int fft_size,
     double *spectral_envelope) {
   int current_frame_floor = MyMinInt(f0_length - 1,
@@ -120,7 +120,7 @@ void GetSpectralEnvelope(double current_time, double frame_period,
   }
 }
 
-void GetAperiodicRatio(double current_time, double frame_period,
+static void GetAperiodicRatio(double current_time, double frame_period,
     int f0_length, double **const aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
   int current_frame_floor = MyMinInt(f0_length - 1,
@@ -144,7 +144,7 @@ void GetAperiodicRatio(double current_time, double frame_period,
 //-----------------------------------------------------------------------------
 // GetOneFrameSegment() calculates a periodic and aperiodic response at a time.
 //-----------------------------------------------------------------------------
-void GetOneFrameSegment(double current_vuv, int noise_size,
+static void GetOneFrameSegment(double current_vuv, int noise_size,
     double **const spectrogram, int fft_size, double **const aperiodicity,
     int f0_length, double frame_period, double current_time, int fs,
     const ForwardRealFFT *forward_real_fft,
@@ -181,7 +181,7 @@ void GetOneFrameSegment(double current_vuv, int noise_size,
   delete[] aperiodic_response;
 }
 
-void GetTemporalParametersForTimeBase(const double *f0, int f0_length, int fs,
+static void GetTemporalParametersForTimeBase(const double *f0, int f0_length, int fs,
     int y_length, double frame_period, double *time_axis,
     double *coarse_time_axis, double *coarse_f0, double *coarse_vuv) {
   for (int i = 0; i < y_length; ++i)
@@ -199,7 +199,7 @@ void GetTemporalParametersForTimeBase(const double *f0, int f0_length, int fs,
 }
 
 
-int GetPulseLocationsForTimeBase(const double *interpolated_f0,
+static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
     const double *time_axis, int y_length, int fs, double *pulse_locations,
     int *pulse_locations_index) {
 
@@ -234,7 +234,7 @@ int GetPulseLocationsForTimeBase(const double *interpolated_f0,
   return number_of_pulses;
 }
 
-int GetTimeBase(const double *f0, int f0_length, int fs,
+static int GetTimeBase(const double *f0, int f0_length, int fs,
     double frame_period, int y_length, double *pulse_locations,
     int *pulse_locations_index, double *interpolated_vuv) {
   double *time_axis = new double[y_length];

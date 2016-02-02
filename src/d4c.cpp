@@ -18,7 +18,7 @@ namespace {
 //-----------------------------------------------------------------------------
 // SetParametersForGetWindowedWaveform()
 //-----------------------------------------------------------------------------
-void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
+static void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
     double temporal_position, int fs, double current_f0, int window_type,
     int *base_index, int *index, double *window) {
   for (int i = -half_window_length; i <= half_window_length; ++i)
@@ -48,7 +48,7 @@ void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
 // GetWindowedWaveform() windows the waveform by F0-adaptive window
 // In the variable window_type, 1: hanning, 2: blackman
 //-----------------------------------------------------------------------------
-void GetWindowedWaveform(const double *x, int x_length, int fs,
+static void GetWindowedWaveform(const double *x, int x_length, int fs,
     double current_f0, double temporal_position, int window_type,
     double window_length_ratio, double *waveform) {
   int half_window_length =
@@ -86,7 +86,7 @@ void GetWindowedWaveform(const double *x, int x_length, int fs,
 // GetCentroid() calculates the energy centroid (see the book, time-frequency
 // analysis written by L. Cohen).
 //-----------------------------------------------------------------------------
-void GetCentroid(const double *x, int x_length, int fs, double current_f0,
+static void GetCentroid(const double *x, int x_length, int fs, double current_f0,
     int fft_size, double temporal_position,
     const ForwardRealFFT *forward_real_fft, double *centroid) {
   for (int i = 0; i < fft_size; ++i) forward_real_fft->waveform[i] = 0.0;
@@ -121,7 +121,7 @@ void GetCentroid(const double *x, int x_length, int fs, double current_f0,
 // GetStaticCentroid() calculates the temporally static energy centroid.
 // Basic idea was proposed by H. Kawahara.
 //-----------------------------------------------------------------------------
-void GetStaticCentroid(const double *x, int x_length, int fs,
+static void GetStaticCentroid(const double *x, int x_length, int fs,
     double current_f0, int fft_size, double temporal_position,
     const ForwardRealFFT *forward_real_fft, double *static_centroid) {
   double *centroid1 = new double[fft_size / 2 + 1];
@@ -144,7 +144,7 @@ void GetStaticCentroid(const double *x, int x_length, int fs,
 // GetSmoothedPowerSpectrum() calculates the smoothed power spectrum.
 // The parameters used for smoothing are optimized in davance.
 //-----------------------------------------------------------------------------
-void GetSmoothedPowerSpectrum(const double *x, int x_length, int fs,
+static void GetSmoothedPowerSpectrum(const double *x, int x_length, int fs,
     double current_f0, int fft_size, double temporal_position,
     const ForwardRealFFT *forward_real_fft, double *smoothed_power_spectrum) {
   for (int i = 0; i < fft_size; ++i) forward_real_fft->waveform[i] = 0.0;
@@ -167,7 +167,7 @@ void GetSmoothedPowerSpectrum(const double *x, int x_length, int fs,
 // GetStaticGroupDelay() calculates the temporally static group delay.
 // This is the fundamental parameter in D4C.
 //-----------------------------------------------------------------------------
-void GetStaticGroupDelay(const double *static_centroid,
+static void GetStaticGroupDelay(const double *static_centroid,
     const double *smoothed_power_spectrum, int fs, double current_f0,
     int fft_size, double *static_group_delay) {
   for (int i = 0; i <= fft_size / 2; ++i)
@@ -189,7 +189,7 @@ void GetStaticGroupDelay(const double *static_centroid,
 // GetCoarseAperiodicity() calculates the aperiodicity in multiples of 3 kHz.
 // The upper limit is given based on the sampling frequency.
 //-----------------------------------------------------------------------------
-void GetCoarseAperiodicity(const double *static_group_delay, int fs,
+static void GetCoarseAperiodicity(const double *static_group_delay, int fs,
     double current_f0, int fft_size, int number_of_aperiodicities,
     const double *window, int window_length,
     const ForwardRealFFT *forward_real_fft, double *coarse_aperiodicity) {
@@ -228,7 +228,7 @@ void GetCoarseAperiodicity(const double *static_group_delay, int fs,
 // Caution:
 //   forward_fft is allocated in advance to speed up the processing.
 //-----------------------------------------------------------------------------
-void D4CGeneralBody(const double *x, int x_length, int fs, double current_f0,
+static void D4CGeneralBody(const double *x, int x_length, int fs, double current_f0,
     int fft_size, double temporal_position, int number_of_aperiodicities,
     const double *window, int window_length,
     const ForwardRealFFT *forward_real_fft, double *coarse_aperiodicity) {

@@ -26,7 +26,7 @@ namespace {
 //-----------------------------------------------------------------------------
 // SetParametersForLinearSmoothing() is used in LinearSmoothing()
 //-----------------------------------------------------------------------------
-void SetParametersForLinearSmoothing(int boundary, int fft_size, int fs,
+static void SetParametersForLinearSmoothing(int boundary, int fft_size, int fs,
     double width, const double *power_spectrum, double *mirroring_spectrum,
     double *mirroring_segment, double *frequency_axis) {
   for (int i = 0; i < boundary; ++i)
