@@ -22,7 +22,7 @@ namespace {
 // FilterForDecimate() calculates the coefficients of low-pass filter and
 // carries out the filtering. This function is only used for decimate().
 //-----------------------------------------------------------------------------
-void FilterForDecimate(const double *x, int x_length, int r, double *y) {
+static void FilterForDecimate(const double *x, int x_length, int r, double *y) {
   double a[3], b[2];  // filter Coefficients
   switch (r) {
     case 11:  // fs : 44100 (default)
