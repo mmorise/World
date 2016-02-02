@@ -46,7 +46,7 @@ void SetParametersForLinearSmoothing(int boundary, int fft_size, int fs,
     frequency_axis[i] = static_cast<double>(i) / fft_size *
     fs - width / 2.0;
 }
-}
+}  // namespace
 
 //-----------------------------------------------------------------------------
 // Fundamental functions
@@ -147,7 +147,7 @@ void InitializeForwardRealFFT(int fft_size, ForwardRealFFT *forward_real_fft) {
       forward_real_fft->waveform, forward_real_fft->spectrum, FFT_ESTIMATE);
 }
 
-void DestroyForwardRealFFT(const ForwardRealFFT *forward_real_fft) {
+void DestroyForwardRealFFT(ForwardRealFFT *forward_real_fft) {
   fft_destroy_plan(forward_real_fft->forward_fft);
   delete[] forward_real_fft->spectrum;
   delete[] forward_real_fft->waveform;
@@ -161,7 +161,7 @@ void InitializeInverseRealFFT(int fft_size, InverseRealFFT *inverse_real_fft) {
       inverse_real_fft->spectrum, inverse_real_fft->waveform, FFT_ESTIMATE);
 }
 
-void DestroyInverseRealFFT(const InverseRealFFT *inverse_real_fft) {
+void DestroyInverseRealFFT(InverseRealFFT *inverse_real_fft) {
   fft_destroy_plan(inverse_real_fft->inverse_fft);
   delete[] inverse_real_fft->spectrum;
   delete[] inverse_real_fft->waveform;
@@ -220,7 +220,7 @@ void GetMinimumPhaseSpectrum(const MinimumPhaseAnalysis *minimum_phase) {
   }
 }
 
-void DestroyMinimumPhaseAnalysis(const MinimumPhaseAnalysis *minimum_phase) {
+void DestroyMinimumPhaseAnalysis(MinimumPhaseAnalysis *minimum_phase) {
   fft_destroy_plan(minimum_phase->forward_fft);
   fft_destroy_plan(minimum_phase->inverse_fft);
   delete[] minimum_phase->cepstrum;

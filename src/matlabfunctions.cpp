@@ -261,7 +261,7 @@ double randn(void) {
   return tmp / 268435456.0 - 6.0;
 }
 
-void fast_fftfilt(const double *x, int x_length, double *h, int h_length,
+void fast_fftfilt(const double *x, int x_length, const double *h, int h_length,
     int fft_size, const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft, double *y) {
   fft_complex *x_spectrum = new fft_complex[fft_size];

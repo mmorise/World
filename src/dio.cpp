@@ -510,7 +510,7 @@ void GetF0Candidates(const ZeroCrossings *zero_crossings, double boundary_f0,
 //-----------------------------------------------------------------------------
 // DestroyZeroCrossings() frees the memory of array in the struct
 //-----------------------------------------------------------------------------
-void DestroyZeroCrossings(const ZeroCrossings *zero_crossings) {
+void DestroyZeroCrossings(ZeroCrossings *zero_crossings) {
   delete[] zero_crossings->negative_interval_locations;
   delete[] zero_crossings->positive_interval_locations;
   delete[] zero_crossings->peak_interval_locations;
