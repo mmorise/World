@@ -576,7 +576,7 @@ static void GetF0CandidateAndStabilityMap(double *boundary_f0_list,
 // DioGeneralBody() estimates the F0 based on Distributed Inline-filter
 // Operation.
 //-----------------------------------------------------------------------------
-static void DioGeneralBody(double *x, int x_length, int fs, double frame_period,
+static void DioGeneralBody(const double *x, int x_length, int fs, double frame_period,
     double f0_floor, double f0_ceil, double channels_in_octave, int speed,
     double allowed_range, double *time_axis, double *f0) {
   int number_of_bands = 1 + static_cast<int>(log(f0_ceil / f0_floor) /
@@ -640,7 +640,7 @@ int GetSamplesForDIO(int fs, int x_length, double frame_period) {
     (frame_period / 1000.0)) + 1;
 }
 
-void Dio(double *x, int x_length, int fs, const DioOption *option,
+void Dio(const double *x, int x_length, int fs, const DioOption *option,
     double *time_axis, double *f0) {
   DioGeneralBody(x, x_length, fs, option->frame_period, option->f0_floor,
       option->f0_ceil, option->channels_in_octave, option->speed,
