@@ -5,8 +5,8 @@
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
 
-#include "./fft.h"
-#include "./macrodefinitions.h"
+#include "fft.h"
+#include "macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 
