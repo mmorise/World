@@ -5,13 +5,13 @@
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // forward_real_fft, inverse_real_fft and minimum_phase are used to speed up.
 //-----------------------------------------------------------------------------
-#include "./synthesis.h"
+#include "world/synthesis.h"
 
 #include <math.h>
 
-#include "./common.h"
-#include "./constantnumbers.h"
-#include "./matlabfunctions.h"
+#include "world/common.h"
+#include "world/constantnumbers.h"
+#include "world/matlabfunctions.h"
 
 namespace {
 
