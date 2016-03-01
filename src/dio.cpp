@@ -4,13 +4,13 @@
 //
 // F0 estimation based on DIO (Distributed Inline-filter Operation).
 //-----------------------------------------------------------------------------
-#include "./dio.h"
+#include "world/dio.h"
 
 #include <math.h>
 
-#include "./common.h"
-#include "./constantnumbers.h"
-#include "./matlabfunctions.h"
+#include "world/common.h"
+#include "world/constantnumbers.h"
+#include "world/matlabfunctions.h"
 
 //-----------------------------------------------------------------------------
 // struct for RawEventByDio()
