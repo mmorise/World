@@ -11,11 +11,11 @@
 //   The functions wavread() and wavwrite() were removed to the /src.
 //   they were moved to the test/audioio.cpp. (2016/01/28)
 //-----------------------------------------------------------------------------
-#include "./matlabfunctions.h"
+#include "world/matlabfunctions.h"
 
 #include <math.h>
 
-#include "./constantnumbers.h"
+#include "world/constantnumbers.h"
 
 namespace {
 //-----------------------------------------------------------------------------
