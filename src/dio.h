@@ -32,7 +32,7 @@ typedef struct {
 //   time_axis  : Temporal positions.
 //   f0         : F0 contour.
 //-----------------------------------------------------------------------------
-void Dio(double *x, int x_length, int fs, const DioOption *option,
+void Dio(const double *x, int x_length, int fs, const DioOption *option,
   double *time_axis, double *f0);
 
 //-----------------------------------------------------------------------------

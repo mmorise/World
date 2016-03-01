@@ -20,11 +20,11 @@
 
 namespace {
 
-inline int MyMaxInt(int x, int y) {
+static inline int MyMaxInt(int x, int y) {
   return x > y ? x : y;
 }
 
-inline int MyMinInt(int x, int y) {
+static inline int MyMinInt(int x, int y) {
   return x < y ? x : y;
 }
 
@@ -32,7 +32,7 @@ inline int MyMinInt(int x, int y) {
 // CheckHeader() checks the .wav header. This function can only support the
 // monaural wave file. This function is only used in waveread().
 //-----------------------------------------------------------------------------
-int CheckHeader(FILE *fp) {
+static int CheckHeader(FILE *fp) {
   char data_check[5];
   fread(data_check, 1, 4, fp);  // "RIFF"
   data_check[4] = '\0';
@@ -74,7 +74,7 @@ int CheckHeader(FILE *fp) {
 // GetParameters() extracts fp, nbit, wav_length from the .wav file
 // This function is only used in wavread().
 //-----------------------------------------------------------------------------
-int GetParameters(FILE *fp, int *fs, int *nbit, int *wav_length) {
+static int GetParameters(FILE *fp, int *fs, int *nbit, int *wav_length) {
   char data_check[5] = {0};
   data_check[4] = '\0';
   unsigned char for_int_number[4];
