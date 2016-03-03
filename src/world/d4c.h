@@ -5,7 +5,7 @@
 #ifndef WORLD_D4C_H_
 #define WORLD_D4C_H_
 
-#include "macrodefinitions.h"
+#include "world/macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 
