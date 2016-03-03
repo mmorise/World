@@ -38,15 +38,15 @@
 #endif
 
 // For .wav input/output functions.
-#include "./audioio.h"
+#include "audioio.h"
 
 // WORLD core functions.
-#include "./../src/d4c.h"
-#include "./../src/dio.h"
-#include "./../src/matlabfunctions.h"
-#include "./../src/cheaptrick.h"
-#include "./../src/stonemask.h"
-#include "./../src/synthesis.h"
+#include "world/d4c.h"
+#include "world/dio.h"
+#include "world/matlabfunctions.h"
+#include "world/cheaptrick.h"
+#include "world/stonemask.h"
+#include "world/synthesis.h"
 
 #if (defined (__linux__) || defined(__CYGWIN__) || defined(__APPLE__))
 // Linux porting section: implement timeGetTime() by gettimeofday(),

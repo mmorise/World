@@ -5,7 +5,7 @@
 #ifndef WORLD_CHEAPTRICK_H_
 #define WORLD_CHEAPTRICK_H_
 
-#include "./macrodefinitions.h"
+#include "macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 

@@ -5,14 +5,14 @@
 // F0 estimation based on instantaneous frequency.
 // This method is carried out by using the output of Dio().
 //-----------------------------------------------------------------------------
-#include "./stonemask.h"
+#include "world/stonemask.h"
 
 #include <math.h>
 
-#include "./common.h"
-#include "./constantnumbers.h"
-#include "./fft.h"
-#include "./matlabfunctions.h"
+#include "world/common.h"
+#include "world/constantnumbers.h"
+#include "world/fft.h"
+#include "world/matlabfunctions.h"
 
 namespace {
 

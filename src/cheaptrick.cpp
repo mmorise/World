@@ -4,13 +4,13 @@
 //
 // Spectral envelope estimation on the basis of the idea of CheapTrick.
 //-----------------------------------------------------------------------------
-#include "./cheaptrick.h"
+#include "world/cheaptrick.h"
 
 #include <math.h>
 
-#include "./common.h"
-#include "./constantnumbers.h"
-#include "./matlabfunctions.h"
+#include "world/common.h"
+#include "world/constantnumbers.h"
+#include "world/matlabfunctions.h"
 
 namespace {
 

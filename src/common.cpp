@@ -15,12 +15,12 @@
 // because forward FFT and inverse FFT can run in one step.
 //
 //-----------------------------------------------------------------------------
-#include "./common.h"
+#include "world/common.h"
 
 #include <math.h>
 
-#include "./constantnumbers.h"
-#include "./matlabfunctions.h"
+#include "world/constantnumbers.h"
+#include "world/matlabfunctions.h"
 
 namespace {
 //-----------------------------------------------------------------------------

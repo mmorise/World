@@ -7,7 +7,7 @@
 // we recommend more suitable functions provided by other organizations.
 // This file is independent of WORLD project and for the test.cpp.
 //-----------------------------------------------------------------------------
-#include "./audioio.h"
+#include "audioio.h"
 
 #include <math.h>
 #include <stdint.h>

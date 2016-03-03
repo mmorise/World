@@ -13,7 +13,7 @@
 //   (English) http://www.fftw.org/
 // 2012/08/24 by M. Morise
 //-----------------------------------------------------------------------------
-#include "./fft.h"
+#include "world/fft.h"
 
 #include <math.h>
 #include <stdlib.h>
