@@ -42,7 +42,7 @@ $(OUT_DIR)/objs/test/%.o : test/%.c
 
 $(OUT_DIR)/objs/%.o : src/%.c
 	mkdir -p $(OUT_DIR)/objs
-	$(C99) $(CFLAGS) -o "$@" -c "$<"
+	$(C99) $(CFLAGS) -Isrc -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/test/%.o : test/%.cpp
 	mkdir -p $(OUT_DIR)/objs/test
@@ -50,7 +50,7 @@ $(OUT_DIR)/objs/test/%.o : test/%.cpp
 
 $(OUT_DIR)/objs/%.o : src/%.cpp
 	mkdir -p $(OUT_DIR)/objs
-	$(CXX) $(CXXFLAGS) -o "$@" -c "$<"
+	$(CXX) $(CXXFLAGS) -Isrc -o "$@" -c "$<"
 
 clean:
 	@echo 'Removing all temporary binaries... '
