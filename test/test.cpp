@@ -12,7 +12,7 @@
 // Test program for WORLD 0.2.0_3 (2015/07/28)
 // Test program for WORLD 0.2.0_4 (2015/11/15)
 // Test program for WORLD in GitHub (2015/11/16-)
-// Latest update: 2016/02/02
+// Latest update: 2016/03/04
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
@@ -41,6 +41,8 @@
 #include "audioio.h"
 
 // WORLD core functions.
+// Note: .sln uses an option in Additional Include Directories.
+// To compile the program, the option "-I $(SolutionDir)..\src" was set.
 #include "world/d4c.h"
 #include "world/dio.h"
 #include "world/matlabfunctions.h"
