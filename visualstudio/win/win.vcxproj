@@ -74,6 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalOptions>-I $(SolutionDir)..\src %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -122,16 +123,16 @@
     <ClCompile Include="..\..\test\test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\cheaptrick.h" />
-    <ClInclude Include="..\..\src\common.h" />
-    <ClInclude Include="..\..\src\constantnumbers.h" />
-    <ClInclude Include="..\..\src\d4c.h" />
-    <ClInclude Include="..\..\src\dio.h" />
-    <ClInclude Include="..\..\src\fft.h" />
-    <ClInclude Include="..\..\src\macrodefinitions.h" />
-    <ClInclude Include="..\..\src\matlabfunctions.h" />
-    <ClInclude Include="..\..\src\stonemask.h" />
-    <ClInclude Include="..\..\src\synthesis.h" />
+    <ClInclude Include="..\..\src\world\cheaptrick.h" />
+    <ClInclude Include="..\..\src\world\common.h" />
+    <ClInclude Include="..\..\src\world\constantnumbers.h" />
+    <ClInclude Include="..\..\src\world\d4c.h" />
+    <ClInclude Include="..\..\src\world\dio.h" />
+    <ClInclude Include="..\..\src\world\fft.h" />
+    <ClInclude Include="..\..\src\world\macrodefinitions.h" />
+    <ClInclude Include="..\..\src\world\matlabfunctions.h" />
+    <ClInclude Include="..\..\src\world\stonemask.h" />
+    <ClInclude Include="..\..\src\world\synthesis.h" />
     <ClInclude Include="..\..\test\audioio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
