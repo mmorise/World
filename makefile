@@ -60,5 +60,5 @@ clean:
 
 clear: clean
 
-.PHONY: clean clear
+.PHONY: clean clear test default
 .DELETE_ON_ERRORS:
