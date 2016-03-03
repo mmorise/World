@@ -41,7 +41,7 @@
 #include "audioio.h"
 
 // WORLD core functions.
-// Note: .sln uses an option in Additional Include Directories.
+// Note: win.sln uses an option in Additional Include Directories.
 // To compile the program, the option "-I $(SolutionDir)..\src" was set.
 #include "world/d4c.h"
 #include "world/dio.h"
