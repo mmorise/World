@@ -5,7 +5,7 @@
 #ifndef WORLD_DIO_H_
 #define WORLD_DIO_H_
 
-#include "macrodefinitions.h"
+#include "world/macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 

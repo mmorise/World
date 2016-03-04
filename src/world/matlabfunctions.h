@@ -5,8 +5,8 @@
 #ifndef WORLD_MATLABFUNCTIONS_H_
 #define WORLD_MATLABFUNCTIONS_H_
 
-#include "common.h"
-#include "macrodefinitions.h"
+#include "world/common.h"
+#include "world/macrodefinitions.h"
 
 WORLD_BEGIN_C_DECLS
 
