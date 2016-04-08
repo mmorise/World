@@ -12,4 +12,4 @@ There is no patent in all algorithms in WORLD.
 I'm afraid that no pull request is accepted until this implementaion is completed.
 Since the old function is not removed from the project, you can use both of them as necessary.
 
-[■■■■■■■□□□] 70% 2016/03/26
+[■■■■■■■■□□] 80% 2016/04/08
