@@ -13,3 +13,4 @@ I'm afraid that no pull request is accepted until this implementaion is complete
 Since the old function is not removed from the project, you can use both of them as necessary.
 
 [■■■■■■■■□□] 80% 2016/04/08
+2016/04/15: I'm suffering from bugs.
