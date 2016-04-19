@@ -12,13 +12,18 @@
 // Test program for WORLD 0.2.0_3 (2015/07/28)
 // Test program for WORLD 0.2.0_4 (2015/11/15)
 // Test program for WORLD in GitHub (2015/11/16-)
-// Latest update: 2016/03/04
+// Latest update: 2016/04/19
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
 // output.wav : Output file
 // f0         : F0 scaling (a positive number)
 // spec       : Formant scaling (a positive number)
+//
+// 2016/04/19:
+// Note: This version output three speech synthesized by different algorithms.
+//       When the filename is "output.wav", "01output.wav", "02output.wav" and
+//       "03output.wav" are generated. They are almost all the same.
 //-----------------------------------------------------------------------------
 
 #include <math.h>
@@ -49,6 +54,7 @@
 #include "world/cheaptrick.h"
 #include "world/stonemask.h"
 #include "world/synthesis.h"
+#include "world/synthesisrealtime.h"
 
 #if (defined (__linux__) || defined(__CYGWIN__) || defined(__APPLE__))
 // Linux porting section: implement timeGetTime() by gettimeofday(),
@@ -241,13 +247,82 @@ void WaveformSynthesis(WorldParameters *world_parameters, int fs,
     int y_length, double *y) {
   DWORD elapsed_time;
   // Synthesis by the aperiodicity
-  printf("\nSynthesis\n");
+  printf("\nSynthesis 1 (conventional algorithm)\n");
   elapsed_time = timeGetTime();
   Synthesis(world_parameters->f0, world_parameters->f0_length,
       world_parameters->spectrogram, world_parameters->aperiodicity,
       world_parameters->fft_size, world_parameters->frame_period, fs,
       y_length, y);
   printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
+}
+
+void WaveformSynthesis2(WorldParameters *world_parameters, int fs,
+  int y_length, double *y) {
+  DWORD elapsed_time;
+  printf("\nSynthesis 2 (All frames are added at the same time)\n");
+  elapsed_time = timeGetTime();
+
+  WorldSynthesizer synthesizer = { 0 };
+  int buffer_size = 64;
+  InitializeSynthesizer(world_parameters->fs, world_parameters->frame_period,
+      world_parameters->fft_size, buffer_size, 1, &synthesizer);
+
+  // All parameters are added at the same time.
+  AddParameters(world_parameters->f0, world_parameters->f0_length,
+      world_parameters->spectrogram, world_parameters->aperiodicity,
+      &synthesizer);
+
+  int index;
+  for (int i = 0; Synthesis2(&synthesizer) != 0; ++i) {
+    index = i * buffer_size;
+    for (int j = 0; j < buffer_size; ++j) {
+      y[j + index] = synthesizer.buffer[j];
+    }
+  }
+
+  printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
+  DestroySynthesizer(&synthesizer);
+}
+
+void WaveformSynthesis3(WorldParameters *world_parameters, int fs,
+  int y_length, double *y) {
+  DWORD elapsed_time;
+  // Synthesis by the aperiodicity
+  printf("\nSynthesis 3 (Ring buffer is efficiently used.)\n");
+  elapsed_time = timeGetTime();
+
+  WorldSynthesizer synthesizer = { 0 };
+  int buffer_size = 64;
+  InitializeSynthesizer(world_parameters->fs, world_parameters->frame_period,
+    world_parameters->fft_size, buffer_size, 20, &synthesizer);
+
+  int offset = 0;
+  int index = 0;
+  for (int i = 0; i < world_parameters->f0_length;) {
+    // Add one frame (i shows the frame index that should be added)
+    if (AddParameters(&world_parameters->f0[i], 1,
+      &world_parameters->spectrogram[i], &world_parameters->aperiodicity[i],
+      &synthesizer) == 1) ++i;
+
+    // Synthesize speech with length of buffer_size sample.
+    // It is repeated until the function returns 0
+    // (it suggests that the synthesizer cannot generate speech).
+    while (Synthesis2(&synthesizer) != 0) {
+      index = offset * buffer_size;
+      for (int j = 0; j < buffer_size; ++j)
+        y[j + index] = synthesizer.buffer[j];
+      offset++;
+    }
+
+    // Check the "Lock" (Please see synthesisrealtime.h)
+    if (IsLocked(&synthesizer) == 1) {
+      printf("Locked!\n");
+      break;
+    }
+  }
+
+  printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
+  DestroySynthesizer(&synthesizer);
 }
 
 void DestroyMemory(WorldParameters *world_parameters) {
@@ -323,17 +398,35 @@ int main(int argc, char *argv[]) {
     world_parameters.spectrogram);
 
   //---------------------------------------------------------------------------
-  // Synthesis part
+  // Synthesis part (2016/04/19)
+  // There are three samples in speech synthesis
+  // 1: Conventional synthesis
+  // 2: Example of real-time synthesis
+  // 3: Example of real-time synthesis (Ring buffer is efficiently used)
   //---------------------------------------------------------------------------
+  char filename[100];
   // The length of the output waveform
   int y_length = static_cast<int>((world_parameters.f0_length - 1) *
     world_parameters.frame_period / 1000.0 * fs) + 1;
   double *y = new double[y_length];
-  // Synthesis
-  WaveformSynthesis(&world_parameters, fs, y_length, y);
 
-  // Output
-  wavwrite(y, y_length, fs, 16, argv[2]);
+  // Synthesis 1 (conventional synthesis)
+  for (int i = 0; i < y_length; ++i) y[i] = 0.0;
+  WaveformSynthesis(&world_parameters, fs, y_length, y);
+  sprintf(filename, "01%s", argv[2]);
+  wavwrite(y, y_length, fs, 16, filename);
+
+  // Synthesis 2 (All frames are added at the same time)
+  for (int i = 0; i < y_length; ++i) y[i] = 0.0;
+  WaveformSynthesis2(&world_parameters, fs, y_length, y);
+  sprintf(filename, "02%s", argv[2]);
+  wavwrite(y, y_length, fs, 16, filename);
+
+  // Synthesis 3 (Ring buffer is efficiently used.)
+  for (int i = 0; i < y_length; ++i) y[i] = 0.0;
+  WaveformSynthesis3(&world_parameters, fs, y_length, y);
+  sprintf(filename, "03%s", argv[2]);
+  wavwrite(y, y_length, fs, 16, filename);
 
   delete[] y;
   delete[] x;

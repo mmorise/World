@@ -18,8 +18,8 @@ namespace {
 // SmoothingWithRecovery() carries out the spectral smoothing and spectral
 // recovery on the Cepstrum domain.
 //-----------------------------------------------------------------------------
-static void SmoothingWithRecovery(double current_f0, int fs, int fft_size, double q1,
-    const ForwardRealFFT *forward_real_fft,
+static void SmoothingWithRecovery(double current_f0, int fs, int fft_size,
+    double q1, const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft, double *spectral_envelope) {
 // We can control q1 as the parameter. 2015/9/22 by M. Morise
 // const double q1 = -0.09;  // Please see the reference in CheapTrick.
@@ -85,9 +85,9 @@ static void GetPowerSpectrum(int fs, double current_f0, int fft_size,
 //-----------------------------------------------------------------------------
 // SetParametersForGetWindowedWaveform()
 //-----------------------------------------------------------------------------
-static void SetParametersForGetWindowedWaveform(int half_window_length, int x_length,
-    double temporal_position, int fs, double current_f0, int *base_index,
-    int *index, double *window) {
+static void SetParametersForGetWindowedWaveform(int half_window_length,
+    int x_length, double temporal_position, int fs, double current_f0,
+    int *base_index, int *index, double *window) {
   for (int i = -half_window_length; i <= half_window_length; ++i)
     base_index[i + half_window_length] = i;
   for (int i = 0; i <= half_window_length * 2; ++i)

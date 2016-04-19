@@ -6,7 +6,7 @@ CXXFLAGS = -O1 -g -Wall -fPIC
 CFLAGS = $(CXXFLAGS)
 ARFLAGS = -rv
 OUT_DIR = ./build
-OBJS = $(OUT_DIR)/objs/cheaptrick.o $(OUT_DIR)/objs/common.o $(OUT_DIR)/objs/d4c.o $(OUT_DIR)/objs/dio.o $(OUT_DIR)/objs/fft.o $(OUT_DIR)/objs/matlabfunctions.o $(OUT_DIR)/objs/stonemask.o $(OUT_DIR)/objs/synthesis.o
+OBJS = $(OUT_DIR)/objs/cheaptrick.o $(OUT_DIR)/objs/common.o $(OUT_DIR)/objs/d4c.o $(OUT_DIR)/objs/dio.o $(OUT_DIR)/objs/fft.o $(OUT_DIR)/objs/matlabfunctions.o $(OUT_DIR)/objs/stonemask.o $(OUT_DIR)/objs/synthesis.o $(OUT_DIR)/objs/synthesisrealtime.o
 LIBS =
 
 default: $(OUT_DIR)/libworld.a
@@ -35,6 +35,7 @@ $(OUT_DIR)/objs/fft.o : src/world/fft.h src/world/macrodefinitions.h
 $(OUT_DIR)/objs/matlabfunctions.o : src/world/constantnumbers.h src/world/matlabfunctions.h src/world/macrodefinitions.h
 $(OUT_DIR)/objs/stonemask.o : src/world/stonemask.h src/world/fft.h src/world/common.h src/world/constantnumbers.h src/world/matlabfunctions.h src/world/macrodefinitions.h
 $(OUT_DIR)/objs/synthesis.o : src/world/synthesis.h src/world/common.h src/world/constantnumbers.h src/world/matlabfunctions.h src/world/macrodefinitions.h
+$(OUT_DIR)/objs/synthesisrealtime.o : src/world/synthesisrealtime.h src/world/common.h src/world/constantnumbers.h src/world/matlabfunctions.h src/world/macrodefinitions.h
 
 $(OUT_DIR)/objs/test/%.o : test/%.c
 	mkdir -p $(OUT_DIR)/objs/test

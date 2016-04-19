@@ -120,8 +120,8 @@ static double FixF0(const double *power_spectrum, const double *numerator_i,
 // Calculated value is tentative because it is fixed as needed.
 // Note: The sixth argument in FixF0() is not optimized.
 //-----------------------------------------------------------------------------
-static double GetTentativeF0(const double *power_spectrum, const double *numerator_i,
-    int fft_size, int fs, double f0_initial) {
+static double GetTentativeF0(const double *power_spectrum,
+    const double *numerator_i, int fft_size, int fs, double f0_initial) {
   double tentative_f0 =
     FixF0(power_spectrum, numerator_i, fft_size, fs, f0_initial, 2);
 
@@ -135,9 +135,10 @@ static double GetTentativeF0(const double *power_spectrum, const double *numerat
 //-----------------------------------------------------------------------------
 // GetMeanF0() calculates the instantaneous frequency.
 //-----------------------------------------------------------------------------
-static double GetMeanF0(const double *x, int x_length, int fs, double current_time,
-    double f0_initial, int fft_size, double window_length_in_time,
-    const double *base_time, int base_time_length) {
+static double GetMeanF0(const double *x, int x_length, int fs,
+    double current_time, double f0_initial, int fft_size,
+    double window_length_in_time, const double *base_time,
+    int base_time_length) {
   ForwardRealFFT forward_real_fft = {0};
   InitializeForwardRealFFT(fft_size, &forward_real_fft);
   fft_complex *main_spectrum = new fft_complex[fft_size];
@@ -182,8 +183,8 @@ static double GetMeanF0(const double *x, int x_length, int fs, double current_ti
 // GetRefinedF0() fixes the F0 estimated by Dio(). This function uses
 // instantaneous frequency.
 //-----------------------------------------------------------------------------
-static double GetRefinedF0(const double *x, int x_length, int fs, double current_time,
-    double current_f0) {
+static double GetRefinedF0(const double *x, int x_length, int fs,
+    double current_time, double current_f0) {
   // A safeguard was added (2015/12/02).
   if (current_f0 <= 0.0 || current_f0 > fs / 12.0)
     return 0.0;

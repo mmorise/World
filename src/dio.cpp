@@ -56,8 +56,8 @@ static void DesignLowCutFilter(int N, int fft_size, double *low_cut_filter) {
 // This function carries out downsampling to speed up the estimation process
 // and calculates the spectrum of the downsampled signal.
 //-----------------------------------------------------------------------------
-static void GetSpectrumForEstimation(const double *x, int x_length, int y_length,
-    double actual_fs, int fft_size, int decimation_ratio,
+static void GetSpectrumForEstimation(const double *x, int x_length,
+    int y_length, double actual_fs, int fft_size, int decimation_ratio,
     fft_complex *y_spectrum) {
   double *y = new double[fft_size];
 
@@ -152,8 +152,8 @@ static void FixStep1(const double *best_f0_contour, int f0_length,
 // FixStep2() is the 2nd step of the postprocessing.
 // This function eliminates the suspected f0 in the anlaut and auslaut.
 //-----------------------------------------------------------------------------
-static void FixStep2(const double *f0_step1, int f0_length, int voice_range_minimum,
-    double *f0_step2) {
+static void FixStep2(const double *f0_step1, int f0_length,
+    int voice_range_minimum, double *f0_step2) {
   for (int i = 0; i < f0_length; ++i) f0_step2[i] = f0_step1[i];
 
   int center = (voice_range_minimum - 1) / 2;
@@ -355,8 +355,8 @@ static inline int CheckEvent(int x) {
 // ZeroCrossingEngine() calculates the zero crossing points from positive to
 // negative. Thanks to Custom.Maid http://custom-made.seesaa.net/ (2012/8/19)
 //-----------------------------------------------------------------------------
-static int ZeroCrossingEngine(const double *filtered_signal, int y_length, double fs,
-    double *interval_locations, double *intervals) {
+static int ZeroCrossingEngine(const double *filtered_signal, int y_length,
+    double fs, double *interval_locations, double *intervals) {
   int *negative_going_points = new int[y_length];
 
   for (int i = 0; i < y_length - 1; ++i)
@@ -469,9 +469,10 @@ static void GetF0CandidatesSub(double **const interpolated_f0_set,
 // GetF0Candidates() calculates the F0 candidates based on the zero-crossings.
 // Calculation of F0 candidates is carried out in GetF0CandidatesSub().
 //-----------------------------------------------------------------------------
-static void GetF0Candidates(const ZeroCrossings *zero_crossings, double boundary_f0,
-    double f0_floor, double f0_ceil, const double *time_axis,
-    int time_axis_length, double *f0_candidates, double *f0_deviations) {
+static void GetF0Candidates(const ZeroCrossings *zero_crossings,
+    double boundary_f0, double f0_floor, double f0_ceil,
+    const double *time_axis, int time_axis_length, double *f0_candidates,
+    double *f0_deviations) {
   if (0 == CheckEvent(zero_crossings->number_of_negatives - 2) *
       CheckEvent(zero_crossings->number_of_positives - 2) *
       CheckEvent(zero_crossings->number_of_peaks - 2) *
@@ -576,9 +577,10 @@ static void GetF0CandidateAndStabilityMap(double *boundary_f0_list,
 // DioGeneralBody() estimates the F0 based on Distributed Inline-filter
 // Operation.
 //-----------------------------------------------------------------------------
-static void DioGeneralBody(const double *x, int x_length, int fs, double frame_period,
-    double f0_floor, double f0_ceil, double channels_in_octave, int speed,
-    double allowed_range, double *time_axis, double *f0) {
+static void DioGeneralBody(const double *x, int x_length, int fs,
+    double frame_period, double f0_floor, double f0_ceil,
+    double channels_in_octave, int speed, double allowed_range,
+    double *time_axis, double *f0) {
   int number_of_bands = 1 + static_cast<int>(log(f0_ceil / f0_floor) /
     world::kLog2 * channels_in_octave);
   double * boundary_f0_list = new double[number_of_bands];
