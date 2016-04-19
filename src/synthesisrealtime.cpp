@@ -444,11 +444,8 @@ void InitializeSynthesizer(int fs, double frame_period, int fft_size,
   // Initilize internal parameters
   RefreshSynthesizer(synth);
 
-  synth->minimum_phase = (MinimumPhaseAnalysis){0};
   InitializeMinimumPhaseAnalysis(fft_size, &synth->minimum_phase);
-  synth->inverse_real_fft = (InverseRealFFT){0};
   InitializeInverseRealFFT(fft_size, &synth->inverse_real_fft);
-  synth->forward_real_fft = (ForwardRealFFT){0};
   InitializeForwardRealFFT(fft_size, &synth->forward_real_fft);
 }
 
