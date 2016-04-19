@@ -7,11 +7,9 @@ and also generate the speech like input speech with only estimated parameters.
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## [WIP] - New synthesis function for real-time applications is implementing (2016/03/17).
+## [WIP] - New synthesis function for real-time applications was released! (2016/04/19)
 
-I'm afraid that no pull request is accepted until this implementaion is completed.
-Since the old function is not removed from the project, you can use both of them as necessary.
+Another synthesis function was implemented for real-time applications.
+In test.cpp, there are three examples in speech synthesis.
 
-[■■■■■■■■□□] 80% 2016/04/08
-
-2016/04/15:I'm suffering from bugs.
+Note: This is a prototype version, and there may be bugs.
