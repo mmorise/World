@@ -7,9 +7,11 @@ and also generate the speech like input speech with only estimated parameters.
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## [WIP] - New synthesis function for real-time applications was released! (2016/04/19)
 
-Another synthesis function was implemented for real-time applications.
-In test.cpp, there are three examples in speech synthesis.
+## Introduction of WORLD family (2016/05/26)
 
-Note: This is a prototype version, and there may be bugs.
+I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
+
+PyWorldVocoder (https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) is a Python wrapper for World Vocoder.
+
+Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
