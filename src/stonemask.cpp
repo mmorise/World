@@ -100,7 +100,8 @@ static double FixF0(const double *power_spectrum, const double *numerator_i,
   int index;
   for (int i = 0; i < number_of_harmonics; ++i) {
     index = matlab_round(f0_initial * fft_size / fs * (i + 1));
-    fixp_list[i] = static_cast<double>(index) * fs / fft_size +
+    fixp_list[i] = power_spectrum[index] == 0.0 ? 0.0 : 
+      static_cast<double>(index) * fs / fft_size +
       numerator_i[index] / power_spectrum[index] * fs / 2.0 / world::kPi;
     power_list[i] = sqrt(power_spectrum[index]);
   }
