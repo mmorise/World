@@ -1,12 +1,27 @@
 # World - a high-quality speech analysis, manipulation and synthesis system
 
 WORLD is free software for high-quality speech analysis, manipulation and synthesis.
-It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope
-and also generate the speech like input speech with only estimated parameters.
+It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope and also generate the speech like input speech with only estimated parameters.
 
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
+## References (2016/10/02)
+When you cite the latest version of WORLD in your paper, please use the sentence "WORLD \[1\] (D4C edition [2])" and cite the following papers. 
+
+[1] M. Morise, F. Yokomori, and K. Ozawa, ``WORLD: a vocoder-based high-quality speech synthesis system for real-time applications,'' IEICE transactions on information and systems, vol. E99-D, no. 7, pp. 1877-1884, 2016. 
+
+[2] M. Morise, ``D4C, a band-aperiodicity estimator for high-quality speech synthesis,'' Speech Communication, vol. 84, pp. 57-65, Nov. 2016. http://www.sciencedirect.com/science/article/pii/S0167639316300413
+
+In CheapTrick, you can refer the following references.
+
+[3] M. Morise, ``CheapTrick, a spectral envelope estimator for high-quality speech synthesis,'' Speech Communication, vol. 67, pp. 1-7, March 2015. http://www.sciencedirect.com/science/article/pii/S0167639314000697
+
+[4] M. Morise, ``Error evaluation of an F0-adaptive spectral envelope estimator in robustness against the additive noise and F0 error,'' IEICE transactions on information and systems, vol. E98-D, no. 7, pp. 1405-1408, July 2015.
+
+In DIO, you can refer the following reference.
+
+[5] M. Morise, H. Kawahara and H. Katayose, ``Fast and reliable F0 estimation method based on the period extraction of vocal fold vibration of singing voice and speech,'' AES 35th International Conference, CD-ROM Proceeding, Feb. 2009.
 
 ## Introduction of WORLD family (2016/05/26)
 
