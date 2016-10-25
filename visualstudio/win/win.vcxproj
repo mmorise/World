@@ -74,7 +74,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-I $(SolutionDir)..\src %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I $(SolutionDir)..\src -I $(SolutionDir)..\tools %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -104,7 +104,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalOptions>-I $(SolutionDir)..\src %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>-I $(SolutionDir)..\src -I $(SolutionDir)..\tools %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -121,8 +121,8 @@
     <ClCompile Include="..\..\src\stonemask.cpp" />
     <ClCompile Include="..\..\src\synthesis.cpp" />
     <ClCompile Include="..\..\src\synthesisrealtime.cpp" />
-    <ClCompile Include="..\..\test\audioio.cpp" />
     <ClCompile Include="..\..\test\test.cpp" />
+    <ClCompile Include="..\..\tools\audioio.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\world\cheaptrick.h" />
@@ -136,7 +136,7 @@
     <ClInclude Include="..\..\src\world\stonemask.h" />
     <ClInclude Include="..\..\src\world\synthesis.h" />
     <ClInclude Include="..\..\src\world\synthesisrealtime.h" />
-    <ClInclude Include="..\..\test\audioio.h" />
+    <ClInclude Include="..\..\tools\audioio.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
