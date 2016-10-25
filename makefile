@@ -92,7 +92,7 @@ $(OUT_DIR)/objs/tools/%.o : tools/%.cpp
 
 $(OUT_DIR)/objs/world/%.o : src/%.cpp
 	mkdir -p $(OUT_DIR)/objs/world
-	$(CXX) $(CXXFLAGS) -Isrc-o "$@" -c "$<"
+	$(CXX) $(CXXFLAGS) -Isrc -o "$@" -c "$<"
 
 clean:
 	@echo 'Removing all temporary binaries... '
