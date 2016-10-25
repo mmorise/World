@@ -1,3 +1,4 @@
+// memo: I will fix the program according to the rules (by M. Morise, 2016/10/25)
 
 #include <math.h>
 #include <stdlib.h>
