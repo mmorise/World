@@ -1,5 +1,18 @@
-// memo: I will fix the program according to the rules (by M. Morise, 2016/10/25)
-
+//-----------------------------------------------------------------------------
+// Copyright 2016 seblemaguer. All Rights Reserved.
+// Author: https://github.com/seblemaguer
+//
+// Summary:
+// The example synthesizes a .wav file by three files generated from
+// "analysis.cpp".
+//
+// How to use:
+// The format is shown in the line 140.
+//
+// Caution: (by M. Morise)
+// Sampling frequency and frame period is fixed to 22050 and 5, respectively.
+// To use files with arbitrary conditions, I will fix the problem.
+//-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
