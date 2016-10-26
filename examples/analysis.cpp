@@ -1,5 +1,18 @@
-// memo: I will fix the program according to the rules (by M. Morise, 2016/10/25)
-
+//-----------------------------------------------------------------------------
+// Copyright 2016 seblemaguer. All Rights Reserved.
+// Author: https://github.com/seblemaguer
+//
+// Summary:
+// The example analyzes a .wav file and outputs three files in each parameter.
+// Files are used to synthesize speech by "synthesis.cpp".
+//
+// How to use:
+// The format is shown in the line 251.
+//
+// Caution: (by M. Morise)
+// The outputted files don't include the sampling frequency and frame period.
+// I will modify the program to fix this problem.
+//-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
