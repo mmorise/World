@@ -10,22 +10,7 @@ OUT_DIR = ./build
 OBJS = $(OUT_DIR)/objs/world/cheaptrick.o $(OUT_DIR)/objs/world/common.o $(OUT_DIR)/objs/world/d4c.o $(OUT_DIR)/objs/world/dio.o $(OUT_DIR)/objs/world/fft.o $(OUT_DIR)/objs/world/matlabfunctions.o $(OUT_DIR)/objs/world/stonemask.o $(OUT_DIR)/objs/world/synthesis.o $(OUT_DIR)/objs/world/synthesisrealtime.o
 LIBS =
 
-
 all: default test
-
-default: $(OUT_DIR)/libworld.a $(OUT_DIR)/analysis $(OUT_DIR)/synthesis
-###############################################################################################################
-### Example
-###############################################################################################################
-
-$(OUT_DIR)/analysis: $(OUT_DIR)/objs/examples/analysis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
-	 $(LINK) $(CXXFLAGS) -o $@ $^ -lm
-
-$(OUT_DIR)/synthesis: $(OUT_DIR)/objs/examples/synthesis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
-	$(LINK) $(CXXFLAGS) -o $@ $^ -lm
-
-$(OUT_DIR)/objs/tools/audioio.o : tools/audioio.h
-
 
 ###############################################################################################################
 ### Tests
@@ -43,11 +28,11 @@ $(OUT_DIR)/ctest: $(OUT_DIR)/libworld.a $(ctest_OBJS)
 $(OUT_DIR)/objs/test/test.o : tools/audioio.h src/world/d4c.h src/world/dio.h src/world/matlabfunctions.h src/world/cheaptrick.h src/world/stonemask.h src/world/synthesis.h src/world/common.h src/world/fft.h src/world/macrodefinitions.h
 $(OUT_DIR)/objs/test/ctest.o : tools/audioio.h src/world/d4c.h src/world/dio.h src/world/matlabfunctions.h src/world/cheaptrick.h src/world/stonemask.h src/world/synthesis.h src/world/common.h src/world/fft.h src/world/macrodefinitions.h
 
-
-
 ###############################################################################################################
 ### Library
 ###############################################################################################################
+default: $(OUT_DIR)/libworld.a
+
 $(OUT_DIR)/libworld.a: $(OBJS)
 	$(AR) $(ARFLAGS) $(OUT_DIR)/libworld.a $(OBJS) $(LIBS)
 	@echo Done.
@@ -70,21 +55,9 @@ $(OUT_DIR)/objs/test/%.o : test/%.c
 	mkdir -p $(OUT_DIR)/objs/test
 	$(C99) $(CFLAGS) -Isrc -Itools -o "$@" -c "$<"
 
-$(OUT_DIR)/objs/world/%.o : src/world/%.c
-	mkdir -p $(OUT_DIR)/objs/world
-	$(C99) $(CFLAGS) -Isrc -o "$@" -c "$<"
-
-$(OUT_DIR)/objs/%.o : src/%.c
-	mkdir -p $(OUT_DIR)/objs
-	$(C99) $(CFLAGS) -Isrc -o "$@" -c "$<"
-
 $(OUT_DIR)/objs/test/%.o : test/%.cpp
 	mkdir -p $(OUT_DIR)/objs/test
 	$(CXX) $(CXXFLAGS) -Isrc -Itools -o "$@" -c "$<"
-
-$(OUT_DIR)/objs/examples/%.o : examples/%.cpp
-	mkdir -p $(OUT_DIR)/objs/examples
-	$(CXX) $(CXXFLAGS) -Isrc -Itools  -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/tools/%.o : tools/%.cpp
 	mkdir -p $(OUT_DIR)/objs/tools
