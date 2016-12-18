@@ -47,6 +47,9 @@
     <ClCompile Include="..\..\tools\audioio.cpp">
       <Filter>tools</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\harvest.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\world\cheaptrick.h">
@@ -84,6 +87,9 @@
     </ClInclude>
     <ClInclude Include="..\..\tools\audioio.h">
       <Filter>tools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\world\harvest.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

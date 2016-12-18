@@ -117,6 +117,7 @@
     <ClCompile Include="..\..\src\d4c.cpp" />
     <ClCompile Include="..\..\src\dio.cpp" />
     <ClCompile Include="..\..\src\fft.cpp" />
+    <ClCompile Include="..\..\src\harvest.cpp" />
     <ClCompile Include="..\..\src\matlabfunctions.cpp" />
     <ClCompile Include="..\..\src\stonemask.cpp" />
     <ClCompile Include="..\..\src\synthesis.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="..\..\src\world\d4c.h" />
     <ClInclude Include="..\..\src\world\dio.h" />
     <ClInclude Include="..\..\src\world\fft.h" />
+    <ClInclude Include="..\..\src\world\harvest.h" />
     <ClInclude Include="..\..\src\world\macrodefinitions.h" />
     <ClInclude Include="..\..\src\world\matlabfunctions.h" />
     <ClInclude Include="..\..\src\world\stonemask.h" />
