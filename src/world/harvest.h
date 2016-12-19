@@ -15,6 +15,7 @@ WORLD_BEGIN_C_DECLS
 typedef struct {
   double f0_floor;
   double f0_ceil;
+  double frame_period;
 } HarvestOption;
 
 //-----------------------------------------------------------------------------
@@ -44,13 +45,12 @@ void InitializeHarvestOption(HarvestOption *option);
 // Harvest().
 // Input:
 //   fs             : Sampling frequency [Hz]
-//   x_length       : Length of the input signal [Sample].
+//   x_length       : Length of the input signal [Sample]
+//   frame_period   : Frame shift [msec]
 // Output:
-//   The number of samples required to store the results of Dio()
-// Note:
-//   Harvest requires 1 ms frame shift
+//   The number of samples required to store the results of Harvest().
 //-----------------------------------------------------------------------------
-int GetSamplesForHarvest(int fs, int x_length);
+int GetSamplesForHarvest(int fs, int x_length, double frame_period);
 
 WORLD_END_C_DECLS
 

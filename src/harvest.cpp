@@ -3,9 +3,6 @@
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
 // F0 estimation based on Harvest.
-// Caution: you CANNOT change the frame period. It is fixed to 1 ms.
-//          If you need the F0 contour with a different frame period,
-//          please decimate the result.
 //-----------------------------------------------------------------------------
 #include "world/harvest.h"
 
@@ -1191,7 +1188,7 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
   GetWaveformAndSpectrum(x, x_length, y_length, actual_fs, fft_size,
       decimation_ratio, y, y_spectrum);
 
-  int f0_length = GetSamplesForHarvest(fs, x_length);
+  int f0_length = GetSamplesForHarvest(fs, x_length, frame_period);
   for (int i = 0; i < f0_length; ++i) {
     time_axis[i] = i * frame_period / 1000.0;
   }
@@ -1244,8 +1241,9 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
 
 }  // namespace
 
-int GetSamplesForHarvest(int fs, int x_length) {
-  return static_cast<int>(1000.0 * x_length / static_cast<double>(fs)) + 1;
+int GetSamplesForHarvest(int fs, int x_length, double frame_period) {
+  return static_cast<int>(x_length / static_cast<double>(fs) /
+    (frame_period / 1000.0)) + 1;
 }
 
 void Harvest(const double *x, int x_length, int fs,
@@ -1253,14 +1251,37 @@ void Harvest(const double *x, int x_length, int fs,
   // Several parameters will be controllable for debug.
   double target_fs = 8000.0;
   int dimension_ratio = matlab_round(fs / target_fs);
-  int frame_period = 1;
   double channels_in_octave = 40;
-  HarvestGeneralBody(x, x_length, fs, frame_period, option->f0_floor,
+
+  if (option->frame_period == 1.0) {
+    HarvestGeneralBody(x, x_length, fs, 1, option->f0_floor,
       option->f0_ceil, channels_in_octave, dimension_ratio, time_axis, f0);
+    return;
+  }
+
+  int basic_frame_period = 1;
+  int basic_f0_length =
+    GetSamplesForHarvest(fs, x_length, basic_frame_period);
+  double *basic_f0 = new double[basic_f0_length];
+  double *basic_time_axis = new double[basic_f0_length];
+  HarvestGeneralBody(x, x_length, fs, basic_frame_period, option->f0_floor,
+      option->f0_ceil, channels_in_octave, dimension_ratio, basic_time_axis,
+      basic_f0);
+
+  int f0_length = GetSamplesForHarvest(fs, x_length, option->frame_period);
+  for (int i = 0; i < f0_length; ++i) {
+    time_axis[i] = i * option->frame_period / 1000.0;
+    f0[i] = basic_f0[MyMinInt(basic_f0_length - 1,
+      matlab_round(time_axis[i] * 1000.0))];
+  }
+
+  delete[] basic_f0;
+  delete[] basic_time_axis;
 }
 
 void InitializeHarvestOption(HarvestOption *option) {
   // You can change default parameters.
   option->f0_ceil = world::kCeilF0;
   option->f0_floor = world::kFloorF0;
+  option->frame_period = 5;
 }

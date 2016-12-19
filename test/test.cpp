@@ -12,7 +12,7 @@
 // Test program for WORLD 0.2.0_3 (2015/07/28)
 // Test program for WORLD 0.2.0_4 (2015/11/15)
 // Test program for WORLD in GitHub (2015/11/16-)
-// Latest update: 2016/04/19
+// Latest update: 2016/12/19
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
@@ -24,11 +24,6 @@
 // Note: This version output three speech synthesized by different algorithms.
 //       When the filename is "output.wav", "01output.wav", "02output.wav" and
 //       "03output.wav" are generated. They are almost all the same.
-//
-// 2016/12/18:
-// Note: Harvest() is added and requires the frame shift of 1 ms.
-//       You CANNOT set the frame period. The option is ignored.
-//       You can set another frame period by decimating the F0 contour.
 //-----------------------------------------------------------------------------
 
 #include <math.h>
@@ -108,9 +103,6 @@ void F0EstimationDio(double *x, int x_length,
   InitializeDioOption(&option);
 
   // Modification of the option
-  // When you You must set the same value.
-  // If a different value is used, you may suffer a fatal error because of a
-  // illegal memory access.
   option.frame_period = world_parameters->frame_period;
 
   // Valuable option.speed represents the ratio for downsampling.
@@ -156,10 +148,12 @@ void F0EstimationDio(double *x, int x_length,
 
 void F0EstimationHarvest(double *x, int x_length,
     WorldParameters *world_parameters) {
-  // Note: frame_period is fixed to 1 ms
-  world_parameters->frame_period = 1.0;
   HarvestOption option = { 0 };
   InitializeHarvestOption(&option);
+
+  // You can change the frame period.
+  // But the estimation is carried out with 1-ms frame shift.
+  option.frame_period = world_parameters->frame_period;
 
   // You should not set option.f0_floor to under world::kFloorF0.
   // If you want to analyze such low F0 speech, please change world::kFloorF0.
@@ -168,7 +162,7 @@ void F0EstimationHarvest(double *x, int x_length,
 
   // Parameters setting and memory allocation.
   world_parameters->f0_length = GetSamplesForHarvest(world_parameters->fs,
-    x_length);
+    x_length, world_parameters->frame_period);
   world_parameters->f0 = new double[world_parameters->f0_length];
   world_parameters->time_axis = new double[world_parameters->f0_length];
 
@@ -418,7 +412,9 @@ int main(int argc, char *argv[]) {
   world_parameters.frame_period = 5.0;
 
   // F0 estimation
+  // DIO
   // F0EstimationDio(x, x_length, &world_parameters);
+  // Harvest
   F0EstimationHarvest(x, x_length, &world_parameters);
 
   // Spectral envelope estimation
