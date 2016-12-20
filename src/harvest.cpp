@@ -823,7 +823,7 @@ static int ExtendF0(const double *f0, int f0_length, int origin,
   double tmp_f0 = extended_f0[origin];
   int shifted_origin = origin;
 
-  int distance = static_cast<int>(fabs(last_point - origin));
+  int distance = abs(last_point - origin);
   int *index_list = new int[distance + 1];
   for (int i = 0; i <= distance; ++i) index_list[i] = origin + shift * i;
 
