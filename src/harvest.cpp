@@ -813,6 +813,13 @@ static void GetMultiChannelF0(const double *f0, int f0_length,
 }
 
 //-----------------------------------------------------------------------------
+// abs() often causes bugs, an original function is used.
+//-----------------------------------------------------------------------------
+static inline int MyAbsInt(int x) {
+  return x > 0 ? x : -x;
+}
+
+//-----------------------------------------------------------------------------
 // ExtendF0() : The Hand erasing the Space.
 // The subfunction of Extend().
 //-----------------------------------------------------------------------------
@@ -823,7 +830,7 @@ static int ExtendF0(const double *f0, int f0_length, int origin,
   double tmp_f0 = extended_f0[origin];
   int shifted_origin = origin;
 
-  int distance = abs(last_point - origin);
+  int distance = MyAbsInt(last_point - origin);
   int *index_list = new int[distance + 1];
   for (int i = 0; i <= distance; ++i) index_list[i] = origin + shift * i;
 
