@@ -71,8 +71,8 @@ static void GetWaveformAndSpectrumSub(const double *x, int x_length,
 // and calculates the spectrum of the downsampled signal.
 //-----------------------------------------------------------------------------
 static void GetWaveformAndSpectrum(const double *x, int x_length,
-  int y_length, double actual_fs, int fft_size, int decimation_ratio,
-  double *y, fft_complex *y_spectrum) {
+    int y_length, double actual_fs, int fft_size, int decimation_ratio,
+    double *y, fft_complex *y_spectrum) {
   // Initialization
   for (int i = 0; i < fft_size; ++i) y[i] = 0.0;
 
@@ -321,9 +321,9 @@ static void DestroyZeroCrossings(ZeroCrossings *zero_crossings) {
 // CalculateRawEvent() calculates the zero-crossings.
 //-----------------------------------------------------------------------------
 static void CalculateRawEvent(double boundary_f0, double fs,
-  const fft_complex *y_spectrum, int y_length, int fft_size, double f0_floor,
-  double f0_ceil, const double *time_axis, int time_axis_length,
-  double *f0_candidates) {
+    const fft_complex *y_spectrum, int y_length, int fft_size, double f0_floor,
+    double f0_ceil, const double *time_axis, int time_axis_length,
+    double *f0_candidates) {
   double *filtered_signal = new double[fft_size];
   GetFilteredSignal(boundary_f0, fft_size, fs, y_spectrum,
     y_length, filtered_signal);
@@ -343,10 +343,10 @@ static void CalculateRawEvent(double boundary_f0, double fs,
 // GetF0CandidateAndStabilityMap() calculates all f0 candidates and
 // their stabilities.
 //-----------------------------------------------------------------------------
-static void GetF0CandidateMap(double *boundary_f0_list, int number_of_bands,
-  double actual_fs, int y_length, double *time_axis, int f0_length,
-  fft_complex *y_spectrum, int fft_size, double f0_floor, double f0_ceil,
-  double **f0_candidate_map) {
+static void GetF0CandidateMap(const double *boundary_f0_list,
+    int number_of_bands, double actual_fs, int y_length,
+    const double *time_axis, int f0_length, const fft_complex *y_spectrum,
+    int fft_size, double f0_floor, double f0_ceil, double **f0_candidate_map) {
   // Calculation of the acoustics events (zero-crossing)
   for (int i = 0; i < number_of_bands; ++i) {
     CalculateRawEvent(boundary_f0_list[i], actual_fs, y_spectrum, y_length,
@@ -358,7 +358,7 @@ static void GetF0CandidateMap(double *boundary_f0_list, int number_of_bands,
 // DetectF0CandidatesSub1() calculates VUV areas.
 //-----------------------------------------------------------------------------
 static int DetectF0CandidatesSub1(const int *vuv, int number_of_channels,
-  int *st, int *ed) {
+    int *st, int *ed) {
   int number_of_voiced_sections = 0;
   int tmp;
   for (int i = 1; i < number_of_channels; ++i) {
@@ -1166,6 +1166,35 @@ static void SmoothF0Contour(const double *f0, int f0_length,
 }
 
 //-----------------------------------------------------------------------------
+// HarvestGeneralBodySub() is the subfunction of HarvestGeneralBody()
+//-----------------------------------------------------------------------------
+static int HarvestGeneralBodySub(const double *boundary_f0_list,
+    int number_of_channels, int f0_length, double actual_fs, int y_length,
+    const double *time_axis, const fft_complex *y_spectrum, int fft_size,
+    double f0_floor, double f0_ceil, int max_candidates,
+    double **f0_candidates) {
+  double **raw_f0_candidates = new double *[number_of_channels];
+  for (int i = 0; i < number_of_channels; ++i) {
+    raw_f0_candidates[i] = new double[f0_length];
+  }
+
+  GetF0CandidateMap(boundary_f0_list, number_of_channels,
+    actual_fs, y_length, time_axis, f0_length, y_spectrum,
+    fft_size, f0_floor, f0_ceil, raw_f0_candidates);
+
+  int number_of_candidates = DetectF0Candidates(raw_f0_candidates,
+    number_of_channels, f0_length, max_candidates, f0_candidates);
+
+  OverlapF0Candidates(f0_length, number_of_candidates, f0_candidates);
+
+  for (int i = 0; i < number_of_channels; ++i) {
+    delete[] raw_f0_candidates[i];
+  }
+  delete[] raw_f0_candidates;
+  return number_of_candidates;
+}
+
+//-----------------------------------------------------------------------------
 // HarvestGeneralBody() estimates the F0 contour based on Harvest.
 //-----------------------------------------------------------------------------
 static void HarvestGeneralBody(const double *x, int x_length, int fs,
@@ -1198,16 +1227,11 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
   int f0_length = GetSamplesForHarvest(fs, x_length, frame_period);
   for (int i = 0; i < f0_length; ++i) {
     time_axis[i] = i * frame_period / 1000.0;
+    f0[i] = 0.0;
   }
-  double **raw_f0_candidates = new double *[number_of_channels];
-  for (int i = 0; i < number_of_channels; ++i) {
-    raw_f0_candidates[i] = new double[f0_length];
-  }
-  GetF0CandidateMap(boundary_f0_list, number_of_channels,
-      actual_fs, y_length, time_axis, f0_length, y_spectrum,
-      fft_size, f0_floor, f0_ceil, raw_f0_candidates);
 
-  int max_candidates = matlab_round(number_of_channels / 10) * 7;
+  const int kOverlapParam = 7;
+  int max_candidates = matlab_round(number_of_channels / 10) * kOverlapParam;
   double **f0_candidates = new double *[f0_length];
   double **f0_candidates_score = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i) {
@@ -1215,10 +1239,11 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
     f0_candidates_score[i] = new double[max_candidates];
   }
 
-  int number_of_candidates = DetectF0Candidates(raw_f0_candidates,
-      number_of_channels, f0_length, max_candidates, f0_candidates);
-  OverlapF0Candidates(f0_length, number_of_candidates, f0_candidates);
-  number_of_candidates = number_of_candidates * 7;
+  int number_of_candidates =
+    HarvestGeneralBodySub(boundary_f0_list, number_of_channels, f0_length,
+        actual_fs, y_length, time_axis, y_spectrum, fft_size, f0_floor,
+        f0_ceil, max_candidates, f0_candidates) * kOverlapParam;
+
   RefineF0Candidates(y, y_length, actual_fs, time_axis, f0_length,
       number_of_candidates, f0_floor, f0_ceil, f0_candidates,
       f0_candidates_score);
@@ -1239,10 +1264,6 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
   }
   delete[] f0_candidates;
   delete[] f0_candidates_score;
-  for (int i = 0; i < number_of_channels; ++i) {
-    delete[] raw_f0_candidates[i];
-  }
-  delete[] raw_f0_candidates;
   delete[] boundary_f0_list;
 }
 
