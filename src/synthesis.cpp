@@ -111,13 +111,17 @@ static void GetSpectralEnvelope(double current_time, double frame_period,
 
   if (current_frame_floor == current_frame_ceil) {
     for (int i = 0; i <= fft_size / 2; ++i)
-      spectral_envelope[i] = spectrogram[current_frame_floor][i];
+      spectral_envelope[i] = fabs(spectrogram[current_frame_floor][i]);
   } else {
     for (int i = 0; i <= fft_size / 2; ++i)
       spectral_envelope[i] =
-        (1.0 - interpolation) * spectrogram[current_frame_floor][i] +
-        interpolation * spectrogram[current_frame_ceil][i];
+        (1.0 - interpolation) * fabs(spectrogram[current_frame_floor][i]) +
+        interpolation * fabs(spectrogram[current_frame_ceil][i]);
   }
+}
+
+static inline double GetSafeAperiodicity(double x) {
+  return MyMaxDouble(0.001, MyMinDouble(1.0, x));
 }
 
 static void GetAperiodicRatio(double current_time, double frame_period,
@@ -132,12 +136,13 @@ static void GetAperiodicRatio(double current_time, double frame_period,
   if (current_frame_floor == current_frame_ceil) {
     for (int i = 0; i <= fft_size / 2; ++i)
       aperiodic_spectrum[i] =
-        pow(aperiodicity[current_frame_floor][i], 2.0);
+        pow(GetSafeAperiodicity(aperiodicity[current_frame_floor][i]), 2.0);
   } else {
     for (int i = 0; i <= fft_size / 2; ++i)
-      aperiodic_spectrum[i] =
-        pow((1.0 - interpolation) * aperiodicity[current_frame_floor][i] +
-        interpolation * aperiodicity[current_frame_ceil][i], 2.0);
+      aperiodic_spectrum[i] = pow((1.0 - interpolation) *
+          GetSafeAperiodicity(aperiodicity[current_frame_floor][i]) +
+          interpolation *
+          GetSafeAperiodicity(aperiodicity[current_frame_ceil][i]), 2.0);
   }
 }
 

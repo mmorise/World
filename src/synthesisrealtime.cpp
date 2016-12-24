@@ -6,7 +6,7 @@
 // This is an implementation for real-time applications.
 // Note: Several functions are same as those of synthesis.cpp.
 //
-// Caution: This is an implementation as a prototype. 
+// Caution: This is an implementation as a prototype.
 //          Specifications may change. There may be a bug.
 //-----------------------------------------------------------------------------
 #include "world/synthesisrealtime.h"
@@ -180,12 +180,16 @@ static void GetSpectralEnvelope(double current_location,
 
   if (current_frame_floor == current_frame_ceil) {
     for (int i = 0; i <= synth->fft_size / 2; ++i)
-      spectral_envelope[i] = front[i];
+      spectral_envelope[i] = fabs(front[i]);
   } else {
     for (int i = 0; i <= synth->fft_size / 2; ++i)
     spectral_envelope[i] =
-      (1.0 - interpolation) * front[i] + interpolation * next[i];
+      (1.0 - interpolation) * fabs(front[i]) + interpolation * fabs(next[i]);
   }
+}
+
+static inline double GetSafeAperiodicity(double x) {
+  return MyMaxDouble(0.001, MyMinDouble(1.0, x));
 }
 
 static void GetAperiodicRatio(double current_location,
@@ -204,12 +208,12 @@ static void GetAperiodicRatio(double current_location,
 
   if (current_frame_floor == current_frame_ceil) {
     for (int i = 0; i <= synth->fft_size / 2; ++i)
-      aperiodic_spectrum[i] = pow(front[i], 2.0);
+      aperiodic_spectrum[i] = pow(GetSafeAperiodicity(front[i]), 2.0);
   } else {
     for (int i = 0; i <= synth->fft_size / 2; ++i)
       aperiodic_spectrum[i] =
-        pow((1.0 - interpolation) * front[i] +
-        interpolation * next[i], 2.0);
+        pow((1.0 - interpolation) * GetSafeAperiodicity(front[i]) +
+        interpolation * GetSafeAperiodicity(next[i]), 2.0);
   }
 }
 
