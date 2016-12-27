@@ -90,16 +90,15 @@ static void SetParametersForGetWindowedWaveform(int half_window_length,
     int *base_index, int *index, double *window) {
   for (int i = -half_window_length; i <= half_window_length; ++i)
     base_index[i + half_window_length] = i;
+  int origin = matlab_round(temporal_position * fs + 0.001);
   for (int i = 0; i <= half_window_length * 2; ++i)
-    index[i] = MyMinInt(x_length - 1, MyMaxInt(0,
-        matlab_round(temporal_position * fs + base_index[i])));
+    index[i] = MyMinInt(x_length - 1, MyMaxInt(0, origin + base_index[i]));
 
   // Designing of the window function
   double average = 0.0;
   double position;
-  double bias = temporal_position * fs - matlab_round(temporal_position * fs);
   for (int i = 0; i <= half_window_length * 2; ++i) {
-    position = (static_cast<double>(base_index[i]) / 1.5 + bias) / fs;
+    position = (static_cast<double>(base_index[i]) / 1.5) / fs;
     window[i] = 0.5 * cos(world::kPi * position * current_f0) + 0.5;
     average += window[i] * window[i];
   }
@@ -153,7 +152,7 @@ static void CheapTrickGeneralBody(const double *x, int x_length, int fs,
     const InverseRealFFT *inverse_real_fft, double *spectral_envelope) {
   // F0-adaptive windowing
   GetWindowedWaveform(x, x_length, fs, current_f0, temporal_position,
-    forward_real_fft);
+      forward_real_fft);
 
   // Calculate power spectrum with DC correction
   // Note: The calculated power spectrum is stored in an array for waveform.
