@@ -214,6 +214,12 @@ static void AperiodicityEstimation(double *x, int x_length,
   D4COption option = { 0 };
   InitializeD4COption(&option);
 
+  // This parameter is used to determine the aperiodicity at 0 Hz.
+  // If you want to use the conventional D4C, please set the threshold to 0.0.
+  // Unvoiced section is counted by using this parameter.
+  // Aperiodicity indicates high value when the frame is the unvoiced section.
+  option.threshold = 0.85;
+
   // Parameters setting and memory allocation.
   world_parameters->aperiodicity = (double **)malloc(sizeof(double *) * (world_parameters->f0_length));
   for (int i = 0; i < world_parameters->f0_length; ++i) {

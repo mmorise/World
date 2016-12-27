@@ -25,6 +25,7 @@ namespace world {
   const int kBlackman = 2;
   const double kFrequencyInterval = 3000.0;
   const double kUpperLimit = 15000.0;
+  const double kThreshold = 0.85;
 }  // namespace world
 
 #endif

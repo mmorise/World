@@ -13,7 +13,7 @@ WORLD_BEGIN_C_DECLS
 // Struct for D4C
 //-----------------------------------------------------------------------------
 typedef struct {
-  double dummy;  // This is the future update.
+  double threshold;
 } D4COption;
 
 //-----------------------------------------------------------------------------
