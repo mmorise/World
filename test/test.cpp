@@ -423,10 +423,8 @@ int main(int argc, char *argv[]) {
   // Harvest
   F0EstimationHarvest(x, x_length, &world_parameters);
 
-  printf("aaa");
   // Spectral envelope estimation
   SpectralEnvelopeEstimation(x, x_length, &world_parameters);
-  printf("aaa");
 
   // Aperiodicity estimation by D4C
   AperiodicityEstimation(x, x_length, &world_parameters);
