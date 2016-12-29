@@ -43,8 +43,10 @@ typedef struct {
 // GetSuitableFFTSize() calculates the suitable FFT size.
 // The size is defined as the minimum length whose length is longer than
 // the input sample.
+//
 // Input:
-//   sample     : Length of the input signal
+//   sample : Length of the input signal
+//
 // Output:
 //   Suitable FFT size
 //-----------------------------------------------------------------------------
@@ -72,15 +74,25 @@ inline double MyMinDouble(double x, double y) {
 
 //-----------------------------------------------------------------------------
 // These functions are used in at least two different .cpp files
-// DCCorrection is used in CheapTrick() and D4C().
+
+//-----------------------------------------------------------------------------
+// DCCorrection interpolates the power under f0 Hz
+// and is used in CheapTrick() and D4C().
+//-----------------------------------------------------------------------------
 void DCCorrection(const double *input, double current_f0, int fs, int fft_size,
     double *output);
 
-// LinearSmoothing is used in CheapTrick() and D4C().
+//-----------------------------------------------------------------------------
+// LinearSmoothing() carries out the spectral smoothing by rectangular window
+// whose length is width Hz and is used in CheapTrick() and D4C().
+//-----------------------------------------------------------------------------
 void LinearSmoothing(const double *input, double width, int fs, int fft_size,
     double *output);
 
-// NuttallWindow is used in Dio() and D4C().
+//-----------------------------------------------------------------------------
+// NuttallWindow() calculates the coefficients of Nuttall window whose length
+// is y_length and is used in Dio(), Harvest() and D4C().
+//-----------------------------------------------------------------------------
 void NuttallWindow(int y_length, double *y);
 
 //-----------------------------------------------------------------------------

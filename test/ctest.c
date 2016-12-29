@@ -2,25 +2,15 @@
 // Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
-// Test program for WORLD 0.1.2 (2012/08/19)
-// Test program for WORLD 0.1.3 (2013/07/26)
-// Test program for WORLD 0.1.4 (2014/04/29)
-// Test program for WORLD 0.1.4_3 (2015/03/07)
-// Test program for WORLD 0.2.0 (2015/05/29)
-// Test program for WORLD 0.2.0_1 (2015/05/31)
-// Test program for WORLD 0.2.0_2 (2015/06/06)
-// Test program for WORLD 0.2.0_3 (2015/07/28)
-// Test program for WORLD 0.2.0_4 (2015/11/15)
-// Test program for WORLD in GitHub (2015/11/16-)
-// Latest update: 2016/02/02
+// Latest update: 2016/12/28
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
+//
 // output.wav : Output file
 // f0         : F0 scaling (a positive number)
 // spec       : Formant scaling (a positive number)
 //
-// 2016/04/19:
 // Note: This version output three speech synthesized by different algorithms.
 //       When the filename is "output.wav", "01output.wav", "02output.wav" and
 //       "03output.wav" are generated. They are almost all the same.
@@ -93,7 +83,8 @@ static void DisplayInformation(int fs, int nbit, int x_length) {
   printf("Length %f [sec]\n", (double)(x_length) / fs);
 }
 
-static void F0EstimationDio(double *x, int x_length, WorldParameters *world_parameters) {
+static void F0EstimationDio(double *x, int x_length,
+    WorldParameters *world_parameters) {
   DioOption option = { 0 };
   InitializeDioOption(&option);
 
@@ -118,20 +109,23 @@ static void F0EstimationDio(double *x, int x_length, WorldParameters *world_para
   // Parameters setting and memory allocation.
   world_parameters->f0_length = GetSamplesForDIO(world_parameters->fs,
     x_length, world_parameters->frame_period);
-  world_parameters->f0 = (double*)malloc(sizeof(double) * (world_parameters->f0_length));
-  world_parameters->time_axis = (double*)malloc(sizeof(double) * (world_parameters->f0_length));
-  double *refined_f0 = (double*)malloc(sizeof(double) * (world_parameters->f0_length));
+  world_parameters->f0 =
+    (double*)malloc(sizeof(double) * (world_parameters->f0_length));
+  world_parameters->time_axis =
+    (double*)malloc(sizeof(double) * (world_parameters->f0_length));
+  double *refined_f0 =
+    (double*)malloc(sizeof(double) * (world_parameters->f0_length));
 
   printf("\nAnalysis\n");
   DWORD elapsed_time = timeGetTime();
   Dio(x, x_length, world_parameters->fs, &option, world_parameters->time_axis,
-    world_parameters->f0);
+      world_parameters->f0);
   printf("DIO: %d [msec]\n", timeGetTime() - elapsed_time);
 
   // StoneMask is carried out to improve the estimation performance.
   elapsed_time = timeGetTime();
   StoneMask(x, x_length, world_parameters->fs, world_parameters->time_axis,
-    world_parameters->f0, world_parameters->f0_length, refined_f0);
+      world_parameters->f0, world_parameters->f0_length, refined_f0);
   printf("StoneMask: %d [msec]\n", timeGetTime() - elapsed_time);
 
   for (int i = 0; i < world_parameters->f0_length; ++i)
@@ -145,7 +139,7 @@ static void F0EstimationDio(double *x, int x_length, WorldParameters *world_para
 }
 
 void F0EstimationHarvest(double *x, int x_length,
-  WorldParameters *world_parameters) {
+    WorldParameters *world_parameters) {
   HarvestOption option = { 0 };
   InitializeHarvestOption(&option);
 
@@ -161,25 +155,27 @@ void F0EstimationHarvest(double *x, int x_length,
   // Parameters setting and memory allocation.
   world_parameters->f0_length = GetSamplesForHarvest(world_parameters->fs,
     x_length, world_parameters->frame_period);
-  world_parameters->f0 = (double*)malloc(sizeof(double) * (world_parameters->f0_length));;
-  world_parameters->time_axis = (double*)malloc(sizeof(double) * (world_parameters->f0_length));
+  world_parameters->f0 =
+    (double*)malloc(sizeof(double) * (world_parameters->f0_length));;
+  world_parameters->time_axis =
+    (double*)malloc(sizeof(double) * (world_parameters->f0_length));
 
   printf("\nAnalysis\n");
   DWORD elapsed_time = timeGetTime();
   Harvest(x, x_length, world_parameters->fs, &option,
-    world_parameters->time_axis, world_parameters->f0);
+      world_parameters->time_axis, world_parameters->f0);
   printf("Harvest: %d [msec]\n", timeGetTime() - elapsed_time);
 
   return;
 }
 
 static void SpectralEnvelopeEstimation(double *x, int x_length,
-  WorldParameters *world_parameters) {
+    WorldParameters *world_parameters) {
   CheapTrickOption option = { 0 };
   InitializeCheapTrickOption(&option);
 
-  // This value may be better one for HMM speech synthesis.
-  // Default value is -0.09.
+  // 2016/12/28
+  // Default value is modified to -0.15.
   option.q1 = -0.15;
 
   // Important notice (2016/02/02)
@@ -197,20 +193,19 @@ static void SpectralEnvelopeEstimation(double *x, int x_length,
   world_parameters->fft_size =
     GetFFTSizeForCheapTrick(world_parameters->fs, &option);
   world_parameters->spectrogram = (double **)malloc(sizeof(double *) * (world_parameters->f0_length));
-  for (int i = 0; i < world_parameters->f0_length; ++i) {
+  for (int i = 0; i < world_parameters->f0_length; ++i)
     world_parameters->spectrogram[i] =
       (double*)malloc(sizeof(double) * (world_parameters->fft_size / 2 + 1));
-  }
 
   DWORD elapsed_time = timeGetTime();
   CheapTrick(x, x_length, world_parameters->fs, world_parameters->time_axis,
-    world_parameters->f0, world_parameters->f0_length, &option,
-    world_parameters->spectrogram);
+      world_parameters->f0, world_parameters->f0_length, &option,
+      world_parameters->spectrogram);
   printf("CheapTrick: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
 static void AperiodicityEstimation(double *x, int x_length,
-  WorldParameters *world_parameters) {
+    WorldParameters *world_parameters) {
   D4COption option = { 0 };
   InitializeD4COption(&option);
 
@@ -222,22 +217,19 @@ static void AperiodicityEstimation(double *x, int x_length,
 
   // Parameters setting and memory allocation.
   world_parameters->aperiodicity = (double **)malloc(sizeof(double *) * (world_parameters->f0_length));
-  for (int i = 0; i < world_parameters->f0_length; ++i) {
+  for (int i = 0; i < world_parameters->f0_length; ++i)
     world_parameters->aperiodicity[i] =
       (double*)malloc(sizeof(double) * (world_parameters->fft_size / 2 + 1));
-  }
 
   DWORD elapsed_time = timeGetTime();
-  // option is not implemented in this version. This is for future update.
-  // We can use "NULL" as the argument.
   D4C(x, x_length, world_parameters->fs, world_parameters->time_axis,
-    world_parameters->f0, world_parameters->f0_length,
-    world_parameters->fft_size, &option, world_parameters->aperiodicity);
+      world_parameters->f0, world_parameters->f0_length,
+      world_parameters->fft_size, &option, world_parameters->aperiodicity);
   printf("D4C: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
-static void ParameterModification(int argc, char *argv[], int fs, int f0_length,
-  int fft_size, double *f0, double **spectrogram) {
+static void ParameterModification(int argc, char *argv[], int fs,
+    int f0_length, int fft_size, double *f0, double **spectrogram) {
   // F0 scaling
   if (argc >= 4) {
     double shift = atof(argv[3]);
@@ -265,7 +257,7 @@ static void ParameterModification(int argc, char *argv[], int fs, int f0_length,
       spectrogram[i][j] = exp(spectrum2[j]);
     if (ratio >= 1.0) continue;
     for (int j = (int)(fft_size / 2.0 * ratio);
-      j <= fft_size / 2; ++j)
+        j <= fft_size / 2; ++j)
       spectrogram[i][j] =
       spectrogram[i][(int)(fft_size / 2.0 * ratio) - 1];
   }
@@ -288,15 +280,15 @@ static void ParameterModification(int argc, char *argv[], int fs, int f0_length,
 }
 
 static void WaveformSynthesis(WorldParameters *world_parameters, int fs,
-  int y_length, double *y) {
+    int y_length, double *y) {
   DWORD elapsed_time;
   // Synthesis by the aperiodicity
   printf("\nSynthesis\n");
   elapsed_time = timeGetTime();
   Synthesis(world_parameters->f0, world_parameters->f0_length,
-    world_parameters->spectrogram, world_parameters->aperiodicity,
-    world_parameters->fft_size, world_parameters->frame_period, fs,
-    y_length, y);
+      world_parameters->spectrogram, world_parameters->aperiodicity,
+      world_parameters->fft_size, world_parameters->frame_period, fs,
+      y_length, y);
   printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
@@ -309,19 +301,18 @@ void WaveformSynthesis2(WorldParameters *world_parameters, int fs,
   WorldSynthesizer synthesizer = { 0 };
   int buffer_size = 64;
   InitializeSynthesizer(world_parameters->fs, world_parameters->frame_period,
-    world_parameters->fft_size, buffer_size, 1, &synthesizer);
+      world_parameters->fft_size, buffer_size, 1, &synthesizer);
 
   // All parameters are added at the same time.
   AddParameters(world_parameters->f0, world_parameters->f0_length,
-    world_parameters->spectrogram, world_parameters->aperiodicity,
-    &synthesizer);
+      world_parameters->spectrogram, world_parameters->aperiodicity,
+      &synthesizer);
 
   int index;
   for (int i = 0; Synthesis2(&synthesizer) != 0; ++i) {
     index = i * buffer_size;
-    for (int j = 0; j < buffer_size; ++j) {
+    for (int j = 0; j < buffer_size; ++j)
       y[j + index] = synthesizer.buffer[j];
-    }
   }
 
   printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
@@ -329,7 +320,7 @@ void WaveformSynthesis2(WorldParameters *world_parameters, int fs,
 }
 
 void WaveformSynthesis3(WorldParameters *world_parameters, int fs,
-  int y_length, double *y) {
+    int y_length, double *y) {
   DWORD elapsed_time;
   // Synthesis by the aperiodicity
   printf("\nSynthesis 3 (Ring buffer is efficiently used.)\n");
@@ -338,7 +329,7 @@ void WaveformSynthesis3(WorldParameters *world_parameters, int fs,
   WorldSynthesizer synthesizer = { 0 };
   int buffer_size = 64;
   InitializeSynthesizer(world_parameters->fs, world_parameters->frame_period,
-    world_parameters->fft_size, buffer_size, 20, &synthesizer);
+      world_parameters->fft_size, buffer_size, 100, &synthesizer);
 
   int offset = 0;
   int index = 0;
@@ -412,15 +403,12 @@ int main(int argc, char *argv[]) {
     return -2;
   }
 
-  // 2016/01/28: Important modification.
   // Memory allocation is carried out in advanse.
   // This is for compatibility with C language.
   int x_length = GetAudioLength(argv[1]);
   if (x_length <= 0) {
-    if (x_length == 0)
-      printf("error: File not found.\n");
-    else
-      printf("error: The file is not .wav format.\n");
+    if (x_length == 0) printf("error: File not found.\n");
+    else printf("error: The file is not .wav format.\n");
     return -1;
   }
   double *x = (double*)malloc(sizeof(double) * (x_length));
@@ -432,20 +420,17 @@ int main(int argc, char *argv[]) {
   //---------------------------------------------------------------------------
   // Analysis part
   //---------------------------------------------------------------------------
-  // 2016/02/02
   // A new struct is introduced to implement safe program.
   WorldParameters world_parameters = { 0 };
   // You must set fs and frame_period before analysis/synthesis.
   world_parameters.fs = fs;
-
   // 5.0 ms is the default value.
-  // Generally, the inverse of the lowest F0 of speech is the best.
-  // However, the more elapsed time is required.
   world_parameters.frame_period = 5.0;
 
   // F0 estimation
   // DIO
   // F0EstimationDio(x, x_length, &world_parameters);
+
   // Harvest
   F0EstimationHarvest(x, x_length, &world_parameters);
 
@@ -457,11 +442,11 @@ int main(int argc, char *argv[]) {
 
   // Note that F0 must not be changed until all parameters are estimated.
   ParameterModification(argc, argv, fs, world_parameters.f0_length,
-    world_parameters.fft_size, world_parameters.f0,
-    world_parameters.spectrogram);
+      world_parameters.fft_size, world_parameters.f0,
+      world_parameters.spectrogram);
 
   //---------------------------------------------------------------------------
-  // Synthesis part (2016/04/19)
+  // Synthesis part
   // There are three samples in speech synthesis
   // 1: Conventional synthesis
   // 2: Example of real-time synthesis

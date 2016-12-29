@@ -12,6 +12,7 @@ WORLD_BEGIN_C_DECLS
 //-----------------------------------------------------------------------------
 // Synthesis() synthesize the voice based on f0, spectrogram and
 // aperiodicity (not excitation signal).
+//
 // Input:
 //   f0                   : f0 contour
 //   f0_length            : Length of f0

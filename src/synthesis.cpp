@@ -23,7 +23,7 @@ static void GetNoiseSpectrum(int noise_size, int fft_size,
     average += forward_real_fft->waveform[i];
   }
 
-  average /= static_cast<double>(noise_size);
+  average /= noise_size;
   for (int i = 0; i < noise_size; ++i)
     forward_real_fft->waveform[i] -= average;
   for (int i = noise_size; i < fft_size; ++i)
@@ -41,14 +41,13 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
     const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response) {
   GetNoiseSpectrum(noise_size, fft_size, forward_real_fft);
 
-  if (current_vuv != 0.0) {
+  if (current_vuv != 0.0)
     for (int i = 0; i <= minimum_phase->fft_size / 2; ++i)
       minimum_phase->log_spectrum[i] =
         log(spectrum[i] * aperiodic_ratio[i]) / 2.0;
-  } else {
+  else
     for (int i = 0; i <= minimum_phase->fft_size / 2; ++i)
       minimum_phase->log_spectrum[i] = log(spectrum[i]) / 2.0;
-  }
   GetMinimumPhaseSpectrum(minimum_phase);
 
   for (int i = 0; i <= fft_size / 2; ++i) {
@@ -104,20 +103,19 @@ static void GetSpectralEnvelope(double current_time, double frame_period,
     int f0_length, double **const spectrogram, int fft_size,
     double *spectral_envelope) {
   int current_frame_floor = MyMinInt(f0_length - 1,
-      static_cast<int>(floor(current_time / frame_period)));
+    static_cast<int>(floor(current_time / frame_period)));
   int current_frame_ceil = MyMinInt(f0_length - 1,
-      static_cast<int>(ceil(current_time / frame_period)));
+    static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
-  if (current_frame_floor == current_frame_ceil) {
+  if (current_frame_floor == current_frame_ceil)
     for (int i = 0; i <= fft_size / 2; ++i)
       spectral_envelope[i] = fabs(spectrogram[current_frame_floor][i]);
-  } else {
+  else
     for (int i = 0; i <= fft_size / 2; ++i)
       spectral_envelope[i] =
         (1.0 - interpolation) * fabs(spectrogram[current_frame_floor][i]) +
         interpolation * fabs(spectrogram[current_frame_ceil][i]);
-  }
 }
 
 static inline double GetSafeAperiodicity(double x) {
@@ -128,22 +126,21 @@ static void GetAperiodicRatio(double current_time, double frame_period,
     int f0_length, double **const aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
   int current_frame_floor = MyMinInt(f0_length - 1,
-      static_cast<int>(floor(current_time / frame_period)));
+    static_cast<int>(floor(current_time / frame_period)));
   int current_frame_ceil = MyMinInt(f0_length - 1,
-      static_cast<int>(ceil(current_time / frame_period)));
+    static_cast<int>(ceil(current_time / frame_period)));
   double interpolation = current_time / frame_period - current_frame_floor;
 
-  if (current_frame_floor == current_frame_ceil) {
+  if (current_frame_floor == current_frame_ceil)
     for (int i = 0; i <= fft_size / 2; ++i)
       aperiodic_spectrum[i] =
         pow(GetSafeAperiodicity(aperiodicity[current_frame_floor][i]), 2.0);
-  } else {
+  else
     for (int i = 0; i <= fft_size / 2; ++i)
       aperiodic_spectrum[i] = pow((1.0 - interpolation) *
           GetSafeAperiodicity(aperiodicity[current_frame_floor][i]) +
           interpolation *
           GetSafeAperiodicity(aperiodicity[current_frame_ceil][i]), 2.0);
-  }
 }
 
 //-----------------------------------------------------------------------------
@@ -167,7 +164,7 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
 
   // Synthesis of the periodic response
   GetPeriodicResponse(fft_size, spectral_envelope, aperiodic_ratio,
-    current_vuv, inverse_real_fft, minimum_phase, periodic_response);
+      current_vuv, inverse_real_fft, minimum_phase, periodic_response);
 
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, fft_size, spectral_envelope,
@@ -307,11 +304,11 @@ void Synthesis(const double *f0, int f0_length, double **const spectrogram,
         pulse_locations[i], fs, &forward_real_fft, &inverse_real_fft,
         &minimum_phase, impulse_response);
 
-    int index = 0;
+    int safe_index = 0;
     for (int j = 0; j < fft_size; ++j) {
-      index = MyMinInt(y_length - 1,
+      safe_index = MyMinInt(y_length - 1,
         MyMaxInt(0, j + pulse_locations_index[i] - fft_size / 2 + 1));
-        y[index] += impulse_response[j];
+      y[safe_index] += impulse_response[j];
     }
   }
 
