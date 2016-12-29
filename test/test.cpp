@@ -393,10 +393,10 @@ int main(int argc, char *argv[]) {
 
   // F0 estimation
   // DIO
-  F0EstimationDio(x, x_length, &world_parameters);
+  // F0EstimationDio(x, x_length, &world_parameters);
 
   // Harvest
-  // F0EstimationHarvest(x, x_length, &world_parameters);
+  F0EstimationHarvest(x, x_length, &world_parameters);
 
   // Spectral envelope estimation
   SpectralEnvelopeEstimation(x, x_length, &world_parameters);
