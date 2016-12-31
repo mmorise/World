@@ -5,7 +5,6 @@
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
 
-#include "world/constantnumbers.h"
 #include "world/fft.h"
 #include "world/macrodefinitions.h"
 
@@ -98,10 +97,10 @@ void NuttallWindow(int y_length, double *y);
 
 //-----------------------------------------------------------------------------
 // GetSafeAperiodicity() limit the range of aperiodicity from 0.001 to
-// 1 - world::kMySafeGuardMinimum.
+// 0.999999999999 (1 - world::kMySafeGuardMinimum).
 //-----------------------------------------------------------------------------
 inline double GetSafeAperiodicity(double x) {
-  return MyMaxDouble(0.001, MyMinDouble(1.0 - world::kMySafeGuardMinimum, x));
+  return MyMaxDouble(0.001, MyMinDouble(0.999999999999, x));
 }
 
 //-----------------------------------------------------------------------------
