@@ -141,7 +141,7 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, double *periodic_response) {
-  if (current_vuv <= 0.5) {
+  if (current_vuv <= 0.5 || aperiodic_ratio[0] > 0.999) {
     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
     return;
   }
@@ -182,10 +182,6 @@ static void GetSpectralEnvelope(double current_location,
     for (int i = 0; i <= synth->fft_size / 2; ++i)
       spectral_envelope[i] =
       (1.0 - interpolation) * fabs(front[i]) + interpolation * fabs(next[i]);
-}
-
-static inline double GetSafeAperiodicity(double x) {
-  return MyMaxDouble(0.001, MyMinDouble(1.0, x));
 }
 
 static void GetAperiodicRatio(double current_location,

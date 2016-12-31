@@ -221,6 +221,64 @@ static void GetCoarseAperiodicity(const double *static_group_delay, int fs,
   delete[] power_spectrum;
 }
 
+static double D4CLoveTrainSub(const double *x, int fs, int x_length,
+    double current_f0, double current_position, int f0_length, int fft_size,
+    int boundary0, int boundary1, int boundary2,
+    ForwardRealFFT *forward_real_fft) {
+  double *power_spectrum = new double[fft_size];
+
+  const int window_length = matlab_round(1.5 * fs / current_f0) * 2 + 1;
+  GetWindowedWaveform(x, x_length, fs, current_f0, current_position,
+    world::kBlackman, 3.0, forward_real_fft->waveform);
+
+  for (int i = window_length; i < fft_size; ++i)
+    forward_real_fft->waveform[i] = 0.0;
+  fft_execute(forward_real_fft->forward_fft);
+
+  for (int i = 0; i <= boundary0; ++i) power_spectrum[i] = 0.0;
+  for (int i = boundary0 + 1; i < fft_size / 2 + 1; ++i)
+    power_spectrum[i] =
+    forward_real_fft->spectrum[i][0] * forward_real_fft->spectrum[i][0] +
+    forward_real_fft->spectrum[i][1] * forward_real_fft->spectrum[i][1];
+  for (int i = boundary0; i <= boundary2; ++i)
+    power_spectrum[i] += +power_spectrum[i - 1];
+
+  double aperiodicity0 = power_spectrum[boundary1] / power_spectrum[boundary2];
+  delete[] power_spectrum;
+  return aperiodicity0;
+}
+
+//-----------------------------------------------------------------------------
+// D4CLoveTrain() determines the aperiodicity with VUV detection.
+// If a frame was determined as the unvoiced section, aperiodicity is set to
+// very high value as the safeguard.
+// If it was voiced section, the aperiodicity of 0 Hz is set to -60 dB.
+//-----------------------------------------------------------------------------
+static void D4CLoveTrain(const double *x, int fs, int x_length,
+    const double *f0, int f0_length, const double *temporal_positions,
+    double lowest_f0, double *aperiodicity0) {
+  const double f0_floor = 100.0;
+  int fft_size = static_cast<int>(pow(2.0, 1.0 +
+    static_cast<int>(log(3.0 * fs / lowest_f0 + 1) / world::kLog2)));
+  ForwardRealFFT forward_real_fft = { 0 };
+  InitializeForwardRealFFT(fft_size, &forward_real_fft);
+
+  const int boundary0 = static_cast<int>(ceil(f0_floor * fft_size / fs));
+  const int boundary1 = static_cast<int>(ceil(4000.0 * fft_size / fs));
+  const int boundary2 = static_cast<int>(ceil(7900.0 * fft_size / fs));
+  for (int i = 0; i < f0_length; ++i) {
+    if (f0[i] == 0.0) {
+      aperiodicity0[i] = 0.0;
+      continue;
+    }
+    aperiodicity0[i] = D4CLoveTrainSub(x, fs, x_length,
+      MyMaxDouble(f0[i], lowest_f0), temporal_positions[i], f0_length,
+      fft_size, boundary0, boundary1, boundary2, &forward_real_fft);
+  }
+
+  DestroyForwardRealFFT(&forward_real_fft);
+}
+
 //-----------------------------------------------------------------------------
 // D4CGeneralBody() calculates a spectral envelope at a temporal
 // position. This function is only used in D4C().
@@ -255,75 +313,21 @@ static void D4CGeneralBody(const double *x, int x_length, int fs,
   delete[] static_group_delay;
 }
 
-static double GetAperiodicityZeroSub(const double *x, int fs, int x_length,
-    double current_f0, double current_position, int f0_length, int fft_size,
-    int boundary0, int boundary1, int boundary2,
-    ForwardRealFFT *forward_real_fft) {
-  double *power_spectrum = new double[fft_size];
-
-  const int window_length = matlab_round(1.5 * fs / current_f0) * 2 + 1;
-  GetWindowedWaveform(x, x_length, fs, current_f0, current_position,
-      world::kBlackman, 3.0, forward_real_fft->waveform);
-
-  for (int i = window_length; i < fft_size; ++i)
-    forward_real_fft->waveform[i] = 0.0;
-  fft_execute(forward_real_fft->forward_fft);
-
-  for (int i = 0; i <= boundary0; ++i) power_spectrum[i] = 0.0;
-  for (int i = boundary0 + 1; i < fft_size / 2 + 1; ++i)
-    power_spectrum[i] =
-      forward_real_fft->spectrum[i][0] * forward_real_fft->spectrum[i][0] +
-      forward_real_fft->spectrum[i][1] * forward_real_fft->spectrum[i][1];
-  for (int i = boundary0; i <= boundary2; ++i)
-    power_spectrum[i] += +power_spectrum[i - 1];
-
-  double aperiodicity0 = power_spectrum[boundary1] / power_spectrum[boundary2];
-  delete[] power_spectrum;
-  return aperiodicity0;
+static void InitializeAperiodicity(int f0_length, int fft_size,
+    double **aperiodicity) {
+  for (int i = 0; i < f0_length; ++i)
+    for (int j = 0; j < fft_size / 2 + 1; ++j)
+      aperiodicity[i][j] = 1.0 - world::kMySafeGuardMinimum;
 }
 
-//-----------------------------------------------------------------------------
-// GetAperiodicityZero() determines the aperiodicity with VUV detection.
-// If a frame was determined as the unvoiced section, aperiodicity is set to
-// very high value (0.000000000001 dB) as the safeguard.
-// If it was voiced section, the aperiodicity of 0 Hz is set to -60 dB.
-//-----------------------------------------------------------------------------
-static void GetAperiodicityZero(const double *x, int fs, int x_length,
-    const double *f0, int f0_length, const double *temporal_positions,
-    double lowest_f0, double *aperiodicity0) {
-  const double f0_floor = 100.0;
-  int fft_size = static_cast<int>(pow(2.0, 1.0 +
-    static_cast<int>(log(3.0 * fs / lowest_f0 + 1) / world::kLog2)));
-  ForwardRealFFT forward_real_fft = { 0 };
-  InitializeForwardRealFFT(fft_size, &forward_real_fft);
-
-  const int boundary0 = static_cast<int>(ceil(f0_floor * fft_size / fs));
-  const int boundary1 = static_cast<int>(ceil(4000.0 * fft_size / fs));
-  const int boundary2 = static_cast<int>(ceil(7900.0 * fft_size / fs));
-  for (int i = 0; i < f0_length; ++i) {
-    if (f0[i] == 0.0) {
-      aperiodicity0[i] = 0.0;
-      continue;
-    }
-    aperiodicity0[i] = GetAperiodicityZeroSub(x, fs, x_length, f0[i],
-      temporal_positions[i], f0_length, fft_size, boundary0, boundary1,
-      boundary2, &forward_real_fft);
-  }
-
-  DestroyForwardRealFFT(&forward_real_fft);
-}
-
-//-----------------------------------------------------------------------------
-// GetAperiodicityZero() calculates the aperiodicity from coarse aperiodicity.
-// aperiodicity0 is the aperidicity at 0 Hz.
-//-----------------------------------------------------------------------------
-static void GetFullAperiodicity(double aperiodicity0, double threshold,
-    int number_of_aperiodicities, double *coarse_aperiodicity) {
-  if (aperiodicity0 > threshold)
-    coarse_aperiodicity[0] = -60.0;
-  else
-    for (int i = 0; i < number_of_aperiodicities + 1; ++i)
-      coarse_aperiodicity[i] = world::kMySafeGuardMinimum;
+static void GetAperiodicity(const double *coarse_frequency_axis,
+    const double *coarse_aperiodicity, int number_of_aperiodicities,
+    const double *frequency_axis, int fft_size, double *aperiodicity) {
+  interp1(coarse_frequency_axis, coarse_aperiodicity,
+    number_of_aperiodicities + 2, frequency_axis, fft_size / 2 + 1,
+    aperiodicity);
+  for (int i = 0; i <= fft_size / 2; ++i)
+    aperiodicity[i] = pow(10.0, aperiodicity[i] / 20.0);
 }
 
 }  // namespace
@@ -331,6 +335,8 @@ static void GetFullAperiodicity(double aperiodicity0, double threshold,
 void D4C(const double *x, int x_length, int fs,
     const double *temporal_positions, const double *f0, int f0_length,
     int fft_size, const D4COption *option, double **aperiodicity) {
+  InitializeAperiodicity(f0_length, fft_size, aperiodicity);
+
   int fft_size_d4c = static_cast<int>(pow(2.0, 1.0 +
       static_cast<int>(log(4.0 * fs / world::kFloorF0 + 1) / world::kLog2)));
 
@@ -348,16 +354,15 @@ void D4C(const double *x, int x_length, int fs,
   NuttallWindow(window_length, window);
 
   // D4C Love Train (Aperiodicity of 0 Hz is given by the different algorithm)
-  double lowest_f0 = world::kCeilF0;
-  for (int i = 0; i < f0_length; ++i)
-    lowest_f0 = lowest_f0 > f0[i] && f0[i] != 0 ? f0[i] : lowest_f0;
+  const double kLowestF0 = 40.0;
   double *aperiodicity0 = new double[f0_length];
-  GetAperiodicityZero(x, fs, x_length, f0, f0_length, temporal_positions,
-      MyMinDouble(lowest_f0, 40.0), aperiodicity0);
+  D4CLoveTrain(x, fs, x_length, f0, f0_length, temporal_positions,
+      kLowestF0, aperiodicity0);
 
   double *coarse_aperiodicity = new double[number_of_aperiodicities + 2];
   coarse_aperiodicity[0] = -60.0;
-  coarse_aperiodicity[number_of_aperiodicities + 1] = 0.0;
+  coarse_aperiodicity[number_of_aperiodicities + 1] =
+    -world::kMySafeGuardMinimum;
   double *coarse_frequency_axis = new double[number_of_aperiodicities + 2];
   for (int i = 0; i <= number_of_aperiodicities; ++i)
     coarse_frequency_axis[i] = i * world::kFrequencyInterval;
@@ -366,25 +371,17 @@ void D4C(const double *x, int x_length, int fs,
   double *frequency_axis = new double[fft_size / 2 + 1];
   for (int i = 0; i <= fft_size / 2; ++i)
     frequency_axis[i] = static_cast<double>(i) * fs / fft_size;
+
   for (int i = 0; i < f0_length; ++i) {
-    if (f0[i] == 0) {
-      for (int j = 0; j <= fft_size / 2; ++j) aperiodicity[i][j] = 0.0;
-      continue;
-    }
+    if (f0[i] == 0 || aperiodicity0[i] < option->threshold) continue;
     D4CGeneralBody(x, x_length, fs, f0[i],
         fft_size_d4c, temporal_positions[i], number_of_aperiodicities, window,
         window_length, &forward_real_fft, &coarse_aperiodicity[1]);
 
-    GetFullAperiodicity(aperiodicity0[i], option->threshold,
-      number_of_aperiodicities, coarse_aperiodicity);
-
     // Linear interpolation to convert the coarse aperiodicity into its
     // spectral representation.
-    interp1(coarse_frequency_axis, coarse_aperiodicity,
-        number_of_aperiodicities + 2, frequency_axis, fft_size / 2 + 1,
-        aperiodicity[i]);
-    for (int j = 0; j <= fft_size / 2; ++j)
-      aperiodicity[i][j] = pow(10.0, aperiodicity[i][j] / 20.0);
+    GetAperiodicity(coarse_frequency_axis, coarse_aperiodicity,
+        number_of_aperiodicities, frequency_axis, fft_size, aperiodicity[i]);
   }
 
   DestroyForwardRealFFT(&forward_real_fft);

@@ -5,6 +5,7 @@
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
 
+#include "world/constantnumbers.h"
 #include "world/fft.h"
 #include "world/macrodefinitions.h"
 
@@ -94,6 +95,14 @@ void LinearSmoothing(const double *input, double width, int fs, int fft_size,
 // is y_length and is used in Dio(), Harvest() and D4C().
 //-----------------------------------------------------------------------------
 void NuttallWindow(int y_length, double *y);
+
+//-----------------------------------------------------------------------------
+// GetSafeAperiodicity() limit the range of aperiodicity from 0.001 to
+// 1 - world::kMySafeGuardMinimum.
+//-----------------------------------------------------------------------------
+inline double GetSafeAperiodicity(double x) {
+  return MyMaxDouble(0.001, MyMinDouble(1.0 - world::kMySafeGuardMinimum, x));
+}
 
 //-----------------------------------------------------------------------------
 // These functions are used to speed up the processing.
