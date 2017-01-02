@@ -167,7 +167,7 @@ namespace {
                                     WorldParameters *world_parameters)
     {
         CheapTrickOption option;
-        InitializeCheapTrickOption(&option);
+        InitializeCheapTrickOption(world_parameters->fs, &option);
 
         // This value may be better one for HMM speech synthesis.
         // Default value is -0.09.
