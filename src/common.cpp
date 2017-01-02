@@ -54,15 +54,14 @@ int GetSuitableFFTSize(int sample) {
 
 void DCCorrection(const double *input, double f0, int fs, int fft_size,
     double *output) {
-  int upper_limit = 1 +
-    static_cast<int>(1.2 * f0 * fft_size / fs);
+  int upper_limit = 2 + static_cast<int>(f0 * fft_size / fs);
   double *low_frequency_replica = new double[upper_limit];
   double *low_frequency_axis = new double[upper_limit];
 
   for (int i = 0; i < upper_limit; ++i)
     low_frequency_axis[i] = static_cast<double>(i) * fs / fft_size;
 
-  int upper_limit_replica = 1 + static_cast<int>(f0 * fft_size / fs);
+  int upper_limit_replica = upper_limit - 1;
   interp1Q(f0 - low_frequency_axis[0],
       -static_cast<double>(fs) / fft_size, input, upper_limit + 1,
       low_frequency_axis, upper_limit_replica, low_frequency_replica);
