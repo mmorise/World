@@ -227,7 +227,7 @@ static double D4CLoveTrainSub(const double *x, int fs, int x_length,
     ForwardRealFFT *forward_real_fft) {
   double *power_spectrum = new double[fft_size];
 
-  const int window_length = matlab_round(1.5 * fs / current_f0) * 2 + 1;
+  int window_length = matlab_round(1.5 * fs / current_f0) * 2 + 1;
   GetWindowedWaveform(x, x_length, fs, current_f0, current_position,
     world::kBlackman, 3.0, forward_real_fft->waveform);
 
@@ -256,16 +256,17 @@ static double D4CLoveTrainSub(const double *x, int fs, int x_length,
 //-----------------------------------------------------------------------------
 static void D4CLoveTrain(const double *x, int fs, int x_length,
     const double *f0, int f0_length, const double *temporal_positions,
-    double lowest_f0, double *aperiodicity0) {
-  const double f0_floor = 100.0;
+    double *aperiodicity0) {
+  double lowest_f0 = 40.0;
   int fft_size = static_cast<int>(pow(2.0, 1.0 +
     static_cast<int>(log(3.0 * fs / lowest_f0 + 1) / world::kLog2)));
   ForwardRealFFT forward_real_fft = { 0 };
   InitializeForwardRealFFT(fft_size, &forward_real_fft);
 
-  const int boundary0 = static_cast<int>(ceil(f0_floor * fft_size / fs));
-  const int boundary1 = static_cast<int>(ceil(4000.0 * fft_size / fs));
-  const int boundary2 = static_cast<int>(ceil(7900.0 * fft_size / fs));
+  // Cumulative powers at 100, 4000, 7900 Hz are used for VUV identification.
+  int boundary0 = static_cast<int>(ceil(100.0 * fft_size / fs));
+  int boundary1 = static_cast<int>(ceil(4000.0 * fft_size / fs));
+  int boundary2 = static_cast<int>(ceil(7900.0 * fft_size / fs));
   for (int i = 0; i < f0_length; ++i) {
     if (f0[i] == 0.0) {
       aperiodicity0[i] = 0.0;
@@ -297,16 +298,16 @@ static void D4CGeneralBody(const double *x, int x_length, int fs,
   GetSmoothedPowerSpectrum(x, x_length, fs, current_f0, fft_size,
       current_position, forward_real_fft, smoothed_power_spectrum);
   GetStaticGroupDelay(static_centroid, smoothed_power_spectrum,
-    fs, current_f0, fft_size, static_group_delay);
+      fs, current_f0, fft_size, static_group_delay);
 
   GetCoarseAperiodicity(static_group_delay, fs, fft_size,
-    number_of_aperiodicities, window, window_length, forward_real_fft,
-    coarse_aperiodicity);
+      number_of_aperiodicities, window, window_length, forward_real_fft,
+      coarse_aperiodicity);
 
   // Revision of the result based on the F0
   for (int i = 0; i < number_of_aperiodicities; ++i)
     coarse_aperiodicity[i] = MyMinDouble(0.0,
-        coarse_aperiodicity[i] + (current_f0 - 100) / 50.0);
+      coarse_aperiodicity[i] + (current_f0 - 100) / 50.0);
 
   delete[] static_centroid;
   delete[] smoothed_power_spectrum;
@@ -338,7 +339,8 @@ void D4C(const double *x, int x_length, int fs,
   InitializeAperiodicity(f0_length, fft_size, aperiodicity);
 
   int fft_size_d4c = static_cast<int>(pow(2.0, 1.0 +
-      static_cast<int>(log(4.0 * fs / world::kFloorF0 + 1) / world::kLog2)));
+    static_cast<int>(log(4.0 * fs / world::kFloorF0D4C + 1) /
+      world::kLog2)));
 
   ForwardRealFFT forward_real_fft = {0};
   InitializeForwardRealFFT(fft_size_d4c, &forward_real_fft);
@@ -354,10 +356,9 @@ void D4C(const double *x, int x_length, int fs,
   NuttallWindow(window_length, window);
 
   // D4C Love Train (Aperiodicity of 0 Hz is given by the different algorithm)
-  const double kLowestF0 = 40.0;
   double *aperiodicity0 = new double[f0_length];
   D4CLoveTrain(x, fs, x_length, f0, f0_length, temporal_positions,
-      kLowestF0, aperiodicity0);
+      aperiodicity0);
 
   double *coarse_aperiodicity = new double[number_of_aperiodicities + 2];
   coarse_aperiodicity[0] = -60.0;
@@ -373,8 +374,8 @@ void D4C(const double *x, int x_length, int fs,
     frequency_axis[i] = static_cast<double>(i) * fs / fft_size;
 
   for (int i = 0; i < f0_length; ++i) {
-    if (f0[i] == 0 || aperiodicity0[i] < option->threshold) continue;
-    D4CGeneralBody(x, x_length, fs, f0[i],
+    if (f0[i] == 0 || aperiodicity0[i] <= option->threshold) continue;
+    D4CGeneralBody(x, x_length, fs, MyMaxDouble(world::kFloorF0D4C, f0[i]),
         fft_size_d4c, temporal_positions[i], number_of_aperiodicities, window,
         window_length, &forward_real_fft, &coarse_aperiodicity[1]);
 

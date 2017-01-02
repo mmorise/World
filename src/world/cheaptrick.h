@@ -15,6 +15,7 @@ WORLD_BEGIN_C_DECLS
 typedef struct {
   double q1;
   double f0_floor;
+  int fft_size;
 } CheapTrickOption;
 
 //-----------------------------------------------------------------------------
@@ -41,10 +42,13 @@ void CheapTrick(const double *x, int x_length, int fs,
 // InitializeCheapTrickOption allocates the memory to the struct and sets the
 // default parameters.
 //
+// Input:
+//   fs : Sampling frequency
+//
 // Output:
 //   option   : Struct for the optional parameter
 //-----------------------------------------------------------------------------
-void InitializeCheapTrickOption(CheapTrickOption *option);
+void InitializeCheapTrickOption(int fs, CheapTrickOption *option);
 
 //-----------------------------------------------------------------------------
 // GetFFTSizeForCheapTrick() calculates the FFT size based on the sampling

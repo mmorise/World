@@ -2,7 +2,7 @@
 // Copyright 2012-2016 Masanori Morise. All Rights Reserved.
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
 //
-// Latest update: 2016/12/28
+// Latest update: 2017/01/02
 
 // test.exe input.wav outout.wav f0 spec
 // input.wav  : Input file
@@ -100,10 +100,8 @@ void F0EstimationDio(double *x, int x_length,
   // If you want to obtain the accurate result, speed should be set to 1.
   option.speed = 1;
 
-  // You should not set option.f0_floor to under world::kFloorF0.
-  // If you want to analyze such low F0 speech, please change world::kFloorF0.
-  // Processing speed may sacrify, provided that the FFT length changes.
-  option.f0_floor = 71.0;
+  // You can set the f0_floor below world::kFloorF0.
+  option.f0_floor = 40.0;
 
   // You can give a positive real number as the threshold.
   // Most strict value is 0, but almost all results are counted as unvoiced.
@@ -144,10 +142,8 @@ void F0EstimationHarvest(double *x, int x_length,
   // But the estimation is carried out with 1-ms frame shift.
   option.frame_period = world_parameters->frame_period;
 
-  // You should not set option.f0_floor to under world::kFloorF0.
-  // If you want to analyze such low F0 speech, please change world::kFloorF0.
-  // Processing speed may sacrify, provided that the FFT length changes.
-  option.f0_floor = 71.0;
+  // You can set the f0_floor below world::kFloorF0.
+  option.f0_floor = 40.0;
 
   // Parameters setting and memory allocation.
   world_parameters->f0_length = GetSamplesForHarvest(world_parameters->fs,
@@ -165,26 +161,26 @@ void F0EstimationHarvest(double *x, int x_length,
 void SpectralEnvelopeEstimation(double *x, int x_length,
     WorldParameters *world_parameters) {
   CheapTrickOption option = {0};
-  InitializeCheapTrickOption(&option);
+  // Note (2017/01/02): fs is added as an argument.
+  InitializeCheapTrickOption(world_parameters->fs, &option);
 
-  // 2016/12/28
-  // Default value is modified to -0.15.
-  option.q1 = -0.15;
+  // Default value was modified to -0.15.
+  // option.q1 = -0.15;
 
-  // Important notice (2016/02/02)
-  // You can control a parameter used for the lowest F0 in speech.
-  // You must not set the f0_floor to 0.
-  // It will cause a fatal error because fft_size indicates the infinity.
-  // You must not change the f0_floor after memory allocation.
-  // You should check the fft_size before excucing the analysis/synthesis.
-  // The default value (71.0) is strongly recommended.
-  // On the other hand, setting the lowest F0 of speech is a good choice
-  // to reduce the fft_size.
+  // Important notice (2017/01/02)
+  // You can set the fft_size.
+  // Default is GetFFTSizeForCheapTrick(world_parameters->fs, &option);
+  // When fft_size changes from default value,
+  // a replaced f0_floor will be used in CheapTrick().
+  // The lowest F0 that WORLD can work as expected is determined
+  // by the following : 3.0 * fs / fft_size.
   option.f0_floor = 71.0;
+  option.fft_size = GetFFTSizeForCheapTrick(world_parameters->fs, &option);
+  // We can directly set fft_size.
+//   option.fft_size = 1024;
 
   // Parameters setting and memory allocation.
-  world_parameters->fft_size =
-    GetFFTSizeForCheapTrick(world_parameters->fs, &option);
+  world_parameters->fft_size = option.fft_size;
   world_parameters->spectrogram = new double *[world_parameters->f0_length];
   for (int i = 0; i < world_parameters->f0_length; ++i)
     world_parameters->spectrogram[i] =

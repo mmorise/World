@@ -204,15 +204,15 @@ static int ZeroCrossingEngine(const double *filtered_signal, int y_length,
 //-----------------------------------------------------------------------------
 static void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
     double actual_fs, ZeroCrossings *zero_crossings) {
-  const int kMaximumNumber = y_length;
-  zero_crossings->negative_interval_locations = new double[kMaximumNumber];
-  zero_crossings->positive_interval_locations = new double[kMaximumNumber];
-  zero_crossings->peak_interval_locations = new double[kMaximumNumber];
-  zero_crossings->dip_interval_locations = new double[kMaximumNumber];
-  zero_crossings->negative_intervals = new double[kMaximumNumber];
-  zero_crossings->positive_intervals = new double[kMaximumNumber];
-  zero_crossings->peak_intervals = new double[kMaximumNumber];
-  zero_crossings->dip_intervals = new double[kMaximumNumber];
+  int maximum_number = y_length;
+  zero_crossings->negative_interval_locations = new double[maximum_number];
+  zero_crossings->positive_interval_locations = new double[maximum_number];
+  zero_crossings->peak_interval_locations = new double[maximum_number];
+  zero_crossings->dip_interval_locations = new double[maximum_number];
+  zero_crossings->negative_intervals = new double[maximum_number];
+  zero_crossings->positive_intervals = new double[maximum_number];
+  zero_crossings->peak_intervals = new double[maximum_number];
+  zero_crossings->dip_intervals = new double[maximum_number];
 
   zero_crossings->number_of_negatives = ZeroCrossingEngine(filtered_signal,
       y_length, actual_fs, zero_crossings->negative_interval_locations,
@@ -239,14 +239,14 @@ static void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
 static void GetF0CandidateContourSub(double **const interpolated_f0_set,
     int f0_length, double f0_floor, double f0_ceil, double boundary_f0,
     double *f0_candidate) {
-  const double kUpper = boundary_f0 * 1.1;
-  const double kLower = boundary_f0 * 0.9;
+  double upper = boundary_f0 * 1.1;
+  double lower = boundary_f0 * 0.9;
   for (int i = 0; i < f0_length; ++i) {
     f0_candidate[i] = (interpolated_f0_set[0][i] +
       interpolated_f0_set[1][i] + interpolated_f0_set[2][i] +
       interpolated_f0_set[3][i]) / 4.0;
 
-    if (f0_candidate[i] > kUpper || f0_candidate[i] < kLower ||
+    if (f0_candidate[i] > upper || f0_candidate[i] < lower ||
         f0_candidate[i] > f0_ceil || f0_candidate[i] < f0_floor)
       f0_candidate[i] = 0.0;
   }
@@ -414,7 +414,7 @@ static int DetectOfficialF0Candidates(double **const raw_f0_candidates,
 //-----------------------------------------------------------------------------
 static void OverlapF0Candidates(int f0_length, int number_of_candidates,
     double **f0_candidates) {
-  const int n = 3;
+  int n = 3;
   for (int i = 1; i <= n; ++i)
     for (int j = 0; j < number_of_candidates; ++j) {
       for (int k = i; k < f0_length; ++k)
@@ -789,7 +789,7 @@ static inline int MyAbsInt(int x) {
 static int ExtendF0(const double *f0, int f0_length, int origin,
     int last_point, int shift, double **const f0_candidates,
     int number_of_candidates, double allowed_range, double *extended_f0) {
-  const int kThreshold = 4;
+  int threshold = 4;
   double tmp_f0 = extended_f0[origin];
   int shifted_origin = origin;
 
@@ -810,7 +810,7 @@ static int ExtendF0(const double *f0, int f0_length, int origin,
       count = 0;
       shifted_origin = index_list[i] + shift;
     }
-    if (count == kThreshold) break;
+    if (count == threshold) break;
   }
 
   delete[] index_list;
@@ -838,7 +838,7 @@ static void Swap(int index1, int index2, double **f0, int *boundary) {
 static int ExtendSub(double **const extended_f0, const int *boundary_list,
     int number_of_sections, double **selected_extended_f0,
     int *selected_boundary_list) {
-  const double threshold = 2200.0;
+  double threshold = 2200.0;
   int count = 0;
   double mean_f0 = 0.0;
   int st, ed;
@@ -860,14 +860,14 @@ static int Extend(double **const multi_channel_f0, int number_of_sections,
     int f0_length, const int *boundary_list, double **const f0_candidates,
     int number_of_candidates, double allowed_range, double **extended_f0,
     int *shifted_boundary_list) {
-  const int kThreshold = 100;
+  int threshold = 100;
   for (int i = 0; i < number_of_sections; ++i) {
     shifted_boundary_list[i * 2 + 1] = ExtendF0(multi_channel_f0[i],
       f0_length, boundary_list[i * 2 + 1],
-      MyMinInt(f0_length - 2, boundary_list[i * 2 + 1] + kThreshold), 1,
+      MyMinInt(f0_length - 2, boundary_list[i * 2 + 1] + threshold), 1,
       f0_candidates, number_of_candidates, allowed_range, extended_f0[i]);
     shifted_boundary_list[i * 2] = ExtendF0(multi_channel_f0[i], f0_length,
-      boundary_list[i * 2], MyMaxInt(1, boundary_list[i * 2] - kThreshold), -1,
+      boundary_list[i * 2], MyMaxInt(1, boundary_list[i * 2] - threshold), -1,
       f0_candidates, number_of_candidates, allowed_range, extended_f0[i]);
   }
 
@@ -1140,15 +1140,15 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
     int frame_period, double f0_floor, double f0_ceil,
     double channels_in_octave, int speed, double *temporal_positions,
     double *f0) {
-  const double kAdjustedF0Floor = f0_floor * 0.9;
-  const double kAdjustedF0Ceil = f0_ceil * 1.1;
+  double adjusted_f0_floor = f0_floor * 0.9;
+  double adjusted_f0_ceil = f0_ceil * 1.1;
   int number_of_channels =
-    1 + static_cast<int>(log(kAdjustedF0Ceil / kAdjustedF0Floor) /
+    1 + static_cast<int>(log(adjusted_f0_ceil / adjusted_f0_floor) /
     world::kLog2 * channels_in_octave);
   double *boundary_f0_list = new double[number_of_channels];
   for (int i = 0; i < number_of_channels; ++i)
     boundary_f0_list[i] =
-      kAdjustedF0Floor * pow(2.0, (i + 1) / channels_in_octave);
+    adjusted_f0_floor * pow(2.0, (i + 1) / channels_in_octave);
 
   // normalization
   int decimation_ratio = MyMaxInt(MyMinInt(speed, 12), 1);
@@ -1169,8 +1169,9 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
     f0[i] = 0.0;
   }
 
-  const int kOverlapParam = 7;
-  int max_candidates = matlab_round(number_of_channels / 10) * kOverlapParam;
+  int overlap_parameter = 7;
+  int max_candidates =
+    matlab_round(number_of_channels / 10) * overlap_parameter;
   double **f0_candidates = new double *[f0_length];
   double **f0_candidates_score = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i) {
@@ -1181,7 +1182,7 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
   int number_of_candidates = HarvestGeneralBodySub(boundary_f0_list,
     number_of_channels, f0_length, actual_fs, y_length, temporal_positions,
     y_spectrum, fft_size, f0_floor, f0_ceil, max_candidates, f0_candidates) *
-    kOverlapParam;
+    overlap_parameter;
 
   RefineF0Candidates(y, y_length, actual_fs, temporal_positions, f0_length,
       number_of_candidates, f0_floor, f0_ceil, f0_candidates,
@@ -1226,12 +1227,12 @@ void Harvest(const double *x, int x_length, int fs,
     return;
   }
 
-  const int kBasicFramePeriod = 1;
+  int basic_frame_period = 1;
   int basic_f0_length =
-    GetSamplesForHarvest(fs, x_length, kBasicFramePeriod);
+    GetSamplesForHarvest(fs, x_length, basic_frame_period);
   double *basic_f0 = new double[basic_f0_length];
   double *basic_temporal_positions = new double[basic_f0_length];
-  HarvestGeneralBody(x, x_length, fs, kBasicFramePeriod, option->f0_floor,
+  HarvestGeneralBody(x, x_length, fs, basic_frame_period, option->f0_floor,
       option->f0_ceil, channels_in_octave, dimension_ratio,
       basic_temporal_positions, basic_f0);
 

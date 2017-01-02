@@ -26,6 +26,7 @@ namespace world {
   const double kFrequencyInterval = 3000.0;
   const double kUpperLimit = 15000.0;
   const double kThreshold = 0.85;
+  const double kFloorF0D4C = 47.0;
 }  // namespace world
 
 #endif
