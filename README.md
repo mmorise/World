@@ -8,7 +8,7 @@ There is no patent in all algorithms in WORLD.
 
 ## Important notice (2017/01/02)
 You can control the fft_size in CheapTrick().
-According to this change, arguments in InitializeCheapTrickOption() has changed. Please see test.cpp
+According to this change, arguments in InitializeCheapTrickOption() have changed. Please see test.cpp.
 
 ## References
 When you cite the latest version of WORLD in your paper, please use the sentence "WORLD \[1\] (D4C edition [2])" and cite the following papers.  
