@@ -217,11 +217,8 @@ static double GetCurrentVUV(int current_location, WorldSynthesizer *synth) {
     static_cast<int>(ceil((synth->f0_origin[pointer] - 1) *
     synth->frame_period * synth->fs)));
 
-// Memo: I leave the old version just in case.
-// current_vuv =
-//   synth->interpolated_vuv[pointer][current_location - start_sample + 1];
   current_vuv =
-    synth->interpolated_vuv[pointer][current_location - start_sample];
+    synth->interpolated_vuv[pointer][current_location - start_sample + 1];
   return current_vuv;
 }
 
