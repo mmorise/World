@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------
-// Copyright 2016 seblemaguer. All Rights Reserved.
+// Copyright 2016 seblemaguer
 // Author: https://github.com/seblemaguer
+// Last update: 2017/02/01
 //
 // Summary:
 // The example synthesizes a .wav file by three files generated from
