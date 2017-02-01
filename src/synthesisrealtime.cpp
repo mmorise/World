@@ -1,6 +1,7 @@
 //-----------------------------------------------------------------------------
-// Copyright 2012-2016 Masanori Morise. All Rights Reserved.
+// Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
+// Last update: 2017/02/01
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // This is an implementation for real-time applications.
@@ -212,12 +213,15 @@ static double GetCurrentVUV(int current_location, WorldSynthesizer *synth) {
   double current_vuv = 0.0;
   int pointer = synth->current_pointer % synth->number_of_pointers;
 
-  int start_sample =
+  int start_sample = MyMaxInt(0,
     static_cast<int>(ceil((synth->f0_origin[pointer] - 1) *
-    synth->frame_period * synth->fs));
+    synth->frame_period * synth->fs)));
 
+// Memo: I leave the old version just in case.
+// current_vuv =
+//   synth->interpolated_vuv[pointer][current_location - start_sample + 1];
   current_vuv =
-    synth->interpolated_vuv[pointer][current_location - start_sample + 1];
+    synth->interpolated_vuv[pointer][current_location - start_sample];
   return current_vuv;
 }
 
