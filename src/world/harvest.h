@@ -23,17 +23,17 @@ typedef struct {
 // Harvest
 //
 // Input:
-//   x          : Input signal
-//   x_length   : Length of x
-//   fs         : Sampling frequency
-//   option     : Struct to order the parameter for Harvest
+//   x                    : Input signal
+//   x_length             : Length of x
+//   fs                   : Sampling frequency
+//   option               : Struct to order the parameter for Harvest
 //
 // Output:
-//   time_axis  : Temporal positions.
-//   f0         : F0 contour.
+//   temporal_positions   : Temporal positions.
+//   f0                   : F0 contour.
 //-----------------------------------------------------------------------------
 void Harvest(const double *x, int x_length, int fs,
-  const HarvestOption *option, double *time_axis, double *f0);
+  const HarvestOption *option, double *temporal_positions, double *f0);
 
 //-----------------------------------------------------------------------------
 // InitializeHarvestOption allocates the memory to the struct and sets the
