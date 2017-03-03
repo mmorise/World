@@ -101,7 +101,7 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
 }
 
 static void GetSpectralEnvelope(double current_time, double frame_period,
-    int f0_length, double **const spectrogram, int fft_size,
+    int f0_length, const double * const *spectrogram, int fft_size,
     double *spectral_envelope) {
   int current_frame_floor = MyMinInt(f0_length - 1,
     static_cast<int>(floor(current_time / frame_period)));
@@ -120,7 +120,7 @@ static void GetSpectralEnvelope(double current_time, double frame_period,
 }
 
 static void GetAperiodicRatio(double current_time, double frame_period,
-    int f0_length, double **const aperiodicity, int fft_size,
+    int f0_length, const double * const *aperiodicity, int fft_size,
     double *aperiodic_spectrum) {
   int current_frame_floor = MyMinInt(f0_length - 1,
     static_cast<int>(floor(current_time / frame_period)));
@@ -144,8 +144,9 @@ static void GetAperiodicRatio(double current_time, double frame_period,
 // GetOneFrameSegment() calculates a periodic and aperiodic response at a time.
 //-----------------------------------------------------------------------------
 static void GetOneFrameSegment(double current_vuv, int noise_size,
-    double **const spectrogram, int fft_size, double **const aperiodicity,
-    int f0_length, double frame_period, double current_time, int fs,
+    const double * const *spectrogram, int fft_size, 
+    const double * const *aperiodicity, int f0_length, double frame_period,
+    double current_time, int fs,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, double *response) {
@@ -268,9 +269,9 @@ static int GetTimeBase(const double *f0, int f0_length, int fs,
 
 }  // namespace
 
-void Synthesis(const double *f0, int f0_length, double **const spectrogram,
-    double **const aperiodicity, int fft_size, double frame_period, int fs,
-    int y_length, double *y) {
+void Synthesis(const double *f0, int f0_length, 
+    const double * const *spectrogram, const double * const *aperiodicity, 
+    int fft_size, double frame_period, int fs, int y_length, double *y) {
   double *impulse_response = new double[fft_size];
 
   for (int i = 0; i < y_length; ++i) y[i] = 0.0;

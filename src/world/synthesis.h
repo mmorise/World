@@ -27,9 +27,9 @@ WORLD_BEGIN_C_DECLS
 // Output:
 //   y                    : Calculated speech
 //-----------------------------------------------------------------------------
-void Synthesis(const double *f0, int f0_length, double **const spectrogram,
-    double **const aperiodicity, int fft_size, double frame_period, int fs,
-    int y_length, double *y);
+void Synthesis(const double *f0, int f0_length, 
+    const double * const *spectrogram, const double * const *aperiodicity, 
+    int fft_size, double frame_period, int fs, int y_length, double *y);
 
 WORLD_END_C_DECLS
 
