@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/03/04
 //
 // F0 estimation based on Harvest.
 //-----------------------------------------------------------------------------
@@ -237,7 +237,7 @@ static void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
       zero_crossings->dip_intervals);
 }
 
-static void GetF0CandidateContourSub(double **const interpolated_f0_set,
+static void GetF0CandidateContourSub(const double * const *interpolated_f0_set,
     int f0_length, double f0_floor, double f0_ceil, double boundary_f0,
     double *f0_candidate) {
   double upper = boundary_f0 * 1.1;
@@ -362,8 +362,9 @@ static int DetectOfficialF0CandidatesSub1(const int *vuv,
 // DetectOfficialF0CandidatesSub2() calculates F0 candidates in a frame
 //-----------------------------------------------------------------------------
 static int DetectOfficialF0CandidatesSub2(const int *vuv,
-    double **const raw_f0_candidates, int index, int number_of_voiced_sections,
-    const int *st, const int *ed, int max_candidates, double *f0_list) {
+    const double * const *raw_f0_candidates, int index,
+    int number_of_voiced_sections, const int *st, const int *ed,
+    int max_candidates, double *f0_list) {
   int number_of_candidates = 0;
   double tmp_f0;
   for (int i = 0; i < number_of_voiced_sections; ++i) {
@@ -384,7 +385,7 @@ static int DetectOfficialF0CandidatesSub2(const int *vuv,
 // DetectOfficialF0Candidates() detectes F0 candidates from multi-channel
 // candidates.
 //-----------------------------------------------------------------------------
-static int DetectOfficialF0Candidates(double **const raw_f0_candidates,
+static int DetectOfficialF0Candidates(const double * const * raw_f0_candidates,
     int number_of_channels, int f0_length, int max_candidates,
     double **f0_candidates) {
   int number_of_candidates = 0;
@@ -649,7 +650,7 @@ static double SelectBestF0(double reference_f0, const double *f0_candidates,
 }
 
 static void RemoveUnreliableCandidatesSub(int i, int j,
-    double **const tmp_f0_candidates, int number_of_candidates,
+    const double * const *tmp_f0_candidates, int number_of_candidates,
     double **f0_candidates, double **f0_scores) {
   double reference_f0 = f0_candidates[i][j];
   double error1, error2, min_error;
@@ -689,8 +690,8 @@ static void RemoveUnreliableCandidates(int f0_length, int number_of_candidates,
 //-----------------------------------------------------------------------------
 // SearchF0Base() gets the F0 with the highest score.
 //-----------------------------------------------------------------------------
-static void SearchF0Base(double **const f0_candidates,
-    double **const f0_scores, int f0_length, int number_of_candidates,
+static void SearchF0Base(const double * const *f0_candidates,
+    const double * const *f0_scores, int f0_length, int number_of_candidates,
     double *base_f0_contour) {
   double tmp_best_score;
   for (int i = 0; i < f0_length; ++i) {
@@ -788,7 +789,7 @@ static inline int MyAbsInt(int x) {
 // The subfunction of Extend().
 //-----------------------------------------------------------------------------
 static int ExtendF0(const double *f0, int f0_length, int origin,
-    int last_point, int shift, double **const f0_candidates,
+    int last_point, int shift, const double * const *f0_candidates,
     int number_of_candidates, double allowed_range, double *extended_f0) {
   int threshold = 4;
   double tmp_f0 = extended_f0[origin];
@@ -836,9 +837,9 @@ static void Swap(int index1, int index2, double **f0, int *boundary) {
   boundary[index2 * 2 + 1] = tmp_index;
 }
 
-static int ExtendSub(double **const extended_f0, const int *boundary_list,
-    int number_of_sections, double **selected_extended_f0,
-    int *selected_boundary_list) {
+static int ExtendSub(const double * const *extended_f0,
+    const int *boundary_list, int number_of_sections,
+    double **selected_extended_f0, int *selected_boundary_list) {
   double threshold = 2200.0;
   int count = 0;
   double mean_f0 = 0.0;
@@ -857,10 +858,10 @@ static int ExtendSub(double **const extended_f0, const int *boundary_list,
 //-----------------------------------------------------------------------------
 // Extend() : The Hand erasing the Space.
 //-----------------------------------------------------------------------------
-static int Extend(double **const multi_channel_f0, int number_of_sections,
-    int f0_length, const int *boundary_list, double **const f0_candidates,
-    int number_of_candidates, double allowed_range, double **extended_f0,
-    int *shifted_boundary_list) {
+static int Extend(const double * const *multi_channel_f0,
+    int number_of_sections, int f0_length, const int *boundary_list,
+    const double * const *f0_candidates, int number_of_candidates,
+    double allowed_range, double **extended_f0, int *shifted_boundary_list) {
   int threshold = 100;
   for (int i = 0; i < number_of_sections; ++i) {
     shifted_boundary_list[i * 2 + 1] = ExtendF0(multi_channel_f0[i],
@@ -909,8 +910,9 @@ static double SearchScore(double f0, const double *f0_candidates,
 // Subfunction of MergeF0()
 //-----------------------------------------------------------------------------
 static int MergeF0Sub(const double *f0_1, int f0_length, int st1, int ed1,
-    const double *f0_2, int st2, int ed2, double **const f0_candidates,
-    double **const f0_scores, int number_of_candidates, double *merged_f0) {
+    const double *f0_2, int st2, int ed2, const double * const *f0_candidates,
+    const double * const *f0_scores, int number_of_candidates,
+    double *merged_f0) {
   if (st1 <= st2 && ed1 >= ed2) return ed1;
 
   double score1 = 0.0;
@@ -932,9 +934,10 @@ static int MergeF0Sub(const double *f0_1, int f0_length, int st1, int ed1,
 //-----------------------------------------------------------------------------
 // Overlapped F0 contours are merged by the likability score.
 //-----------------------------------------------------------------------------
-static void MergeF0(double **const multi_channel_f0, int *boundary_list,
-    int number_of_channels, int f0_length, double **const f0_candidates,
-    double **const f0_scores, int number_of_candidates, double *merged_f0) {
+static void MergeF0(const double * const *multi_channel_f0, int *boundary_list,
+    int number_of_channels, int f0_length, const double * const *f0_candidates,
+    const double * const *f0_scores, int number_of_candidates,
+    double *merged_f0) {
   int *order = new int[number_of_channels];
   MakeSortedOrder(boundary_list, number_of_channels, order);
 
@@ -963,8 +966,8 @@ static void MergeF0(double **const multi_channel_f0, int *boundary_list,
 // Step 3: Voiced sections are extended based on the continuity of F0 contour
 //-----------------------------------------------------------------------------
 static void FixStep3(const double *f0_step2, int f0_length,
-    int number_of_candidates, double **const f0_candidates,
-    double allowed_range, double **const f0_scores, double *f0_step3) {
+    int number_of_candidates, const double * const *f0_candidates,
+    double allowed_range, const double * const *f0_scores, double *f0_step3) {
   for (int i = 0; i < f0_length; ++i) f0_step3[i] = f0_step2[i];
   int *boundary_list = new int[f0_length];
   int number_of_boundaries =
@@ -1020,8 +1023,8 @@ static void FixStep4(const double *f0_step3, int f0_length, int threshold,
 //-----------------------------------------------------------------------------
 // FixF0Contour() obtains the likely F0 contour.
 //-----------------------------------------------------------------------------
-static void FixF0Contour(double **const f0_candidates,
-    double **const f0_scores, int f0_length, int number_of_candidates,
+static void FixF0Contour(const double * const *f0_candidates,
+    const double * const *f0_scores, int f0_length, int number_of_candidates,
     double *best_f0_contour) {
   double *tmp_f0_contour1 = new double[f0_length];
   double *tmp_f0_contour2 = new double[f0_length];

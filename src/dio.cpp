@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/03/04
 //
 // F0 estimation based on DIO (Distributed Inline-filter Operation).
 //-----------------------------------------------------------------------------
@@ -108,8 +108,9 @@ static void GetSpectrumForEstimation(const double *x, int x_length,
 // GetBestF0Contour() calculates the best f0 contour based on scores of
 // all candidates. The F0 with highest score is selected.
 //-----------------------------------------------------------------------------
-static void GetBestF0Contour(int f0_length, double **const f0_candidates,
-    double **const f0_scores, int number_of_bands, double *best_f0_contour) {
+static void GetBestF0Contour(int f0_length,
+    const double * const * f0_candidates, const double * const * f0_scores,
+    int number_of_bands, double *best_f0_contour) {
   double tmp;
   for (int i = 0; i < f0_length; ++i) {
     tmp = f0_scores[0][i];
@@ -186,8 +187,8 @@ static void GetNumberOfVoicedSections(const double *f0, int f0_length,
 // f0[current_index + sign].
 //-----------------------------------------------------------------------------
 static double SelectBestF0(double current_f0, double past_f0,
-    double **const f0_candidates, int number_of_candidates, int target_index,
-    double allowed_range) {
+    const double * const * f0_candidates, int number_of_candidates,
+    int target_index, double allowed_range) {
   double reference_f0 = (current_f0 * 3.0 - past_f0) / 2.0;
 
   double minimum_error = fabs(reference_f0 - f0_candidates[0][target_index]);
@@ -211,7 +212,7 @@ static double SelectBestF0(double current_f0, double past_f0,
 // This function corrects the f0 candidates from backward to forward.
 //-----------------------------------------------------------------------------
 static void FixStep3(const double *f0_step2, int f0_length,
-    double **const f0_candidates, int number_of_candidates,
+    const double * const * f0_candidates, int number_of_candidates,
     double allowed_range, const int *negative_index, int negative_count,
     double *f0_step3) {
   for (int i = 0; i < f0_length; i++) f0_step3[i] = f0_step2[i];
@@ -233,7 +234,7 @@ static void FixStep3(const double *f0_step2, int f0_length,
 // This function corrects the f0 candidates from forward to backward.
 //-----------------------------------------------------------------------------
 static void FixStep4(const double *f0_step3, int f0_length,
-    double **const f0_candidates, int number_of_candidates,
+    const double * const * f0_candidates, int number_of_candidates,
     double allowed_range, const int *positive_index, int positive_count,
     double *f0_step4) {
   for (int i = 0; i < f0_length; ++i) f0_step4[i] = f0_step3[i];
@@ -255,9 +256,9 @@ static void FixStep4(const double *f0_step3, int f0_length,
 // candidates. There are four steps.
 //-----------------------------------------------------------------------------
 static void FixF0Contour(double frame_period, int number_of_candidates,
-    int fs, double **const f0_candidates, const double *best_f0_contour,
-    int f0_length, double f0_floor, double allowed_range,
-    double *fixed_f0_contour) {
+    int fs, const double * const * f0_candidates,
+    const double *best_f0_contour, int f0_length, double f0_floor,
+    double allowed_range, double *fixed_f0_contour) {
   int voice_range_minimum =
     static_cast<int>(0.5 + 1000.0 / frame_period / f0_floor) * 2 + 1;
 
@@ -434,9 +435,10 @@ static void GetFourZeroCrossingIntervals(double *filtered_signal, int y_length,
 // GetF0CandidateContourSub() calculates the f0 candidates and deviations.
 // This is the sub-function of GetF0Candidates() and assumes the calculation.
 //-----------------------------------------------------------------------------
-static void GetF0CandidateContourSub(double **const interpolated_f0_set,
-    int f0_length, double f0_floor, double f0_ceil, double boundary_f0,
-    double *f0_candidate, double *f0_score) {
+static void GetF0CandidateContourSub(
+    const double * const * interpolated_f0_set, int f0_length, double f0_floor,
+    double f0_ceil, double boundary_f0, double *f0_candidate,
+    double *f0_score) {
   for (int i = 0; i < f0_length; ++i) {
     f0_candidate[i] = (interpolated_f0_set[0][i] +
       interpolated_f0_set[1][i] + interpolated_f0_set[2][i] +
