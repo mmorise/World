@@ -108,7 +108,6 @@ int main(int argc, char **argv) {
   // Options from command line
   if (SetOption(argc, argv, &fft_size, &threshold, &compression_flag,
     filename) == 0) return 0;
-  printf("compression_flag: %d\n", compression_flag);
 
   // Aperiodicity analysis
   double **aperiodicity = new double *[f0_length];

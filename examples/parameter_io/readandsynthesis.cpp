@@ -20,8 +20,7 @@
 #include "world/synthesis.h"
 
 namespace {
-void usage(char *argv)
-{
+void usage(char *argv) {
   printf("\n");
   printf(" %s - synthesis from three parameters\n", argv);
   printf("\n");
@@ -35,7 +34,7 @@ void usage(char *argv)
 int SetOption(int argc, char **argv, char *filename) {
   while (--argc) {
     if (strcmp(argv[argc], "-o") == 0)
-      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]); 
+      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);
       return 0;
@@ -62,8 +61,7 @@ int main(int argc, char **argv) {
   int fft_size = static_cast<int>(GetHeaderInformation(argv[2], "FFT "));
   int fs = static_cast<int>(GetHeaderInformation(argv[2], "FS  "));
   double frame_period = GetHeaderInformation(argv[2], "FP  ");
-  char filename[200];
-  sprintf(filename, "output.wav");
+  char filename[200] = "output.wav";
 
   // Option from command line
   if (SetOption(argc, argv, filename) == 0) return 0;
