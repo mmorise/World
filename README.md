@@ -6,6 +6,10 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
+## Parameter I/O functions were added (2017/03/12)
+New files were added in tools folder.
+There are examples in example/parameter_io folder.
+
 ## Important notice (2017/01/02)
 You can control the fft_size in CheapTrick().
 According to this change, arguments in InitializeCheapTrickOption() have changed. Please see test.cpp.
@@ -21,6 +25,9 @@ In CheapTrick, you can refer the following references.
 
 In DIO, you can refer the following reference.  
 [5] M. Morise, H. Kawahara and H. Katayose: Fast and reliable F0 estimation method based on the period extraction of vocal fold vibration of singing voice and speech, AES 35th International Conference, CD-ROM Proceeding, Feb. 2009.
+
+In Harvest, I submitted a paper to INTERSPEECH 2017.  
+[6] M. Morise: Harvest: A high-performance fundamental frequency estimator from speech signals, in Proc. INTERSPEECH 2017 (submitted).
 
 ## Introduction of WORLD family
 
