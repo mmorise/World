@@ -15,8 +15,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "../tools/audioio.h"
-#include "../tools/parameterio.h"
+#include "../../tools/audioio.h"
+#include "../../tools/parameterio.h"
 #include "world/harvest.h"
 #include "world/constantnumbers.h"
 

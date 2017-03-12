@@ -57,7 +57,7 @@ $(OUT_DIR)/objs/world/harvest.o : $(IN_DIR)/src/world/harvest.h $(IN_DIR)/src/wo
 ###############################################################################################################
 ### Global rules
 ###############################################################################################################
-$(OUT_DIR)/objs/examples/%.o : $(IN_DIR)/examples/%.cpp
+$(OUT_DIR)/objs/examples/%.o : $(IN_DIR)/examples/parameter_io/%.cpp
 	mkdir -p $(OUT_DIR)/objs/examples
 	$(CXX) $(CXXFLAGS) -I$(IN_DIR)/src -I$(IN_DIR)/tools  -o "$@" -c "$<"
 

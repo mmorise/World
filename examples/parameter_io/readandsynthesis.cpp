@@ -15,8 +15,8 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "audioio.h"
-#include "parameterio.h"
+#include "../../tools/audioio.h"
+#include "../../tools/parameterio.h"
 #include "world/synthesis.h"
 
 namespace {
