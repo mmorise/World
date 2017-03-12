@@ -1,14 +1,14 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/03/12
 //
 // .wav input/output functions were modified for compatibility with C language.
 // Since these functions (wavread() and wavwrite()) are roughly implemented,
 // we recommend more suitable functions provided by other organizations.
 // This file is independent of WORLD project and for the test.cpp.
 //-----------------------------------------------------------------------------
-#include "audioio.h"
+#include "./audioio.h"
 
 #include <math.h>
 #include <stdint.h>
