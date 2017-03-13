@@ -37,7 +37,7 @@ void usage(char *argv) {
   printf("           : Default depends on fs (44100 -> 2048, 16000 -> 1024)\n");
   printf("   -t t    : threshhold used in D4C Lovetrain  [0.85]\n");
   printf("   -c      : compression                       [false]\n");
-  printf("   -o name : filename used for output          [output.spec]\n");
+  printf("   -o name : filename used for output          [output.ap]\n");
   printf("\n");
 }
 
