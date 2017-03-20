@@ -5,7 +5,7 @@ English:
 http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
 
 However, there are several exceptions about variable names.
-Since these names are generally used in the acoutsic signal processing,
+Since these names are generally used in the acoustic signal processing,
 I employed these names as the variable names.
 (1) x represents the input signal.
 (2) y represents the signal after processing.
