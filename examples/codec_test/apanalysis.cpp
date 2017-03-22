@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/12
+// Last update: 2017/03/22
 //
 // Summary:
 // This example estimates the aperiodicity from an audio file
@@ -19,6 +19,7 @@
 #include "../../tools/audioio.h"
 #include "../../tools/parameterio.h"
 #include "world/cheaptrick.h"  // used for determining the default FFT size.
+#include "world/codec.h"
 #include "world/d4c.h"
 
 namespace {
@@ -58,6 +59,26 @@ int SetOption(int argc, char **argv, int *fft_size, double *threshold,
     }
   }
   return 1;
+}
+
+//-----------------------------------------------------------------------------
+// Write coded aperiodicity
+//-----------------------------------------------------------------------------
+void WriteCodedAperiodicity(const char *filename,
+    const double * const *aperiodicity, int fs, int f0_length,
+    double frame_period, int fft_size) {
+  int number_of_aperiodicities = GetNumberOfAperiodicities(fs);
+  double **coded_aperiodicity = new double *[f0_length];
+  for (int i = 0; i < f0_length; ++i)
+    coded_aperiodicity[i] = new double[number_of_aperiodicities];
+
+  CodeAperiodicity(aperiodicity, f0_length, fs, fft_size,
+    coded_aperiodicity);
+  WriteAperiodicity(filename, fs, f0_length, frame_period,
+    fft_size, number_of_aperiodicities, coded_aperiodicity);
+
+  for (int i = 0; i < f0_length; ++i) delete[] coded_aperiodicity[i];
+  delete[] coded_aperiodicity;
 }
 
 }  // namespace
@@ -117,9 +138,15 @@ int main(int argc, char **argv) {
       &option, aperiodicity);
 
   // File output
-  // compression_flag is not supported yet.
-  WriteAperiodicity(filename, fs, f0_length, frame_period,
-      fft_size, 0, aperiodicity);
+  if (compression_flag == 0) {
+    // If you want to write the raw aperiodicity.
+    WriteAperiodicity(filename, fs, f0_length, frame_period,
+        fft_size, 0, aperiodicity);
+  } else {
+    // If you want to write the coded aperiodicity.
+    WriteCodedAperiodicity(filename, aperiodicity, fs, f0_length, frame_period,
+        fft_size);
+  }
 
   // Memory deallocation
   for (int i = 0; i < f0_length; ++i) delete[] aperiodicity[i];

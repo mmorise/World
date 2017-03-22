@@ -4,13 +4,13 @@
 // Last update: 2017/03/12
 //
 // Summary:
-// This example estimates the aperiodicity from an audio file
+// This example estimates the spectral envelope from an audio file
 // and then saves the result to a file.
 //
 // How to use:
-// % apanalysis -h
+// % spanalysis -h
 //
-// Related works: f0analysis.cpp, spanalysis.cpp, readandsynthesis.cpp
+// Related works: f0analysis.cpp, apanalysis.cpp, readandsynthesis.cpp
 //-----------------------------------------------------------------------------
 #include <stdlib.h>
 #include <string.h>
@@ -18,8 +18,8 @@
 
 #include "../../tools/audioio.h"
 #include "../../tools/parameterio.h"
-#include "world/cheaptrick.h"  // used for determining the default FFT size.
-#include "world/d4c.h"
+#include "world/cheaptrick.h"
+#include "world/constantnumbers.h"
 
 namespace {
 
@@ -28,30 +28,33 @@ namespace {
 //-----------------------------------------------------------------------------
 void usage(char *argv) {
   printf("\n");
-  printf(" %s - aperiodicity estimation by D4C\n", argv);
+  printf(" %s - spectral envelope estimation by CheapTrick\n", argv);
   printf("\n");
   printf("  usage:\n");
   printf("   %s input.wav input.f0 [options]\n", argv);
   printf("  options:\n");
   printf("   -f f    : FFT size (samples)            [variable]\n");
   printf("           : Default depends on fs (44100 -> 2048, 16000 -> 1024)\n");
-  printf("   -t t    : threshhold used in D4C Lovetrain  [0.85]\n");
-  printf("   -c      : compression                       [false]\n");
-  printf("   -o name : filename used for output          [output.ap]\n");
+  printf("   -q q    : compensation coefficient      [-0.15]\n");
+  printf("           : I don't reccomend to change this value.\n");
+  printf("   -d d    : number of coefficients        [0 (without coding)]\n");
+  printf("           : It is used for compression (Not supported yet)\n");
+  printf("   -o name : filename used for output      [output.sp]\n");
   printf("\n");
 }
 
 //-----------------------------------------------------------------------------
 // Set parameters from command line options
 //-----------------------------------------------------------------------------
-int SetOption(int argc, char **argv, int *fft_size, double *threshold,
-    int *compression_flag, char *filename) {
+int SetOption(int argc, char **argv, int *fft_size, double *q1,
+    int *number_of_dimensions, char *filename) {
   while (--argc) {
     if (strcmp(argv[argc], "-f") == 0) *fft_size = atoi(argv[argc + 1]);
-    if (strcmp(argv[argc], "-t") == 0) *threshold = atof(argv[argc + 1]);
+    if (strcmp(argv[argc], "-q") == 0) *q1 = atof(argv[argc + 1]);
+    if (strcmp(argv[argc], "-d") == 0)
+      *number_of_dimensions = atof(argv[argc + 1]);
     if (strcmp(argv[argc], "-o") == 0)
       snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
-    if (strcmp(argv[argc], "-c") == 0) *compression_flag = 1;
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);
       return 0;
@@ -63,7 +66,7 @@ int SetOption(int argc, char **argv, int *fft_size, double *threshold,
 }  // namespace
 
 //-----------------------------------------------------------------------------
-// This example estimates the aperiodicity from an audio file
+// This example estimates the spectral envelope from an audio file
 // and then saves the result to a file.
 //-----------------------------------------------------------------------------
 int main(int argc, char **argv) {
@@ -96,34 +99,29 @@ int main(int argc, char **argv) {
   wavread(argv[1], &fs, &nbit, x);
 
   // Default parameters
-  D4COption option = { 0 };
-  InitializeD4COption(&option);
-  char filename[200] = "output.ap";
-  double threshold = 0.85;
-  CheapTrickOption c_option = { 0 };
-  InitializeCheapTrickOption(fs, &c_option);
-  int fft_size = c_option.fft_size;
-  int compression_flag = 0;
+  CheapTrickOption option = { 0 };
+  InitializeCheapTrickOption(fs, &option);
+  char filename[200] = "output.sp";
+  int number_of_dimensions = 0;
 
   // Options from command line
-  if (SetOption(argc, argv, &fft_size, &threshold, &compression_flag,
-    filename) == 0) return 0;
+  if (SetOption(argc, argv, &option.fft_size, &option.q1,
+    &number_of_dimensions, filename) == 0) return -1;
 
-  // Aperiodicity analysis
-  double **aperiodicity = new double *[f0_length];
+  // Spectral envelope analysis
+  double **spectrogram = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i)
-    aperiodicity[i] = new double[fft_size / 2 + 1];
-  D4C(x, x_length, fs, temporal_positions, f0, f0_length, fft_size,
-      &option, aperiodicity);
+    spectrogram[i] = new double[option.fft_size / 2 + 1];
+  CheapTrick(x, x_length, fs, temporal_positions, f0, f0_length, &option,
+      spectrogram);
 
   // File output
-  // compression_flag is not supported yet.
-  WriteAperiodicity(filename, fs, f0_length, frame_period,
-      fft_size, 0, aperiodicity);
+  WriteSpectralEnvelope(filename, fs, f0_length, frame_period,
+      option.fft_size, number_of_dimensions, spectrogram);
 
   // Memory deallocation
-  for (int i = 0; i < f0_length; ++i) delete[] aperiodicity[i];
-  delete[] aperiodicity;
+  for (int i = 0; i < f0_length; ++i) delete[] spectrogram[i];
+  delete[] spectrogram;
   delete[] f0;
   delete[] temporal_positions;
   delete[] x;
