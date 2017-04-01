@@ -9,10 +9,6 @@
 //
 // How to use:
 // The format is shown in the line 140.
-//
-// Caution: (by M. Morise)
-// Sampling frequency and frame period is fixed to 22050 and 5, respectively.
-// To use files with arbitrary conditions, I will fix the problem.
 //-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
@@ -83,14 +79,6 @@ typedef struct {
 
 namespace {
 
-    void DisplayInformation(int fs, int nbit, int x_length)
-    {
-        printf("File information\n");
-        printf("Sampling : %d Hz %d Bit\n", fs, nbit);
-        printf("Length %d [sample]\n", x_length);
-        printf("Length %f [sec]\n", static_cast<double>(x_length) / fs);
-    }
-
 
     std::ifstream::pos_type filesize(const char* filename)
     {
@@ -138,20 +126,26 @@ int main(int argc, char *argv[])
 {
     if (argc != 5)
     {
-        fprintf(stderr, "%s <input_f0_file> <input_spectrum_file> <input_aperiodicity_file> <output_wav_file>", argv[0]);
+        fprintf(stderr, "%s <input_f0_file> <input_spectrum_file> <input_aperiodicity_file> <output_wav_file>\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     // Define a default filled structures
     WorldParameters world_parameters;
-    world_parameters.fs = 22050; // FIXME: hardcoded value
+    world_parameters.fs = 0; // this value will be filled when reading the spectrogram file
     world_parameters.f0_length = filesize(argv[1]) / sizeof(double);
-    world_parameters.fft_size = ((filesize(argv[2]) / (sizeof(double) * world_parameters.f0_length)) - 1) * 2; // Be careful that .sp contains only first half of the spectrum
+    // The first bytes in the spectrogram file contains the sampling frequency and
+    // the frame period, so we need to subtract those bytes from the spectrogram size
+    size_t specSize = (size_t) filesize(argv[2]) - sizeof(world_parameters.fs) -
+        sizeof(world_parameters.frame_period);
+    // Be careful that .sp contains only first half of the spectrum
+    world_parameters.fft_size = ( (specSize / (sizeof(double) * world_parameters.f0_length)) - 1 ) * 2;
     std::cout << "fft size = " << world_parameters.fft_size << std::endl;
 
     // 5.0 ms is the default value.
     // Generally, the inverse of the lowest F0 of speech is the best.
     // However, the more elapsed time is required.
+    // This value will be replaced by the value stored in the spectrogram file
     world_parameters.frame_period = DEFAULT_FRAME_PERIOD;
 
 
@@ -187,6 +181,15 @@ int main(int argc, char *argv[])
     if ( !is_spectrogram.is_open() )
         return false;
 
+    // read the sampling frequency
+    is_spectrogram.read(reinterpret_cast<char*>(&world_parameters.fs),
+            std::streamsize( sizeof(world_parameters.fs) ) );
+
+    // read the frame period
+    is_spectrogram.read(reinterpret_cast<char*>(&world_parameters.frame_period),
+            std::streamsize( sizeof(world_parameters.frame_period) ) );
+
+    // read the spectrogram data
     for (int i=0; i<world_parameters.f0_length; i++)
     {
         is_spectrogram.read(reinterpret_cast<char*>(world_parameters.spectrogram[i]),
