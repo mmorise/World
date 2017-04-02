@@ -21,10 +21,10 @@ default: $(OUT_DIR)/libworld.a
 ###############################################################################################################
 examples: $(OUT_DIR)/analysis $(OUT_DIR)/synthesis
 
-$(OUT_DIR)/analysis: $(OUT_DIR)/objs/examples/analysis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
+$(OUT_DIR)/analysis: $(OUT_DIR)/objs/examples/analysis_synthesis/analysis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
 	 $(LINK) $(CXXFLAGS) -o $@ $^ -lm
 
-$(OUT_DIR)/synthesis: $(OUT_DIR)/objs/examples/synthesis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
+$(OUT_DIR)/synthesis: $(OUT_DIR)/objs/examples/analysis_synthesis/synthesis.o $(OUT_DIR)/objs/tools/audioio.o $(OUT_DIR)/libworld.a
 	 $(LINK) $(CXXFLAGS) -o $@ $^ -lm
 
 $(OUT_DIR)/objs/tools/audioio.o : $(IN_DIR)/tools/audioio.h
@@ -51,7 +51,7 @@ $(OUT_DIR)/objs/world/harvest.o : $(IN_DIR)/src/world/harvest.h $(IN_DIR)/src/wo
 ### Global rules
 ###############################################################################################################
 $(OUT_DIR)/objs/examples/%.o : $(IN_DIR)/examples/%.cpp
-	mkdir -p $(OUT_DIR)/objs/examples
+	mkdir -p $(OUT_DIR)/objs/examples/analysis_synthesis
 	$(CXX) $(CXXFLAGS) -I$(IN_DIR)/src -I$(IN_DIR)/tools  -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/tools/%.o : $(IN_DIR)/tools/%.cpp
