@@ -186,7 +186,8 @@ static void GetTemporalParametersForTimeBase(const double *f0, int f0_length,
     double *coarse_time_axis, double *coarse_f0, double *coarse_vuv) {
   for (int i = 0; i < y_length; ++i)
     time_axis[i] = i / static_cast<double>(fs);
-  for (int i = 0; i < f0_length; ++i)
+  // the array 'coarse_time_axis' is supposed to have 'f0_length + 1' positions
+  for (int i = 0; i <= f0_length; ++i)
     coarse_time_axis[i] = i * frame_period;
   for (int i = 0; i < f0_length; ++i)
     coarse_f0[i] = f0[i];
