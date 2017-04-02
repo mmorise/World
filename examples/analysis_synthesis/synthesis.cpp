@@ -8,7 +8,7 @@
 // "analysis.cpp".
 //
 // How to use:
-// The format is shown in the line 140.
+// The format is shown in the line 129.
 //-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
