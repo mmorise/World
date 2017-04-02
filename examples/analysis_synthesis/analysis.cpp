@@ -8,7 +8,7 @@
 // Files are used to synthesize speech by "synthesis.cpp".
 //
 // How to use:
-// The format is shown in the line 251.
+// The format is shown in the line 253.
 //-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
