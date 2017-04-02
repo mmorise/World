@@ -9,10 +9,6 @@
 //
 // How to use:
 // The format is shown in the line 251.
-//
-// Caution: (by M. Morise)
-// The outputted files don't include the sampling frequency and frame period.
-// I will modify the program to fix this problem.
 //-----------------------------------------------------------------------------
 #include <math.h>
 #include <stdlib.h>
@@ -328,6 +324,15 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    // write the sampling frequency
+    out_spectrogram.write(reinterpret_cast<const char*>(&world_parameters.fs),
+                 std::streamsize( sizeof(world_parameters.fs) ) );
+
+    // write the sampling frequency
+    out_spectrogram.write(reinterpret_cast<const char*>(&world_parameters.frame_period),
+                 std::streamsize( sizeof(world_parameters.frame_period) ) );
+
+    // write the spectrogram data
     for (int i=0; i<world_parameters.f0_length; i++)
     {
         out_spectrogram.write(reinterpret_cast<const char*>(world_parameters.spectrogram[i]),
