@@ -53,15 +53,31 @@ void InitializeCheapTrickOption(int fs, CheapTrickOption *option);
 
 //-----------------------------------------------------------------------------
 // GetFFTSizeForCheapTrick() calculates the FFT size based on the sampling
-// frequency and the lower limit of f0 (It is defined in world.h).
+// frequency and the lower limit of f0 (kFloorF0 defined in constantnumbers.h).
 //
 // Input:
 //   fs : Sampling frequency
+//   option : Option struct containing the lower f0 limit
 //
 // Output:
 //   FFT size
 //-----------------------------------------------------------------------------
 int GetFFTSizeForCheapTrick(int fs, const CheapTrickOption *option);
+
+//-----------------------------------------------------------------------------
+// GetF0FloorForCheapTrick() calculates actual lower f0 limit for CheapTrick
+// based on the sampling frequency and FFT size used. Whenever f0 is below
+// this threshold the spectrum will be analyzed as if the frame is unvoiced
+// (using kDefaultF0 defined in constantnumbers.h).
+//
+// Input:
+//   fs : Sampling frequency
+//   fft_size : FFT size
+//
+// Output:
+//   Lower f0 limit (Hz)
+//-----------------------------------------------------------------------------
+double GetF0FloorForCheapTrick(int fs, int fft_size);
 
 WORLD_END_C_DECLS
 
