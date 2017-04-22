@@ -3,3 +3,12 @@ build/
 
 # Test
 *.wav
+
+# Visual Studio
+visualstudio/.vs/
+visualstudio/Debug/
+visualstudio/Release/
+visualstudio/win.VC.VC.opendb
+visualstudio/win.VC.db
+visualstudio/win/Debug/
+visualstudio/win/Release/

@@ -178,11 +178,15 @@ int GetFFTSizeForCheapTrick(int fs, const CheapTrickOption *option) {
       static_cast<int>(log(3.0 * fs / option->f0_floor + 1) / world::kLog2)));
 }
 
+double GetF0FloorForCheapTrick(int fs, int fft_size) {
+  return 3.0 * fs / (fft_size - 3.0);
+}
+
 void CheapTrick(const double *x, int x_length, int fs,
     const double *temporal_positions, const double *f0, int f0_length,
     const CheapTrickOption *option, double **spectrogram) {
   int fft_size = option->fft_size;
-  double f0_floor = 3.0 * fs / (fft_size - 3.0);
+  double f0_floor = GetF0FloorForCheapTrick(fs, fft_size);
   double *spectral_envelope = new double[fft_size];
 
   ForwardRealFFT forward_real_fft = {0};
