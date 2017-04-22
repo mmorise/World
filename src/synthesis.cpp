@@ -73,6 +73,20 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
 }
 
 //-----------------------------------------------------------------------------
+// RemoveDCComponent()
+//-----------------------------------------------------------------------------
+static void RemoveDCComponent(const double *periodic_response, int fft_size,
+    double *new_periodic_response) {
+  double dc_component = 0.0;
+  for (int i = fft_size / 2; i < fft_size; ++i)
+    dc_component += periodic_response[i];
+  dc_component /= fft_size / 2.0;
+  for (int i = 0; i < fft_size / 2; ++i) new_periodic_response[i] = 0.0;
+  for (int i = fft_size / 2; i < fft_size; ++i)
+    new_periodic_response[i] -= dc_component;
+}
+
+//-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates an aperiodic response.
 //-----------------------------------------------------------------------------
 static void GetPeriodicResponse(int fft_size, const double *spectrum,
@@ -98,6 +112,7 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
   }
   fft_execute(inverse_real_fft->inverse_fft);
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
+  RemoveDCComponent(periodic_response, fft_size, periodic_response);
 }
 
 static void GetSpectralEnvelope(double current_time, double frame_period,
