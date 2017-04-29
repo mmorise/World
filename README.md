@@ -6,6 +6,10 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
+## Functions for spectral envelope codec were added (2017/04/29)
+You can code/decode the spectral envelope.
+There are examples in examples/codec_test directory.
+
 ## Functions for aperiodicity codec were added (2017/03/22)
 You can code/decode the aperiodicity. The compression ratio is 1/205 in full-band speech (48 kHz).
 In cases where you use the full-band speech, there is no deterioration.
