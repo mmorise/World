@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/04/29
 //
 // common.cpp includes functions used in at least two files.
 // (1) Common functions
@@ -148,6 +148,22 @@ void DestroyInverseRealFFT(InverseRealFFT *inverse_real_fft) {
   fft_destroy_plan(inverse_real_fft->inverse_fft);
   delete[] inverse_real_fft->spectrum;
   delete[] inverse_real_fft->waveform;
+}
+
+void InitializeInverseComplexFFT(int fft_size,
+    InverseComplexFFT *inverse_complex_fft) {
+  inverse_complex_fft->fft_size = fft_size;
+  inverse_complex_fft->input = new fft_complex[fft_size];
+  inverse_complex_fft->output = new fft_complex[fft_size];
+  inverse_complex_fft->inverse_fft = fft_plan_dft_1d(fft_size,
+    inverse_complex_fft->input, inverse_complex_fft->output,
+    FFT_BACKWARD, FFT_ESTIMATE);
+}
+
+void DestroyInverseComplexFFT(InverseComplexFFT *inverse_complex_fft) {
+  fft_destroy_plan(inverse_complex_fft->inverse_fft);
+  delete[] inverse_complex_fft->input;
+  delete[] inverse_complex_fft->output;
 }
 
 void InitializeMinimumPhaseAnalysis(int fft_size,

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/04/29
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // This is an implementation for real-time applications.

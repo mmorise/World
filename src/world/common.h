@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/04/29
 //-----------------------------------------------------------------------------
 #ifndef WORLD_COMMON_H_
 #define WORLD_COMMON_H_
@@ -29,6 +29,14 @@ typedef struct {
   fft_complex *spectrum;
   fft_plan inverse_fft;
 } InverseRealFFT;
+
+// Inverse FFT in the complex sequence
+typedef struct {
+  int fft_size;
+  fft_complex *input;
+  fft_complex *output;
+  fft_plan inverse_fft;
+} InverseComplexFFT;
 
 // Minimum phase analysis from logarithmic power spectrum
 typedef struct {
@@ -113,6 +121,11 @@ void DestroyForwardRealFFT(ForwardRealFFT *forward_real_fft);
 // Inverse FFT
 void InitializeInverseRealFFT(int fft_size, InverseRealFFT *inverse_real_fft);
 void DestroyInverseRealFFT(InverseRealFFT *inverse_real_fft);
+
+// Inverse FFT (Complex)
+void InitializeInverseComplexFFT(int fft_size,
+  InverseComplexFFT *inverse_complex_fft);
+void DestroyInverseComplexFFT(InverseComplexFFT *inverse_complex_fft);
 
 // Minimum phase analysis (This analysis uses FFT)
 void InitializeMinimumPhaseAnalysis(int fft_size,

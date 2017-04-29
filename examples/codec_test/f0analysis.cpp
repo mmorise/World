@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/12
+// Last update: 2017/04/29
 //
 // Summary:
 // This example estimates F0 from an audio file and saves it to a file.
@@ -50,7 +50,7 @@ int SetOption(int argc, char **argv, double *f0_floor, double *f0_ceil,
     if (strcmp(argv[argc], "-c") == 0) *f0_ceil = atof(argv[argc + 1]);
     if (strcmp(argv[argc], "-s") == 0) *frame_period = atof(argv[argc + 1]);
     if (strcmp(argv[argc], "-o") == 0)
-      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
+      snprintf(filename, 200, argv[argc + 1]);
     if (strcmp(argv[argc], "-t") == 0) *text_flag = 1;
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);

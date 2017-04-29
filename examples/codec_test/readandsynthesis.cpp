@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/22
+// Last update: 2017/04/29
 //
 // Summary:
 // This example reads three parameters and generates a waveform from them.
@@ -35,7 +35,7 @@ void usage(char *argv) {
 int SetOption(int argc, char **argv, char *filename) {
   while (--argc) {
     if (strcmp(argv[argc], "-o") == 0)
-      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
+      snprintf(filename, 200, argv[argc + 1]);
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);
       return 0;
@@ -51,9 +51,21 @@ void ReadCodedAperiodicity(const char *filename, int f0_length, int fs,
     coded_aperiodicity[i] = new double[number_of_dimensions];
   ReadAperiodicity(filename, coded_aperiodicity);
   DecodeAperiodicity(coded_aperiodicity, f0_length, fs, fft_size,
-    aperiodicity);
+      aperiodicity);
   for (int i = 0; i < f0_length; ++i) delete[] coded_aperiodicity[i];
   delete[] coded_aperiodicity;
+}
+
+void ReadCodedSpectralEnvelope(const char *filename, int f0_length, int fs,
+    int fft_size, int number_of_dimensions, double **spectrogram) {
+  double **coded_spectral_envelope = new double *[f0_length];
+  for (int i = 0; i < f0_length; ++i)
+    coded_spectral_envelope[i] = new double[number_of_dimensions];
+  ReadSpectralEnvelope(filename, coded_spectral_envelope);
+  DecodeSpectralEnvelope(coded_spectral_envelope, f0_length, fs,
+      fft_size, number_of_dimensions, spectrogram);
+  for (int i = 0; i < f0_length; ++i) delete[] coded_spectral_envelope[i];
+  delete[] coded_spectral_envelope;
 }
 
 }  // namespace
@@ -89,10 +101,23 @@ int main(int argc, char **argv) {
     aperiodicity[i] = new double[fft_size / 2 + 1];
   }
 
-  // Read three parameters
+  // Read F0
   ReadF0(argv[1], temporal_positions, f0);
-  ReadSpectralEnvelope(argv[2], spectrogram);
+
+  // Read spectral envelope
   int number_of_dimensions =
+    static_cast<int>(GetHeaderInformation(argv[2], "NOD "));
+  if (number_of_dimensions == 0) {
+    // If the spectral envelope is not coded.
+    ReadSpectralEnvelope(argv[2], spectrogram);
+  } else {
+    // If the spectral envelope is coded.
+    ReadCodedSpectralEnvelope(argv[2], f0_length, fs, fft_size,
+      number_of_dimensions, spectrogram);
+  }
+
+  // Read aperiodicity
+  number_of_dimensions =
     static_cast<int>(GetHeaderInformation(argv[3], "NOD "));
   if (number_of_dimensions == 0) {
     // If the aperiodicity is not coded.

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/12
+// Last update: 2017/04/29
 //
 // Summary:
 // This example estimates the spectral envelope from an audio file
@@ -19,6 +19,7 @@
 #include "../../tools/audioio.h"
 #include "../../tools/parameterio.h"
 #include "world/cheaptrick.h"
+#include "world/codec.h"
 #include "world/constantnumbers.h"
 
 namespace {
@@ -36,9 +37,11 @@ void usage(char *argv) {
   printf("   -f f    : FFT size (samples)            [variable]\n");
   printf("           : Default depends on fs (44100 -> 2048, 16000 -> 1024)\n");
   printf("   -q q    : compensation coefficient      [-0.15]\n");
-  printf("           : I don't reccomend to change this value.\n");
+  printf("           : I don't recommend to change this value.\n");
   printf("   -d d    : number of coefficients        [0 (without coding)]\n");
-  printf("           : It is used for compression (Not supported yet)\n");
+  printf("           : Spectral envelope is decoded by these coefficients.\n");
+  printf("           : You must not set this value above the half of\n");
+  printf("           : the FFT size.\n");
   printf("   -o name : filename used for output      [output.sp]\n");
   printf("\n");
 }
@@ -54,13 +57,29 @@ int SetOption(int argc, char **argv, int *fft_size, double *q1,
     if (strcmp(argv[argc], "-d") == 0)
       *number_of_dimensions = atof(argv[argc + 1]);
     if (strcmp(argv[argc], "-o") == 0)
-      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
+      snprintf(filename, 200, argv[argc + 1]);
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);
       return 0;
     }
   }
   return 1;
+}
+
+void WriteCodedSpectralEnvelope(char *filename,
+    const double * const *spectrogram, int fs, int f0_length,
+    double frame_period, int number_of_dimensions, int fft_size) {
+  double **coded_spectrogram = new double *[f0_length];
+  for (int i = 0; i < f0_length; ++i)
+    coded_spectrogram[i] = new double[number_of_dimensions];
+
+  CodeSpectralEnvelope(spectrogram, f0_length, fs, fft_size,
+      number_of_dimensions, coded_spectrogram);
+
+  WriteSpectralEnvelope(filename, fs, f0_length, frame_period, fft_size,
+      number_of_dimensions, coded_spectrogram);
+  for (int i = 0; i < f0_length; ++i) delete[] coded_spectrogram[i];
+  delete[] coded_spectrogram;
 }
 
 }  // namespace
@@ -101,6 +120,7 @@ int main(int argc, char **argv) {
   // Default parameters
   CheapTrickOption option = { 0 };
   InitializeCheapTrickOption(fs, &option);
+  option.fft_size = 2048;
   char filename[200] = "output.sp";
   int number_of_dimensions = 0;
 
@@ -116,8 +136,47 @@ int main(int argc, char **argv) {
       spectrogram);
 
   // File output
+  if (number_of_dimensions == 0) {
+    // If you want to write the raw spectral envelope.
+    WriteSpectralEnvelope(filename, fs, f0_length, frame_period,
+        option.fft_size, 0, spectrogram);
+  } else {
+    // If you want to write the coded spectral envelope.
+    WriteCodedSpectralEnvelope(filename, spectrogram, fs, f0_length,
+        frame_period, number_of_dimensions, option.fft_size);
+  }
+  /*
+  double **coded_spectrogram = new double *[f0_length];
+  for (int i = 0; i < f0_length; ++i)
+    coded_spectrogram[i] = new double[number_of_dimensions];
+
+  CodeSpectralEnvelope(spectrogram, f0_length, fs, option.fft_size,
+      number_of_dimensions, coded_spectrogram);
+
+  for (int i = 0; i < f0_length; ++i)
+    for (int j = 0; j < option.fft_size / 2 + 1; ++j)
+      spectrogram[i][j] = 0.0;
+
+  DecodeSpectralEnvelope(coded_spectrogram, f0_length, fs, option.fft_size,
+      number_of_dimensions, spectrogram);
+
+  fp = fopen("C:/mmorise/matlab/2017/0421codec/output.txt", "w");
+  for (int i = 0; i < f0_length; ++i) {
+    for (int j = 0; j < option.fft_size / 2 + 1; ++j)
+      fprintf(fp, "%.20f ", spectrogram[i][j]);
+    fprintf(fp, "\r\n");
+  }
+  fclose(fp);
+
+  for (int i = 0; i < f0_length; ++i) delete[] coded_spectrogram[i];
+  delete[] coded_spectrogram;
+  */
+
+  // File output
+  /*
   WriteSpectralEnvelope(filename, fs, f0_length, frame_period,
       option.fft_size, number_of_dimensions, spectrogram);
+      */
 
   // Memory deallocation
   for (int i = 0; i < f0_length; ++i) delete[] spectrogram[i];

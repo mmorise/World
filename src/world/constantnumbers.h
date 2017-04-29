@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/04/29
 //
 // This header file only defines constant numbers used for several function.
 //-----------------------------------------------------------------------------
@@ -28,6 +28,16 @@ namespace world {
   const double kUpperLimit = 15000.0;
   const double kThreshold = 0.85;
   const double kFloorF0D4C = 47.0;
+
+  // for Codec (Mel scale)
+  // S. Stevens & J. Volkmann,
+  // The Relation of Pitch to Frequency: A Revised Scale,
+  // American Journal of Psychology, vol. 53, no. 3, pp. 329-353, 1940.
+  const double kM0 = 1127.01048;
+  const double kF0 = 700.0;
+  const double kFloorFrequency = 40.0;
+  const double kCeilFrequency = 20000.0;
+
 }  // namespace world
 
-#endif
+#endif  // WORLD_CONSTANT_NUMBERS_H_
