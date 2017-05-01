@@ -1,0 +1,6 @@
+#ifndef WORLD_CONFIG_H
+#define WORLD_CONFIG_H
+
+#define WORLD_VERSION "@PROJECT_VER@"
+
+#endif // WORLD_CONFIG_H
