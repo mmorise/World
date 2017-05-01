@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Last update: 2017/04/01
 //
 // Summary:
 // This example estimates the spectral envelope from an audio file
@@ -120,7 +120,6 @@ int main(int argc, char **argv) {
   // Default parameters
   CheapTrickOption option = { 0 };
   InitializeCheapTrickOption(fs, &option);
-  option.fft_size = 2048;
   char filename[200] = "output.sp";
   int number_of_dimensions = 0;
 
@@ -145,38 +144,6 @@ int main(int argc, char **argv) {
     WriteCodedSpectralEnvelope(filename, spectrogram, fs, f0_length,
         frame_period, number_of_dimensions, option.fft_size);
   }
-  /*
-  double **coded_spectrogram = new double *[f0_length];
-  for (int i = 0; i < f0_length; ++i)
-    coded_spectrogram[i] = new double[number_of_dimensions];
-
-  CodeSpectralEnvelope(spectrogram, f0_length, fs, option.fft_size,
-      number_of_dimensions, coded_spectrogram);
-
-  for (int i = 0; i < f0_length; ++i)
-    for (int j = 0; j < option.fft_size / 2 + 1; ++j)
-      spectrogram[i][j] = 0.0;
-
-  DecodeSpectralEnvelope(coded_spectrogram, f0_length, fs, option.fft_size,
-      number_of_dimensions, spectrogram);
-
-  fp = fopen("C:/mmorise/matlab/2017/0421codec/output.txt", "w");
-  for (int i = 0; i < f0_length; ++i) {
-    for (int j = 0; j < option.fft_size / 2 + 1; ++j)
-      fprintf(fp, "%.20f ", spectrogram[i][j]);
-    fprintf(fp, "\r\n");
-  }
-  fclose(fp);
-
-  for (int i = 0; i < f0_length; ++i) delete[] coded_spectrogram[i];
-  delete[] coded_spectrogram;
-  */
-
-  // File output
-  /*
-  WriteSpectralEnvelope(filename, fs, f0_length, frame_period,
-      option.fft_size, number_of_dimensions, spectrogram);
-      */
 
   // Memory deallocation
   for (int i = 0; i < f0_length; ++i) delete[] spectrogram[i];
