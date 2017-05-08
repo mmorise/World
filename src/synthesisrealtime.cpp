@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Last update: 2017/05/08
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // This is an implementation for real-time applications.
@@ -9,6 +9,8 @@
 //
 // Caution: This is an implementation as a prototype.
 //          Specifications may change. There may be a bug.
+//
+// Caution: I temporarily removed the DC removal process. (2017/05/08)
 //-----------------------------------------------------------------------------
 #include "world/synthesisrealtime.h"
 
@@ -138,6 +140,7 @@ static void SearchPointer(int frame,  WorldSynthesizer *synth, int flag,
 //-----------------------------------------------------------------------------
 // RemoveDCComponent()
 //-----------------------------------------------------------------------------
+/*
 static void RemoveDCComponent(const double *periodic_response, int fft_size,
     double *new_periodic_response) {
   double dc_component = 0.0;
@@ -148,6 +151,7 @@ static void RemoveDCComponent(const double *periodic_response, int fft_size,
   for (int i = fft_size / 2; i < fft_size; ++i)
     new_periodic_response[i] -= dc_component;
 }
+*/
 
 //-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates an aperiodic response.
@@ -176,7 +180,7 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
 
   fft_execute(inverse_real_fft->inverse_fft);
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
-  RemoveDCComponent(periodic_response, fft_size, periodic_response);
+  // RemoveDCComponent(periodic_response, fft_size, periodic_response);
 }
 
 static void GetSpectralEnvelope(double current_location,

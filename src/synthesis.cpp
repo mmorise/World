@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Last update: 2017/05/08
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // forward_real_fft, inverse_real_fft and minimum_phase are used to speed up.
@@ -76,14 +76,14 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
 // RemoveDCComponent()
 //-----------------------------------------------------------------------------
 static void RemoveDCComponent(const double *periodic_response, int fft_size,
-    double *new_periodic_response) {
+    const double *dc_remover, double *new_periodic_response) {
   double dc_component = 0.0;
   for (int i = fft_size / 2; i < fft_size; ++i)
     dc_component += periodic_response[i];
-  dc_component /= fft_size / 2.0;
-  for (int i = 0; i < fft_size / 2; ++i) new_periodic_response[i] = 0.0;
+  for (int i = 0; i < fft_size / 2; ++i)
+    new_periodic_response[i] = -dc_component * dc_remover[i];
   for (int i = fft_size / 2; i < fft_size; ++i)
-    new_periodic_response[i] -= dc_component;
+    new_periodic_response[i] -= dc_component * dc_remover[i];
 }
 
 //-----------------------------------------------------------------------------
@@ -92,7 +92,8 @@ static void RemoveDCComponent(const double *periodic_response, int fft_size,
 static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
     const InverseRealFFT *inverse_real_fft,
-    const MinimumPhaseAnalysis *minimum_phase, double *periodic_response) {
+    const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
+    double *periodic_response) {
   if (current_vuv <= 0.5 || aperiodic_ratio[0] > 0.999) {
     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
     return;
@@ -112,7 +113,8 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
   }
   fft_execute(inverse_real_fft->inverse_fft);
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
-  RemoveDCComponent(periodic_response, fft_size, periodic_response);
+  RemoveDCComponent(periodic_response, fft_size, dc_remover,
+      periodic_response);
 }
 
 static void GetSpectralEnvelope(double current_time, double frame_period,
@@ -164,7 +166,8 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
     double current_time, int fs,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
-    const MinimumPhaseAnalysis *minimum_phase, double *response) {
+    const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
+    double *response) {
   double *aperiodic_response = new double[fft_size];
   double *periodic_response = new double[fft_size];
 
@@ -177,7 +180,8 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
 
   // Synthesis of the periodic response
   GetPeriodicResponse(fft_size, spectral_envelope, aperiodic_ratio,
-      current_vuv, inverse_real_fft, minimum_phase, periodic_response);
+      current_vuv, inverse_real_fft, minimum_phase, dc_remover,
+      periodic_response);
 
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, fft_size, spectral_envelope,
@@ -283,6 +287,20 @@ static int GetTimeBase(const double *f0, int f0_length, int fs,
   return number_of_pulses;
 }
 
+static void GetDCRemover(int fft_size, double *dc_remover) {
+  double dc_component = 0.0;
+  for (int i = 0; i < fft_size / 2; ++i) {
+    dc_remover[i] = 0.5 -
+      0.5 * cos(2.0 * world::kPi * (i + 1.0) / (1.0 + fft_size));
+    dc_remover[fft_size - i - 1] = dc_remover[i];
+    dc_component += dc_remover[i] * 2.0;
+  }
+  for (int i = 0; i < fft_size / 2; ++i) {
+    dc_remover[i] /= dc_component;
+    dc_remover[fft_size - i - 1] = dc_remover[i];
+  }
+}
+
 }  // namespace
 
 void Synthesis(const double *f0, int f0_length,
@@ -306,6 +324,9 @@ void Synthesis(const double *f0, int f0_length,
       y_length, pulse_locations, pulse_locations_index,
       interpolated_vuv);
 
+  double *dc_remover = new double[fft_size];
+  GetDCRemover(fft_size, dc_remover);
+
   frame_period /= 1000.0;
   int noise_size;
 
@@ -316,7 +337,7 @@ void Synthesis(const double *f0, int f0_length,
     GetOneFrameSegment(interpolated_vuv[pulse_locations_index[i]], noise_size,
         spectrogram, fft_size, aperiodicity, f0_length, frame_period,
         pulse_locations[i], fs, &forward_real_fft, &inverse_real_fft,
-        &minimum_phase, impulse_response);
+        &minimum_phase, dc_remover, impulse_response);
 
     int safe_index = 0;
     for (int j = 0; j < fft_size; ++j) {
@@ -326,6 +347,7 @@ void Synthesis(const double *f0, int f0_length,
     }
   }
 
+  delete[] dc_remover;
   delete[] pulse_locations;
   delete[] pulse_locations_index;
   delete[] interpolated_vuv;
