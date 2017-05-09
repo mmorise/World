@@ -1,10 +1,9 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Last update: 2017/05/09
 //
-// coder/decoder functions for the spectral envelope and aperiodicity.
-// Note: I tested this program with speech with fs of above 44.1 kHz.
+// Coder/decoder functions for the spectral envelope and aperiodicity.
 //-----------------------------------------------------------------------------
 #include "world/codec.h"
 
@@ -301,7 +300,8 @@ void DecodeSpectralEnvelope(const double * const *coded_spectral_envelope,
   fft_complex *weight = new fft_complex[fft_size / 2];
 
   // Generation of the required parameters
-  GetParametersForDecoding(world::kFloorFrequency, world::kCeilFrequency,
+  GetParametersForDecoding(world::kFloorFrequency,
+      MyMinDouble(fs / 2.0, world::kCeilFrequency),
       fs, fft_size, number_of_dimensions, mel_axis, frequency_axis, weight);
 
   InverseComplexFFT inverse_complex_fft = { 0 };
