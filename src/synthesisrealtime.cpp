@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/05/08
+// Last update: 2017/05/09
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // This is an implementation for real-time applications.
@@ -10,7 +10,9 @@
 // Caution: This is an implementation as a prototype.
 //          Specifications may change. There may be a bug.
 //
-// Caution: I temporarily removed the DC removal process. (2017/05/08)
+// Caution: DC removal was re-implemented. However, this implementation is
+//          different from the implementation in synthesis.cpp. The sound
+//          quality is almost all the same in both implementations.
 //-----------------------------------------------------------------------------
 #include "world/synthesisrealtime.h"
 
@@ -140,18 +142,16 @@ static void SearchPointer(int frame,  WorldSynthesizer *synth, int flag,
 //-----------------------------------------------------------------------------
 // RemoveDCComponent()
 //-----------------------------------------------------------------------------
-/*
 static void RemoveDCComponent(const double *periodic_response, int fft_size,
-    double *new_periodic_response) {
+    const double *dc_remover, double *new_periodic_response) {
   double dc_component = 0.0;
   for (int i = fft_size / 2; i < fft_size; ++i)
     dc_component += periodic_response[i];
-  dc_component /= fft_size / 2.0;
-  for (int i = 0; i < fft_size / 2; ++i) new_periodic_response[i] = 0.0;
+  for (int i = 0; i < fft_size / 2; ++i)
+    new_periodic_response[i] = 0.0;
   for (int i = fft_size / 2; i < fft_size; ++i)
-    new_periodic_response[i] -= dc_component;
+    new_periodic_response[i] -= dc_component * dc_remover[i - fft_size / 2];
 }
-*/
 
 //-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates an aperiodic response.
@@ -159,7 +159,8 @@ static void RemoveDCComponent(const double *periodic_response, int fft_size,
 static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
     const InverseRealFFT *inverse_real_fft,
-    const MinimumPhaseAnalysis *minimum_phase, double *periodic_response) {
+    const MinimumPhaseAnalysis *minimum_phase,
+    const double *dc_remover, double *periodic_response) {
   if (current_vuv <= 0.5 || aperiodic_ratio[0] > 0.999) {
     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
     return;
@@ -180,7 +181,8 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
 
   fft_execute(inverse_real_fft->inverse_fft);
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
-  // RemoveDCComponent(periodic_response, fft_size, periodic_response);
+  RemoveDCComponent(periodic_response, fft_size, dc_remover,
+      periodic_response);
 }
 
 static void GetSpectralEnvelope(double current_location,
@@ -262,7 +264,7 @@ static void GetOneFrameSegment(int noise_size, int current_location,
   // Synthesis of the periodic response
   GetPeriodicResponse(synth->fft_size, spectral_envelope, aperiodic_ratio,
       current_vuv, &synth->inverse_real_fft, &synth->minimum_phase,
-      periodic_response);
+      synth->dc_remover, periodic_response);
 
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, synth->fft_size, spectral_envelope,
@@ -272,7 +274,7 @@ static void GetOneFrameSegment(int noise_size, int current_location,
   double sqrt_noise_size = sqrt(static_cast<double>(noise_size));
   for (int i = 0; i < synth->fft_size; ++i)
     synth->impulse_response[i] =
-      (periodic_response[i] * sqrt_noise_size + aperiodic_response[i]) /
+    (periodic_response[i] * sqrt_noise_size + aperiodic_response[i]) /
       synth->fft_size;
 
   delete[] spectral_envelope;
@@ -426,6 +428,20 @@ static int CheckSynthesizer(WorldSynthesizer *synth) {
   return 1;
 }
 
+static void GetDCRemover(int fft_size, double *dc_remover) {
+  double dc_component = 0.0;
+  for (int i = 0; i < fft_size / 2; ++i) {
+    dc_remover[i] = 0.5 -
+      0.5 * cos(2.0 * world::kPi * (i + 1.0) / (1.0 + fft_size));
+    dc_remover[fft_size - i - 1] = dc_remover[i];
+    dc_component += dc_remover[i] * 2.0;
+  }
+  for (int i = 0; i < fft_size / 2; ++i) {
+    dc_remover[i] /= dc_component;
+    dc_remover[fft_size - i - 1] = dc_remover[i];
+  }
+}
+
 }  // namespace
 
 void InitializeSynthesizer(int fs, double frame_period, int fft_size,
@@ -454,6 +470,7 @@ void InitializeSynthesizer(int fs, double frame_period, int fft_size,
 
   synth->buffer = new double[buffer_size * 2 + fft_size];
   synth->impulse_response = new double[synth->fft_size];
+  synth->dc_remover = new double[synth->fft_size / 2];
 
   // Initilize internal parameters
   RefreshSynthesizer(synth);
@@ -523,6 +540,7 @@ void RefreshSynthesizer(WorldSynthesizer *synth) {
 
   for (int i = 0; i < synth->buffer_size * 2 + synth->fft_size; ++i)
     synth->buffer[i] = 0;
+  GetDCRemover(synth->fft_size / 2, synth->dc_remover);
 }
 
 void DestroySynthesizer(WorldSynthesizer *synth) {
@@ -534,6 +552,7 @@ void DestroySynthesizer(WorldSynthesizer *synth) {
 
   delete[] synth->buffer;
   delete[] synth->impulse_response;
+  delete[] synth->dc_remover;
 
   delete[] synth->interpolated_vuv;
   delete[] synth->pulse_locations;

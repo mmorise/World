@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2017/05/09
 //-----------------------------------------------------------------------------
 #ifndef WORLD_SYNTHESISREALTIME_H_
 #define WORLD_SYNTHESISREALTIME_H_
@@ -29,6 +29,9 @@ typedef struct {
   double *buffer;
   int current_pointer;
   int i;
+
+  // For DC removal
+  double *dc_remover;
 
   //---------------------------------------------------------------------------
   // Followings are internal parameters.
@@ -94,7 +97,7 @@ void InitializeSynthesizer(int fs, double frame_period, int fft_size,
 // Input:
 //   f0                   : F0 contour with length of f0_length
 //   f0_length            : This is associated with the number of frames
-//   spectrogram          : Spectrogram 
+//   spectrogram          : Spectrogram
 //   aperiodicity         : Aperiodicity
 //
 // Output:
