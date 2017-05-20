@@ -339,11 +339,11 @@ void Synthesis(const double *f0, int f0_length,
         pulse_locations[i], fs, &forward_real_fft, &inverse_real_fft,
         &minimum_phase, dc_remover, impulse_response);
 
-    int safe_index = 0;
+    int index = 0;
     for (int j = 0; j < fft_size; ++j) {
-      safe_index = MyMinInt(y_length - 1,
-        MyMaxInt(0, j + pulse_locations_index[i] - fft_size / 2 + 1));
-      y[safe_index] += impulse_response[j];
+      index = j + pulse_locations_index[i] - fft_size / 2 + 1;
+      if (index < 0 || index > y_length - 1) continue;
+      y[index] += impulse_response[j];
     }
   }
 
