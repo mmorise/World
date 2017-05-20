@@ -81,9 +81,10 @@ static void DCTForCodec(const double *mel_spectrum, int max_dimension,
   }
   fft_execute(forward_real_fft->forward_fft);
 
+  double normalization = sqrt(forward_real_fft->fft_size);
   for (int i = 0; i < number_of_dimensions; ++i)
-    mel_cepstrum[i] = forward_real_fft->spectrum[i][0] * weight[i][0] -
-      forward_real_fft->spectrum[i][1] * weight[i][1];
+    mel_cepstrum[i] = (forward_real_fft->spectrum[i][0] * weight[i][0] -
+      forward_real_fft->spectrum[i][1] * weight[i][1]) / normalization;
 }
 
 //-----------------------------------------------------------------------------
@@ -92,9 +93,12 @@ static void DCTForCodec(const double *mel_spectrum, int max_dimension,
 static void IDCTForCodec(const double *mel_cepstrum, int max_dimension,
     const fft_complex *weight, const InverseComplexFFT *inverse_complex_fft,
     int number_of_dimensions, double *mel_spectrum) {
+  double normalization = sqrt(inverse_complex_fft->fft_size);
   for (int i = 0; i < number_of_dimensions; ++i) {
-    inverse_complex_fft->input[i][0] = mel_cepstrum[i] * weight[i][0];
-    inverse_complex_fft->input[i][1] = -mel_cepstrum[i] * weight[i][1];
+    inverse_complex_fft->input[i][0] =
+      mel_cepstrum[i] * weight[i][0] * normalization;
+    inverse_complex_fft->input[i][1] =
+      -mel_cepstrum[i] * weight[i][1] * normalization;
   }
   for (int i = number_of_dimensions; i < max_dimension; ++i) {
     inverse_complex_fft->input[i][0] = 0.0;

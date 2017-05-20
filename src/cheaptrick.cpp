@@ -141,6 +141,15 @@ static void GetWindowedWaveform(const double *x, int x_length, int fs,
 }
 
 //-----------------------------------------------------------------------------
+// AddInfinitesimalNoise()
+//-----------------------------------------------------------------------------
+static void AddInfinitesimalNoise(const double *input_spectrum, int fft_size,
+    double *output_spectrum) {
+  for (int i = 0; i <= fft_size / 2; ++i)
+    output_spectrum[i] = input_spectrum[i] + fabs(randn()) * world::kEps;
+}
+
+//-----------------------------------------------------------------------------
 // CheapTrickGeneralBody() calculates a spectral envelope at a temporal
 // position. This function is only used in CheapTrick().
 // Caution:
@@ -165,6 +174,11 @@ static void CheapTrickGeneralBody(const double *x, int x_length, int fs,
   // forward_real_fft.waveform is the power spectrum.
   LinearSmoothing(forward_real_fft->waveform, current_f0 * 2.0 / 3.0,
       fs, fft_size, forward_real_fft->waveform);
+
+  // Add infinitesimal noise
+  // This is a safeguard to avoid including zero in the spectrum.
+  AddInfinitesimalNoise(forward_real_fft->waveform, fft_size,
+      forward_real_fft->waveform);
 
   // Smoothing (log axis) and spectral recovery on the cepstrum domain.
   SmoothingWithRecovery(current_f0, fs, fft_size, q1, forward_real_fft,

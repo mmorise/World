@@ -11,6 +11,7 @@
 namespace world {
   const double kPi = 3.1415926535897932384;
   const double kMySafeGuardMinimum = 0.000000000001;
+  const double kEps = 0.00000000000000022204460492503131;
   const double kFloorF0 = 71.0;
   const double kCeilF0 = 800.0;
   const double kDefaultF0 = 500.0;
