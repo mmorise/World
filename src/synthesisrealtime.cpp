@@ -63,11 +63,6 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
 
   for (int i = 0; i <= fft_size / 2; ++i) {
     inverse_real_fft->spectrum[i][0] =
-      minimum_phase->minimum_phase_spectrum[i][0];
-    inverse_real_fft->spectrum[i][1] =
-      minimum_phase->minimum_phase_spectrum[i][1];
-
-    inverse_real_fft->spectrum[i][0] =
       minimum_phase->minimum_phase_spectrum[i][0] *
       forward_real_fft->spectrum[i][0] -
       minimum_phase->minimum_phase_spectrum[i][1] *
