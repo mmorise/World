@@ -231,6 +231,7 @@ void CodeAperiodicity(const double * const *aperiodicity, int f0_length,
         coded_aperiodicity[i]);
   }
 
+  delete[] coarse_frequency_axis;
   delete[] log_aperiodicity;
 }
 
