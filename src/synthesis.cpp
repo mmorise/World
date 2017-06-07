@@ -82,7 +82,7 @@ static void RemoveDCComponent(const double *periodic_response, int fft_size,
 }
 
 //-----------------------------------------------------------------------------
-// GetPeriodicResponse() calculates an aperiodic response.
+// GetPeriodicResponse() calculates a periodic response.
 //-----------------------------------------------------------------------------
 static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
@@ -251,8 +251,7 @@ static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
   for (int i = 0; i < y_length - 1; ++i) {
     if (wrap_phase_abs[i] > world::kPi) {
       pulse_locations[number_of_pulses] = time_axis[i];
-      pulse_locations_index[number_of_pulses] = static_cast<int>
-        (matlab_round(pulse_locations[number_of_pulses] * fs));
+      pulse_locations_index[number_of_pulses] = i;
 
       // calculate the time shift in seconds between exact fractional pulse
       // position and the integer pulse position (sample i)
