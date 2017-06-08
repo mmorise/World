@@ -6,6 +6,10 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
+## Important notice (2017/06/29)
+Synthesis function was updated. The real-time synthesis function isn't updated.
+The difference between them are very small, but if you want to obtain the better one, please use synthesis().
+
 ## Important notice (2017/05/20)
 In the latest version, the codec of spectral envelope has no compatibility with the previous version.
 
@@ -21,10 +25,10 @@ In CheapTrick, you can refer the following references.
 In DIO, you can refer the following reference.  
 [5] M. Morise, H. Kawahara and H. Katayose: Fast and reliable F0 estimation method based on the period extraction of vocal fold vibration of singing voice and speech, AES 35th International Conference, CD-ROM Proceeding, Feb. 2009.
 
-In Harvest, a paper was accepted!
+In Harvest, a paper was accepted!  
 [6] M. Morise: Harvest: A high-performance fundamental frequency estimator from speech signals, in Proc. INTERSPEECH 2017 (accepted).
 
-In the codec of spectral envelope, a paper was accepted!
+In the codec of spectral envelope, a paper was accepted!  
 [7] M. Morise, G. Miyashita and K. Ozawa: Low-dimensional representation of spectral envelope without deterioration for full-band speech analysis/synthesis system, in Proc. INTERSPEECH 2017 (accepted).
 
 ## Introduction of WORLD family
