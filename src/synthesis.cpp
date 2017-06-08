@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/05/08
+// Last update: 2017/06/09
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // forward_real_fft, inverse_real_fft and minimum_phase are used to speed up.
@@ -82,13 +82,31 @@ static void RemoveDCComponent(const double *periodic_response, int fft_size,
 }
 
 //-----------------------------------------------------------------------------
+// GetSpectrumWithFractionalTimeShift() calculates a periodic spectrum with
+// the fractional time shift under 1/fs.
+//-----------------------------------------------------------------------------
+static void GetSpectrumWithFractionalTimeShift(int fft_size,
+    double coefficient, const InverseRealFFT *inverse_real_fft) {
+  double re, im, re2, im2;
+  for (int i = 0; i <= fft_size / 2; ++i) {
+    re = inverse_real_fft->spectrum[i][0];
+    im = inverse_real_fft->spectrum[i][1];
+    re2 = cos(coefficient * i);
+    im2 = sqrt(1.0 - re2 * re2);  // sin(pshift)
+
+    inverse_real_fft->spectrum[i][0] = re * re2 - im * im2;
+    inverse_real_fft->spectrum[i][1] = re * im2 + im * re2;
+  }
+}
+
+//-----------------------------------------------------------------------------
 // GetPeriodicResponse() calculates a periodic response.
 //-----------------------------------------------------------------------------
 static void GetPeriodicResponse(int fft_size, const double *spectrum,
     const double *aperiodic_ratio, double current_vuv,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
-    double tshift, int fs, double *periodic_response) {
+    double fractional_time_shift, int fs, double *periodic_response) {
   if (current_vuv <= 0.5 || aperiodic_ratio[0] > 0.999) {
     for (int i = 0; i < fft_size; ++i) periodic_response[i] = 0.0;
     return;
@@ -107,20 +125,11 @@ static void GetPeriodicResponse(int fft_size, const double *spectrum,
       minimum_phase->minimum_phase_spectrum[i][1];
   }
 
-  // apply fractional time delay of tshift seconds using linear phase shift
-  double bin2freq = (fs / 2.0) / (fft_size / 2.0);
-  for (int i = 0; i <= fft_size / 2; ++i) {
-    double re = inverse_real_fft->spectrum[i][0];
-    double im = inverse_real_fft->spectrum[i][1];
-
-    double freq = i * bin2freq;
-    double phshift = 2.0 * world::kPi * freq * tshift;
-    double re2 = cos(phshift);
-    double im2 = sqrt(1.0 - re2 * re2);  // sin(pshift)
-
-    inverse_real_fft->spectrum[i][0] = re * re2 - im * im2;
-    inverse_real_fft->spectrum[i][1] = re * im2 + im * re2;
-  }
+  // apply fractional time delay of fractional_time_shift seconds
+  // using linear phase shift
+  double coefficient =
+    2.0 * world::kPi * fractional_time_shift * fs / fft_size;
+  GetSpectrumWithFractionalTimeShift(fft_size, coefficient, inverse_real_fft);
 
   fft_execute(inverse_real_fft->inverse_fft);
   fftshift(inverse_real_fft->waveform, fft_size, periodic_response);
@@ -174,7 +183,7 @@ static void GetAperiodicRatio(double current_time, double frame_period,
 static void GetOneFrameSegment(double current_vuv, int noise_size,
     const double * const *spectrogram, int fft_size,
     const double * const *aperiodicity, int f0_length, double frame_period,
-    double current_time, double tshift, int fs,
+    double current_time, double fractional_time_shift, int fs,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
@@ -191,8 +200,8 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
 
   // Synthesis of the periodic response
   GetPeriodicResponse(fft_size, spectral_envelope, aperiodic_ratio,
-      current_vuv, inverse_real_fft, minimum_phase, dc_remover, tshift, fs,
-      periodic_response);
+      current_vuv, inverse_real_fft, minimum_phase, dc_remover,
+      fractional_time_shift, fs, periodic_response);
 
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, fft_size, spectral_envelope,
@@ -231,7 +240,7 @@ static void GetTemporalParametersForTimeBase(const double *f0, int f0_length,
 
 static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
     const double *time_axis, int y_length, int fs, double *pulse_locations,
-    int *pulse_locations_index, double *pulse_locations_tshift) {
+    int *pulse_locations_index, double *pulse_locations_time_shift) {
 
   double *total_phase = new double[y_length];
   total_phase[0] = 2.0 * world::kPi * interpolated_f0[0] / fs;
@@ -264,7 +273,7 @@ static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
       double y1 = wrap_phase[i] - 2.0 * world::kPi;
       double y2 = wrap_phase[i + 1];
       double x = -y1 / (y2 - y1);
-      pulse_locations_tshift[number_of_pulses] = x / fs;
+      pulse_locations_time_shift[number_of_pulses] = x / fs;
 
       ++number_of_pulses;
     }
@@ -279,7 +288,7 @@ static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
 
 static int GetTimeBase(const double *f0, int f0_length, int fs,
     double frame_period, int y_length, double *pulse_locations,
-    int *pulse_locations_index, double *pulse_locations_tshift,
+    int *pulse_locations_index, double *pulse_locations_time_shift,
     double *interpolated_vuv) {
   double *time_axis = new double[y_length];
   double *coarse_time_axis = new double[f0_length + 1];
@@ -302,7 +311,7 @@ static int GetTimeBase(const double *f0, int f0_length, int fs,
 
   int number_of_pulses = GetPulseLocationsForTimeBase(interpolated_f0,
       time_axis, y_length, fs, pulse_locations, pulse_locations_index,
-      pulse_locations_tshift);
+      pulse_locations_time_shift);
 
   delete[] coarse_vuv;
   delete[] coarse_f0;
@@ -345,11 +354,11 @@ void Synthesis(const double *f0, int f0_length,
 
   double *pulse_locations = new double[y_length];
   int *pulse_locations_index = new int[y_length];
-  double *pulse_locations_tshift = new double[y_length];
+  double *pulse_locations_time_shift = new double[y_length];
   double *interpolated_vuv = new double[y_length];
   int number_of_pulses = GetTimeBase(f0, f0_length, fs, frame_period / 1000.0,
-      y_length, pulse_locations, pulse_locations_index, pulse_locations_tshift,
-      interpolated_vuv);
+      y_length, pulse_locations, pulse_locations_index,
+      pulse_locations_time_shift, interpolated_vuv);
 
   double *dc_remover = new double[fft_size];
   GetDCRemover(fft_size, dc_remover);
@@ -363,8 +372,9 @@ void Synthesis(const double *f0, int f0_length,
 
     GetOneFrameSegment(interpolated_vuv[pulse_locations_index[i]], noise_size,
         spectrogram, fft_size, aperiodicity, f0_length, frame_period,
-        pulse_locations[i], pulse_locations_tshift[i], fs, &forward_real_fft, &inverse_real_fft,
-        &minimum_phase, dc_remover, impulse_response);
+        pulse_locations[i], pulse_locations_time_shift[i], fs,
+        &forward_real_fft, &inverse_real_fft, &minimum_phase, dc_remover,
+        impulse_response);
 
     int index = 0;
     for (int j = 0; j < fft_size; ++j) {
@@ -377,7 +387,7 @@ void Synthesis(const double *f0, int f0_length,
   delete[] dc_remover;
   delete[] pulse_locations;
   delete[] pulse_locations_index;
-  delete[] pulse_locations_tshift;
+  delete[] pulse_locations_time_shift;
   delete[] interpolated_vuv;
 
   DestroyMinimumPhaseAnalysis(&minimum_phase);
