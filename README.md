@@ -6,7 +6,7 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## Important notice (2017/06/29)
+## Important notice (2017/06/09)
 Synthesis function was updated. The real-time synthesis function isn't updated.
 The difference between them are very small, but if you want to obtain the better one, please use synthesis().
 
