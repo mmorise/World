@@ -8,6 +8,7 @@
 #include "world/harvest.h"
 
 #include <math.h>
+#include <cstdlib>
 
 #include "world/common.h"
 #include "world/constantnumbers.h"
