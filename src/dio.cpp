@@ -53,7 +53,7 @@ static void DesignLowCutFilter(int N, int fft_size, double *low_cut_filter) {
 }
 
 //-----------------------------------------------------------------------------
-// GetDownsampledSignal() calculates the spectrum for estimation.
+// GetSpectrumForEstimation() calculates the spectrum for estimation.
 // This function carries out downsampling to speed up the estimation process
 // and calculates the spectrum of the downsampled signal.
 //-----------------------------------------------------------------------------
@@ -92,6 +92,7 @@ static void GetSpectrumForEstimation(const double *x, int x_length,
 
   double tmp = 0;
   for (int i = 0; i <= fft_size / 2; ++i) {
+    // Complex number multiplications.
     tmp = y_spectrum[i][0] * filter_spectrum[i][0] -
       y_spectrum[i][1] * filter_spectrum[i][1];
     y_spectrum[i][1] = y_spectrum[i][0] * filter_spectrum[i][1] +
