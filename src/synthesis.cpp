@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/06/09
+// Last update: 2017/06/20
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // forward_real_fft, inverse_real_fft and minimum_phase are used to speed up.
@@ -221,19 +221,20 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
 }
 
 static void GetTemporalParametersForTimeBase(const double *f0, int f0_length,
-    int fs, int y_length, double frame_period, double *time_axis,
-    double *coarse_time_axis, double *coarse_f0, double *coarse_vuv) {
+    int fs, int y_length, double frame_period, double lowest_f0,
+    double *time_axis, double *coarse_time_axis, double *coarse_f0,
+    double *coarse_vuv) {
   for (int i = 0; i < y_length; ++i)
     time_axis[i] = i / static_cast<double>(fs);
   // the array 'coarse_time_axis' is supposed to have 'f0_length + 1' positions
-  for (int i = 0; i <= f0_length; ++i)
+  for (int i = 0; i < f0_length; ++i) {
     coarse_time_axis[i] = i * frame_period;
-  for (int i = 0; i < f0_length; ++i)
-    coarse_f0[i] = f0[i];
+    coarse_f0[i] = f0[i] < lowest_f0 ? 0.0 : f0[i];
+    coarse_vuv[i] = coarse_f0[i] == 0.0 ? 0.0 : 1.0;
+  }
+  coarse_time_axis[f0_length] = f0_length * frame_period;
   coarse_f0[f0_length] = coarse_f0[f0_length - 1] * 2 -
     coarse_f0[f0_length - 2];
-  for (int i = 0; i < f0_length; ++i)
-    coarse_vuv[i] = f0[i] == 0.0 ? 0.0 : 1.0;
   coarse_vuv[f0_length] = coarse_vuv[f0_length - 1] * 2 -
     coarse_vuv[f0_length - 2];
 }
@@ -241,20 +242,17 @@ static void GetTemporalParametersForTimeBase(const double *f0, int f0_length,
 static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
     const double *time_axis, int y_length, int fs, double *pulse_locations,
     int *pulse_locations_index, double *pulse_locations_time_shift) {
-
   double *total_phase = new double[y_length];
+  double *wrap_phase = new double[y_length];
+  double *wrap_phase_abs = new double[y_length - 1];
   total_phase[0] = 2.0 * world::kPi * interpolated_f0[0] / fs;
-  for (int i = 1; i < y_length; ++i)
+  wrap_phase[0] = fmod(total_phase[0], 2.0 * world::kPi);
+  for (int i = 1; i < y_length; ++i) {
     total_phase[i] = total_phase[i - 1] +
       2.0 * world::kPi * interpolated_f0[i] / fs;
-
-  double *wrap_phase = new double[y_length];
-  for (int i = 0; i < y_length; ++i)
     wrap_phase[i] = fmod(total_phase[i], 2.0 * world::kPi);
-
-  double *wrap_phase_abs = new double[y_length];
-  for (int i = 0; i < y_length - 1; ++i)
-    wrap_phase_abs[i] = fabs(wrap_phase[i + 1] - wrap_phase[i]);
+    wrap_phase_abs[i - 1] = fabs(wrap_phase[i] - wrap_phase[i - 1]);
+  }
 
   int number_of_pulses = 0;
   for (int i = 0; i < y_length - 1; ++i) {
@@ -287,27 +285,26 @@ static int GetPulseLocationsForTimeBase(const double *interpolated_f0,
 }
 
 static int GetTimeBase(const double *f0, int f0_length, int fs,
-    double frame_period, int y_length, double *pulse_locations,
-    int *pulse_locations_index, double *pulse_locations_time_shift,
-    double *interpolated_vuv) {
+    double frame_period, int y_length, double lowest_f0,
+    double *pulse_locations, int *pulse_locations_index,
+    double *pulse_locations_time_shift, double *interpolated_vuv) {
   double *time_axis = new double[y_length];
   double *coarse_time_axis = new double[f0_length + 1];
   double *coarse_f0 = new double[f0_length + 1];
   double *coarse_vuv = new double[f0_length + 1];
   GetTemporalParametersForTimeBase(f0, f0_length, fs, y_length, frame_period,
-      time_axis, coarse_time_axis, coarse_f0, coarse_vuv);
-
+      lowest_f0, time_axis, coarse_time_axis, coarse_f0, coarse_vuv);
   double *interpolated_f0 = new double[y_length];
   interp1(coarse_time_axis, coarse_f0, f0_length + 1,
       time_axis, y_length, interpolated_f0);
   interp1(coarse_time_axis, coarse_vuv, f0_length + 1,
       time_axis, y_length, interpolated_vuv);
-  for (int i = 0; i < y_length; ++i)
-    interpolated_vuv[i] = interpolated_vuv[i] > 0.5 ? 1.0 : 0.0;
 
-  for (int i = 0; i < y_length; ++i)
+  for (int i = 0; i < y_length; ++i) {
+    interpolated_vuv[i] = interpolated_vuv[i] > 0.5 ? 1.0 : 0.0;
     interpolated_f0[i] =
       interpolated_vuv[i] == 0.0 ? world::kDefaultF0 : interpolated_f0[i];
+  }
 
   int number_of_pulses = GetPulseLocationsForTimeBase(interpolated_f0,
       time_axis, y_length, fs, pulse_locations, pulse_locations_index,
@@ -357,7 +354,7 @@ void Synthesis(const double *f0, int f0_length,
   double *pulse_locations_time_shift = new double[y_length];
   double *interpolated_vuv = new double[y_length];
   int number_of_pulses = GetTimeBase(f0, f0_length, fs, frame_period / 1000.0,
-      y_length, pulse_locations, pulse_locations_index,
+      y_length, fs / fft_size + 1.0, pulse_locations, pulse_locations_index,
       pulse_locations_time_shift, interpolated_vuv);
 
   double *dc_remover = new double[fft_size];
