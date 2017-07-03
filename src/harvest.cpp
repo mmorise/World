@@ -1106,6 +1106,7 @@ static void SmoothF0Contour(const double *f0, int f0_length,
 
   for (int i = 0; i < number_of_boundaries / 2; ++i)
     delete[] multi_channel_f0[i];
+  delete[] multi_channel_f0;
   delete[] f0_contour;
   delete[] boundary_list;
 }
