@@ -1,9 +1,9 @@
 CXX = g++
 C99 = gcc -std=c99
-LINK = g++
+LINK = g++ -pthread
 AR = ar
 #DEBUG_FLAG=-g
-CXXFLAGS = -O1 -Wall -fPIC $(DEBUG_FLAG)
+CXXFLAGS = -O1 -Wall -fPIC $(DEBUG_FLAG) -std=c++11
 CFLAGS = $(CXXFLAGS)
 ARFLAGS = -rv
 OUT_DIR = ./build
