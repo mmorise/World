@@ -383,7 +383,7 @@ void k_th_thread(int *pulse_locations_index, int number_of_pulses, double *pulse
 
 void Synthesis(const double *f0, int f0_length,
         const double * const *spectrogram, const double * const *aperiodicity,
-        int fft_size, double frame_period, int fs, int y_length, double *y) {
+        int fft_size, double frame_period, int fs, int y_length, double *y, int num_thread) {
 
     for (int i = 0; i < y_length; ++i) y[i] = 0.0;
 
@@ -401,7 +401,6 @@ void Synthesis(const double *f0, int f0_length,
 
     frame_period /= 1000.0;
 
-    int num_thread=4;
     std::thread threads[num_thread];
     for (int k=0; k<num_thread; k++)
     {
