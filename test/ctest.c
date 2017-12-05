@@ -281,7 +281,7 @@ static void WaveformSynthesis(WorldParameters *world_parameters, int fs,
   Synthesis(world_parameters->f0, world_parameters->f0_length,
       world_parameters->spectrogram, world_parameters->aperiodicity,
       world_parameters->fft_size, world_parameters->frame_period, fs,
-      y_length, y);
+      y_length, y, 1);
   printf("WORLD: %d [msec]\n", timeGetTime() - elapsed_time);
 }
 
