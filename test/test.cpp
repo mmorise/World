@@ -197,10 +197,12 @@ void AperiodicityEstimation(double *x, int x_length,
   D4COption option = {0};
   InitializeD4COption(&option);
 
-  // This parameter is used to determine the aperiodicity at 0 Hz.
+  // Comment was modified because it was confusing (2017/12/10).
+  // It is used to determine the aperiodicity in whole frequency band.
+  // D4C identifies whether the frame is voiced segment even if it had an F0.
+  // If the estimated value falls below the threshold,
+  // the aperiodicity in whole frequency band will set to 1.0.
   // If you want to use the conventional D4C, please set the threshold to 0.0.
-  // Unvoiced section is counted by using this parameter.
-  // Aperiodicity indicates high value when the frame is the unvoiced section.
   option.threshold = 0.85;
 
   // Parameters setting and memory allocation.
