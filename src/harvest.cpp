@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/04
+// Last update: 2018/01/21
 //
 // F0 estimation based on Harvest.
 //-----------------------------------------------------------------------------
@@ -488,7 +488,7 @@ static void GetSpectra(const double *x, int x_length, int fft_size,
   fft_execute(forward_real_fft->forward_fft);
   for (int i = 0; i <= fft_size / 2; ++i) {
     main_spectrum[i][0] = forward_real_fft->spectrum[i][0];
-    main_spectrum[i][1] = -forward_real_fft->spectrum[i][1];
+    main_spectrum[i][1] = forward_real_fft->spectrum[i][1];
   }
 
   for (int i = 0; i < base_time_length; ++i)
@@ -498,7 +498,7 @@ static void GetSpectra(const double *x, int x_length, int fft_size,
   fft_execute(forward_real_fft->forward_fft);
   for (int i = 0; i <= fft_size / 2; ++i) {
     diff_spectrum[i][0] = forward_real_fft->spectrum[i][0];
-    diff_spectrum[i][1] = -forward_real_fft->spectrum[i][1];
+    diff_spectrum[i][1] = forward_real_fft->spectrum[i][1];
   }
 
   delete[] safe_index;

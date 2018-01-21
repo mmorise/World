@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Last update: 2018/01/21
 //
 // This file represents the functions about FFT (Fast Fourier Transform)
 // implemented by Mr. Ooura, and wrapper functions implemented by M. Morise.
@@ -29,7 +29,7 @@ static void BackwardFFT(fft_plan p) {
     p.input[1] = p.c_in[p.n / 2][0];
     for (int i = 1; i < p.n / 2; ++i) {
       p.input[i * 2]  = p.c_in[i][0];
-      p.input[i * 2 + 1]  = p.c_in[i][1];
+      p.input[i * 2 + 1]  = -p.c_in[i][1];
     }
     rdft(p.n, -1, p.input, p.ip, p.w);
     for (int i = 0; i < p.n; ++i) p.out[i] = p.input[i] * 2.0;
@@ -41,7 +41,7 @@ static void BackwardFFT(fft_plan p) {
     cdft(p.n * 2, -1, p.input, p.ip, p.w);
     for (int i = 0; i < p.n; ++i) {
       p.c_out[i][0] = p.input[i * 2];
-      p.c_out[i][1] = p.input[i * 2 + 1];
+      p.c_out[i][1] = -p.input[i * 2 + 1];
     }
   }
 }
@@ -54,7 +54,7 @@ static void ForwardFFT(fft_plan p) {
     p.c_out[0][1] = 0.0;
     for (int i = 1; i < p.n / 2; ++i) {
       p.c_out[i][0] = p.input[i * 2];
-      p.c_out[i][1] = p.input[i * 2 + 1];
+      p.c_out[i][1] = -p.input[i * 2 + 1];
     }
     p.c_out[p.n / 2][0] = p.input[1];
     p.c_out[p.n / 2][1] = 0.0;
@@ -65,8 +65,8 @@ static void ForwardFFT(fft_plan p) {
     }
     cdft(p.n * 2, 1, p.input, p.ip, p.w);
     for (int i = 0; i < p.n; ++i) {
-      p.c_out[i][0]   = p.input[i * 2];
-      p.c_out[i][1]   = p.input[i * 2 + 1];
+      p.c_out[i][0] = p.input[i * 2];
+      p.c_out[i][1] = -p.input[i * 2 + 1];
     }
   }
 }
