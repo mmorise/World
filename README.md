@@ -6,12 +6,10 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## Important notice (2017/06/09)
-Synthesis function was updated. The real-time synthesis function isn't updated.
-The difference between them are very small, but if you want to obtain the better one, please use synthesis().
-
-## Important notice (2017/05/20)
-In the latest version, the codec of spectral envelope has no compatibility with the previous version.
+## Important notice (2018/01/21)
+FFT functions were modified.
+If you have used another FFT function, you must change the sign of imaginary part in the spectrum for the compatibility.
+This version outputs the same result compared with major FFT functions (e.g. FFTW and MATLAB).
 
 ## References
 When you cite the latest version of WORLD in your paper, please use the sentence "WORLD \[1\] (D4C edition [2])" and cite the following papers.  
