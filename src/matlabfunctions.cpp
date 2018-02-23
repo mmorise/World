@@ -15,6 +15,7 @@
 #include "world/matlabfunctions.h"
 
 #include <math.h>
+#include <stdint.h>
 
 #include "world/constantnumbers.h"
 
@@ -240,18 +241,18 @@ void interp1Q(double x, double shift, const double *y, int x_length,
 }
 
 double randn(void) {
-  static unsigned int x = 123456789;
-  static unsigned int y = 362436069;
-  static unsigned int z = 521288629;
-  static unsigned int w = 88675123;
-  unsigned int t;
+  static uint32_t x = 123456789;
+  static uint32_t y = 362436069;
+  static uint32_t z = 521288629;
+  static uint32_t w = 88675123;
+  uint32_t t;
   t = x ^ (x << 11);
   x = y;
   y = z;
   z = w;
   w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 
-  unsigned int tmp = 0;
+  uint32_t tmp = 0;
   for (int i = 0; i < 12; ++i) {
     t = x ^ (x << 11);
     x = y;
