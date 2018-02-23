@@ -249,6 +249,7 @@ double randn(void) {
   x = y;
   y = z;
   z = w;
+  w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 
   unsigned int tmp = 0;
   for (int i = 0; i < 12; ++i) {
