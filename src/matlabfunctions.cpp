@@ -252,8 +252,8 @@ double randn(void) {
   z = w;
   w = (w ^ (w >> 19)) ^ (t ^ (t >> 8));
 
-  uint32_t tmp = 0;
-  for (int i = 0; i < 12; ++i) {
+  uint32_t tmp = w >> 4;
+  for (int i = 0; i < 11; ++i) {
     t = x ^ (x << 11);
     x = y;
     y = z;
