@@ -984,8 +984,9 @@ static void FixStep3(const double *f0_step2, int f0_length,
     boundary_list, f0_candidates, number_of_candidates, allowed_range,
     multi_channel_f0, boundary_list);
 
-  MergeF0(multi_channel_f0, boundary_list, number_of_channels, f0_length,
-      f0_candidates, f0_scores, number_of_candidates, f0_step3);
+  if (number_of_channels != 0)
+    MergeF0(multi_channel_f0, boundary_list, number_of_channels, f0_length,
+        f0_candidates, f0_scores, number_of_candidates, f0_step3);
 
   for (int i = 0; i < number_of_boundaries / 2; ++i)
     delete[] multi_channel_f0[i];
