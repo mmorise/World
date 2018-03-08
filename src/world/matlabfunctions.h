@@ -134,6 +134,11 @@ void interp1Q(double x, double shift, const double *y, int x_length,
 double randn(void);
 
 //-----------------------------------------------------------------------------
+// randn_reseed() force to seed the pseudorandom generator using initial values.
+//-----------------------------------------------------------------------------
+void randn_reseed(void);
+
+//-----------------------------------------------------------------------------
 // fast_fftfilt() carries out the convolution on the frequency domain.
 //
 // Input:
