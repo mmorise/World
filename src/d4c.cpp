@@ -337,6 +337,8 @@ static void GetAperiodicity(const double *coarse_frequency_axis,
 void D4C(const double *x, int x_length, int fs,
     const double *temporal_positions, const double *f0, int f0_length,
     int fft_size, const D4COption *option, double **aperiodicity) {
+  randn_reseed();
+
   InitializeAperiodicity(f0_length, fft_size, aperiodicity);
 
   int fft_size_d4c = static_cast<int>(pow(2.0, 1.0 +

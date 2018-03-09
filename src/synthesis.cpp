@@ -338,6 +338,8 @@ static void GetDCRemover(int fft_size, double *dc_remover) {
 void Synthesis(const double *f0, int f0_length,
     const double * const *spectrogram, const double * const *aperiodicity,
     int fft_size, double frame_period, int fs, int y_length, double *y) {
+  randn_reseed();
+
   double *impulse_response = new double[fft_size];
 
   for (int i = 0; i < y_length; ++i) y[i] = 0.0;
