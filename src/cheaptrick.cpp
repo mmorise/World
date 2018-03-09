@@ -124,7 +124,8 @@ static void GetWindowedWaveform(const double *x, int x_length, int fs,
   // F0-adaptive windowing
   double *waveform = forward_real_fft->waveform;
   for (int i = 0; i <= half_window_length * 2; ++i)
-    waveform[i] = x[safe_index[i]] * window[i] + randn() * 0.000000000000001;
+    waveform[i] = x[safe_index[i]] * window[i] +
+      randn() * world::kMySafeGuardMinimum;
   double tmp_weight1 = 0;
   double tmp_weight2 = 0;
   for (int i = 0; i <= half_window_length * 2; ++i) {
