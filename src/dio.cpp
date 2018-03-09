@@ -263,6 +263,8 @@ static void FixF0Contour(double frame_period, int number_of_candidates,
   int voice_range_minimum =
     static_cast<int>(0.5 + 1000.0 / frame_period / f0_floor) * 2 + 1;
 
+  if (f0_length <= voice_range_minimum) return;
+
   double *f0_tmp1 = new double[f0_length];
   double *f0_tmp2 = new double[f0_length];
 

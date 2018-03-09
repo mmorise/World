@@ -9,6 +9,9 @@
 #define WORLD_CONSTANT_NUMBERS_H_
 
 namespace world {
+  // for StoneMask()
+  const double kFloorF0StoneMask = 40.0;
+
   const double kPi = 3.1415926535897932384;
   const double kMySafeGuardMinimum = 0.000000000001;
   const double kEps = 0.00000000000000022204460492503131;

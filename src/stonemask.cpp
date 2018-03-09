@@ -183,7 +183,7 @@ static double GetMeanF0(const double *x, int x_length, int fs,
 //-----------------------------------------------------------------------------
 static double GetRefinedF0(const double *x, int x_length, int fs,
     double current_potision, double initial_f0) {
-  if (initial_f0 <= 0.0 || initial_f0 > fs / 12.0)
+  if (initial_f0 <= world::kFloorF0StoneMask || initial_f0 > fs / 12.0)
     return 0.0;
 
   int half_window_length = static_cast<int>(1.5 * fs / initial_f0 + 1.0);
