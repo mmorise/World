@@ -1158,10 +1158,11 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
 
   // normalization
   int decimation_ratio = MyMaxInt(MyMinInt(speed, 12), 1);
-  int y_length = (1 + static_cast<int>(x_length / decimation_ratio));
+  int y_length =
+    static_cast<int>(ceil(static_cast<double>(x_length) / decimation_ratio));
   double actual_fs = static_cast<double>(fs) / decimation_ratio;
-  int fft_size = GetSuitableFFTSize(y_length +
-    (4 * static_cast<int>(1.0 + actual_fs / boundary_f0_list[0] / 2.0)));
+  int fft_size = GetSuitableFFTSize(y_length + 5 +
+    2 * static_cast<int>(2.0 * actual_fs / boundary_f0_list[0]));
 
   // Calculation of the spectrum used for the f0 estimation
   double *y = new double[fft_size];
