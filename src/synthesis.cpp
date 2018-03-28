@@ -94,8 +94,8 @@ static void GetSpectrumWithFractionalTimeShift(int fft_size,
     re2 = cos(coefficient * i);
     im2 = sqrt(1.0 - re2 * re2);  // sin(pshift)
 
-    inverse_real_fft->spectrum[i][0] = re * re2 - im * im2;
-    inverse_real_fft->spectrum[i][1] = re * im2 + im * re2;
+    inverse_real_fft->spectrum[i][0] = re * re2 + im * im2;
+    inverse_real_fft->spectrum[i][1] = im * re2 - re * im2;
   }
 }
 
