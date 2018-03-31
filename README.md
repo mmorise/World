@@ -35,4 +35,6 @@ I introduce useful software in WORLD. If you want to introduce your project in W
 
 PyWorldVocoder (https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) is a Python wrapper for World Vocoder.
 
+world-class (https://github.com/yukara-ikemiya/world-class) is a C++ library of WORLD.
+
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
