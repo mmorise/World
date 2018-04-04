@@ -1178,7 +1178,7 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
 
   int overlap_parameter = 7;
   int max_candidates =
-    matlab_round(number_of_channels / 10) * overlap_parameter;
+    matlab_round(number_of_channels / 10.0) * overlap_parameter;
   double **f0_candidates = new double *[f0_length];
   double **f0_candidates_score = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i) {
