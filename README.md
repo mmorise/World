@@ -29,11 +29,16 @@ In Harvest, you can refer the following reference.
 In the codec of spectral envelope, you can refer the following reference.  
 [7] M. Morise, G. Miyashita and K. Ozawa: Low-dimensional representation of spectral envelope without deterioration for full-band speech analysis/synthesis system, in Proc. INTERSPEECH 2017, pp. 409-413, 2017. http://www.isca-speech.org/archive/Interspeech_2017/abstracts/0067.html
 
+A paper was published to demonstrate that the current version of WORLD was superior to the similar vocoders in the sound quality of re-synthesized speech. This paper also includes the detailed information in the D4C LoveTrain used in the latest version.  
+[8] M. Morise and Y. Watanabe: Sound quality comparison among high-quality vocoders by using re-synthesized speech, Acoust. Sci. & Tech., vol. 39, no. 3, pp. 263-265, May 2018. https://www.jstage.jst.go.jp/article/ast/39/3/39_E1779/_article/-char/en
+
 ## Introduction of WORLD family
 
 I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
 
 PyWorldVocoder (https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) is a Python wrapper for World Vocoder.
+
+Python-WORLD (https://github.com/tuanad121/Python-WORLD) is line-by-line implementation of WORLD vocoder (Matlab, C++) in python.
 
 world-class (https://github.com/yukara-ikemiya/world-class) is a C++ library of WORLD.
 
