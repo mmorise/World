@@ -198,7 +198,7 @@ void decimate(const double *x, int x_length, int r, double *y) {
   for (int i = 0; i < 2 * kNFact + x_length; ++i)
     tmp1[i] = tmp2[2 * kNFact + x_length - i - 1];
 
-  int nout = x_length / r + 1;
+  int nout = (x_length - 1) / r + 1;
   int nbeg = r - r * nout + x_length;
 
   int count = 0;
