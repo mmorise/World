@@ -54,7 +54,7 @@ int SetOption(int argc, char **argv, int *fft_size, double *q1,
     if (strcmp(argv[argc], "-d") == 0)
       *number_of_dimensions = atof(argv[argc + 1]);
     if (strcmp(argv[argc], "-o") == 0)
-      snprintf(filename, sizeof(argv[argc + 1]), argv[argc + 1]);
+      snprintf(filename, strlen(argv[argc + 1]) + 1, "%s", argv[argc + 1]);
     if (strcmp(argv[argc], "-h") == 0) {
       usage(argv[0]);
       return 0;
