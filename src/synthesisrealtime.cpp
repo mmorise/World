@@ -587,7 +587,8 @@ int Synthesis2(WorldSynthesizer *synth) {
     GetOneFrameSegment(noise_size, current_location, synth);
     offset = current_location - synth->synthesized_sample;
     for (int i = 0; i < synth->fft_size; ++i) {
-      index = MyMaxInt(0, i + offset - synth->fft_size / 2 + 1);
+      index = i + offset - synth->fft_size / 2 + 1;
+      if (index < 0) continue;
       synth->buffer[index] += synth->impulse_response[i];
     }
     current_location = tmp;
