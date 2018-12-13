@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/06/20
+// Last update: 2018/12/13
 //
 // Voice synthesis based on f0, spectrogram and aperiodicity.
 // forward_real_fft, inverse_real_fft and minimum_phase are used to speed up.
@@ -364,7 +364,7 @@ void Synthesis(const double *f0, int f0_length,
 
   frame_period /= 1000.0;
   int noise_size;
-
+  int index, offset, lower_limit, upper_limit;
   for (int i = 0; i < number_of_pulses; ++i) {
     noise_size = pulse_locations_index[MyMinInt(number_of_pulses - 1, i + 1)] -
       pulse_locations_index[i];
@@ -374,11 +374,11 @@ void Synthesis(const double *f0, int f0_length,
         pulse_locations[i], pulse_locations_time_shift[i], fs,
         &forward_real_fft, &inverse_real_fft, &minimum_phase, dc_remover,
         impulse_response);
-
-    int index = 0;
-    for (int j = 0; j < fft_size; ++j) {
-      index = j + pulse_locations_index[i] - fft_size / 2 + 1;
-      if (index < 0 || index > y_length - 1) continue;
+    offset = pulse_locations_index[i] - fft_size / 2 + 1;
+    lower_limit = MyMaxInt(0, -offset);
+    upper_limit = MyMinInt(fft_size, y_length - offset);
+    for (int j = lower_limit; j < upper_limit; ++j) {
+      index = j + offset;
       y[index] += impulse_response[j];
     }
   }
