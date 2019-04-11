@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Last update: 2019/04/11
 //
 // This header file only defines constant numbers used for several function.
 //-----------------------------------------------------------------------------
@@ -9,6 +9,9 @@
 #define WORLD_CONSTANT_NUMBERS_H_
 
 namespace world {
+  // for Dio()
+  const double kCutOff = 50.0;
+
   // for StoneMask()
   const double kFloorF0StoneMask = 40.0;
 
@@ -21,9 +24,10 @@ namespace world {
   const double kLog2 = 0.69314718055994529;
   // Maximum standard deviation not to be selected as a best f0.
   const double kMaximumValue = 100000.0;
-// Note to me (fs: 48000)
-// 71 Hz is the limit to maintain the FFT size at 2048.
-// If we use 70 Hz as FLOOR_F0, the FFT size of 4096 is required.
+
+  // Note to me (fs: 48000)
+  // 71 Hz is the limit to maintain the FFT size at 2048.
+  // If we use 70 Hz as FLOOR_F0, the FFT size of 4096 is required.
 
   // for D4C()
   const int kHanning = 1;

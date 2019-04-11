@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/04
+// Last update: 2019/04/11
 //
 // F0 estimation based on DIO (Distributed Inline-filter Operation).
 //-----------------------------------------------------------------------------
@@ -82,8 +82,8 @@ static void GetSpectrumForEstimation(const double *x, int x_length,
     fft_plan_dft_r2c_1d(fft_size, y, y_spectrum, FFT_ESTIMATE);
   fft_execute(forwardFFT);
 
-  // Low cut filtering (from 0.1.4)
-  int cutoff_in_sample = matlab_round(actual_fs / 50.0);  // Cutoff is 50.0 Hz
+  // Low cut filtering (from 0.1.4). Cut off frequency is 50.0 Hz.
+  int cutoff_in_sample = matlab_round(actual_fs / world::kCutOff);
   DesignLowCutFilter(cutoff_in_sample * 2 + 1, fft_size, y);
 
   fft_complex *filter_spectrum = new fft_complex[fft_size];
@@ -590,6 +590,7 @@ static void DioGeneralBody(const double *x, int x_length, int fs,
   int y_length = (1 + static_cast<int>(x_length / decimation_ratio));
   double actual_fs = static_cast<double>(fs) / decimation_ratio;
   int fft_size = GetSuitableFFTSize(y_length +
+      matlab_round(actual_fs / world::kCutOff) * 2 + 1 +
       (4 * static_cast<int>(1.0 + actual_fs / boundary_f0_list[0] / 2.0)));
 
   // Calculation of the spectrum used for the f0 estimation
