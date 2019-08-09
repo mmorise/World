@@ -42,4 +42,6 @@ Python-WORLD (https://github.com/tuanad121/Python-WORLD) is line-by-line impleme
 
 world-class (https://github.com/yukara-ikemiya/world-class) is a C++ library of WORLD.
 
+World.JS (https://github.com/GloomyGhost-MosquitoSeal/World.JS) is a JavaScript Wrapper for World Vocoder.
+
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
