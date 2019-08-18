@@ -125,7 +125,7 @@ static double GetTentativeF0(const double *power_spectrum,
     FixF0(power_spectrum, numerator_i, fft_size, fs, initial_f0, 2);
 
   // If the fixed value is too large, the result will be rejected.
-  if (tentative_f0 <= 0.0 || tentative_f0 > initial_f0 * 2) return 0.0;
+  if (tentative_f0 <= 0.0 || tentative_f0 > initial_f0 * 2 || isnan(tentative_f0)) return 0.0;
 
   return FixF0(power_spectrum, numerator_i, fft_size, fs, tentative_f0, 6);
 }
