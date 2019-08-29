@@ -117,7 +117,7 @@ static int SeekSynthesizer(double current_location, WorldSynthesizer *synth) {
 
 static void SearchPointer(int frame,  WorldSynthesizer *synth, int flag,
     double **front, double **next) {
-  int pointer = synth->current_pointer2 % synth->number_of_pointers;
+  int pointer = synth->current_pointer % synth->number_of_pointers;
   int index = -1;
   for (int i = 0; i < synth->f0_length[pointer]; ++i)
     if (synth->f0_origin[pointer] + i == frame) {
