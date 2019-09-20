@@ -24,7 +24,7 @@
 #pragma comment(lib, "winmm.lib")
 #pragma warning(disable : 4996)
 #endif
-#if (defined (__linux__) || defined(__CYGWIN__) || defined(__APPLE__))
+#if (defined (__linux__) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__APPLE__))
 #include <stdint.h>
 #include <sys/time.h>
 #endif
@@ -43,7 +43,7 @@
 #include "world/synthesis.h"
 #include "world/synthesisrealtime.h"
 
-#if (defined (__linux__) || defined(__CYGWIN__) || defined(__APPLE__))
+#if (defined (__linux__) || defined(__CYGWIN__) || defined(__MINGW32__) || defined(__APPLE__))
 // Linux porting section: implement timeGetTime() by gettimeofday(),
 #ifndef DWORD
 #define DWORD uint32_t

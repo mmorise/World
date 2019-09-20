@@ -9,6 +9,11 @@ ARFLAGS = -rv
 OUT_DIR = ./build
 OBJS = $(OUT_DIR)/objs/world/cheaptrick.o $(OUT_DIR)/objs/world/common.o $(OUT_DIR)/objs/world/d4c.o $(OUT_DIR)/objs/world/dio.o $(OUT_DIR)/objs/world/fft.o $(OUT_DIR)/objs/world/harvest.o $(OUT_DIR)/objs/world/matlabfunctions.o $(OUT_DIR)/objs/world/stonemask.o $(OUT_DIR)/objs/world/synthesis.o $(OUT_DIR)/objs/world/synthesisrealtime.o
 LIBS =
+MKDIR = mkdir -p $(1)
+ifeq ($(shell echo "check_quotes"),"check_quotes")
+	# Windows
+	MKDIR = mkdir $(subst /,\,$(1)) > nul 2>&1 || (exit 0)
+endif
 
 all: default test
 
@@ -53,19 +58,19 @@ $(OUT_DIR)/objs/world/synthesisrealtime.o : src/world/synthesisrealtime.h src/wo
 ### Global rules
 ###############################################################################################################
 $(OUT_DIR)/objs/test/%.o : test/%.c
-	mkdir -p $(OUT_DIR)/objs/test
+	$(call MKDIR,$(OUT_DIR)/objs/test)
 	$(C99) $(CFLAGS) -Isrc -Itools -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/test/%.o : test/%.cpp
-	mkdir -p $(OUT_DIR)/objs/test
+	$(call MKDIR,$(OUT_DIR)/objs/test)
 	$(CXX) $(CXXFLAGS) -Isrc -Itools -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/tools/%.o : tools/%.cpp
-	mkdir -p $(OUT_DIR)/objs/tools
+	$(call MKDIR,$(OUT_DIR)/objs/tools)
 	$(CXX) $(CXXFLAGS) -Isrc -o "$@" -c "$<"
 
 $(OUT_DIR)/objs/world/%.o : src/%.cpp
-	mkdir -p $(OUT_DIR)/objs/world
+	$(call MKDIR,$(OUT_DIR)/objs/world)
 	$(CXX) $(CXXFLAGS) -Isrc -o "$@" -c "$<"
 
 clean:
