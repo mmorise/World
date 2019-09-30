@@ -6,10 +6,21 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## Important notice (2018/01/21)
-FFT functions were modified.
-If you have used another FFT function, you must change the sign of imaginary part in the spectrum for the compatibility.
-This version outputs the same result compared with major FFT functions (e.g. FFTW and MATLAB).
+## Introduction of WORLD family (2019/09/30)
+
+I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
+
+PyWorldVocoder (https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) is a Python wrapper for World Vocoder.
+
+Python-WORLD (https://github.com/tuanad121/Python-WORLD) is line-by-line implementation of WORLD vocoder (Matlab, C++) in python.
+
+world-class (https://github.com/yukara-ikemiya/world-class) is a C++ library of WORLD.
+
+World.JS (https://github.com/GloomyGhost-MosquitoSeal/World.JS) is a JavaScript Wrapper for World Vocoder.
+
+World.NET (https://github.com/aqtq314/World.NET) is a C# Wrapper for World Vocoder.
+
+Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
 
 ## References
 When you cite the latest version of WORLD in your paper, please use the sentence "WORLD \[1\] (D4C edition [2])" and cite the following papers.  
@@ -31,17 +42,3 @@ In the codec of spectral envelope, you can refer the following reference.
 
 A paper was published to demonstrate that the current version of WORLD was superior to the similar vocoders in the sound quality of re-synthesized speech. This paper also includes the detailed information in the D4C LoveTrain used in the latest version.  
 [8] M. Morise and Y. Watanabe: Sound quality comparison among high-quality vocoders by using re-synthesized speech, Acoust. Sci. & Tech., vol. 39, no. 3, pp. 263-265, May 2018. https://www.jstage.jst.go.jp/article/ast/39/3/39_E1779/_article/-char/en
-
-## Introduction of WORLD family
-
-I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
-
-PyWorldVocoder (https://github.com/JeremyCCHsu/Python-Wrapper-for-World-Vocoder) is a Python wrapper for World Vocoder.
-
-Python-WORLD (https://github.com/tuanad121/Python-WORLD) is line-by-line implementation of WORLD vocoder (Matlab, C++) in python.
-
-world-class (https://github.com/yukara-ikemiya/world-class) is a C++ library of WORLD.
-
-World.JS (https://github.com/GloomyGhost-MosquitoSeal/World.JS) is a JavaScript Wrapper for World Vocoder.
-
-Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
