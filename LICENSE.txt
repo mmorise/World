@@ -1,11 +1,11 @@
 /* ----------------------------------------------------------------- */
 /*           WORLD: High-quality speech analysis,                    */
-/*           modification and synthesis system                       */
+/*           manipulation and synthesis system                       */
 /*           developed by M. Morise                                  */
-/*           http://ml.cs.yamanashi.ac.jp/world/                     */
+/*           http://www.kisc.meiji.ac.jp/~mmorise/world/english/     */
 /* ----------------------------------------------------------------- */
 /*                                                                   */
-/*  Copyright (c) 2010-2016  M. Morise                               */
+/*  Copyright (c) 2010  M. Morise                                    */
 /*                                                                   */
 /* All rights reserved.                                              */
 /*                                                                   */
