@@ -186,6 +186,16 @@ static void GetStaticGroupDelay(const double *static_centroid,
 }
 
 //-----------------------------------------------------------------------------
+// Utility to divide bins of the accumulated power spectrum for aperiodicity
+// estimate. Returns `1 - world::kMySafeGuardMinimum` if either value is NaN.
+//-----------------------------------------------------------------------------
+static inline double safeRatio(double s1, double s2) {
+  if (std::isnan(s1) || std::isinf(s1) || std::isnan(s2) || std::isnan(s2))
+    return 1 - world::kMySafeGuardMinimum;
+  return s1 / s2;
+}
+
+//-----------------------------------------------------------------------------
 // GetCoarseAperiodicity() calculates the aperiodicity in multiples of 3 kHz.
 // The upper limit is given based on the sampling frequency.
 //-----------------------------------------------------------------------------
@@ -216,8 +226,8 @@ static void GetCoarseAperiodicity(const double *static_group_delay, int fs,
     for (int j = 1 ; j <= fft_size / 2; ++j)
       power_spectrum[j] += power_spectrum[j - 1];
     coarse_aperiodicity[i] =
-      10 * log10(power_spectrum[fft_size / 2 - boundary - 1] /
-                 power_spectrum[fft_size / 2]);
+      10 * log10(safeRatio(power_spectrum[fft_size / 2 - boundary - 1],
+                           power_spectrum[fft_size / 2]));
   }
   delete[] power_spectrum;
 }
@@ -239,12 +249,13 @@ static double D4CLoveTrainSub(const double *x, int fs, int x_length,
   for (int i = 0; i <= boundary0; ++i) power_spectrum[i] = 0.0;
   for (int i = boundary0 + 1; i < fft_size / 2 + 1; ++i)
     power_spectrum[i] =
-    forward_real_fft->spectrum[i][0] * forward_real_fft->spectrum[i][0] +
-    forward_real_fft->spectrum[i][1] * forward_real_fft->spectrum[i][1];
+      forward_real_fft->spectrum[i][0] * forward_real_fft->spectrum[i][0] +
+      forward_real_fft->spectrum[i][1] * forward_real_fft->spectrum[i][1];
   for (int i = boundary0; i <= boundary2; ++i)
-    power_spectrum[i] += +power_spectrum[i - 1];
+    power_spectrum[i] += power_spectrum[i - 1];
 
-  double aperiodicity0 = power_spectrum[boundary1] / power_spectrum[boundary2];
+  double aperiodicity0 =
+    safeRatio(power_spectrum[boundary1], power_spectrum[boundary2]);
   delete[] power_spectrum;
   return aperiodicity0;
 }
