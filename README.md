@@ -6,7 +6,7 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## Introduction of WORLD family (2020/02/13)
+## Introduction of WORLD family (2020/03/27)
 
 I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
 
@@ -20,7 +20,9 @@ World.JS (https://github.com/GloomyGhost-MosquitoSeal/World.JS) is a JavaScript 
 
 World.NET (https://github.com/aqtq314/World.NET) is a C# Wrapper for World Vocoder.
 
-WorldInApple (https://github.com/fuziki/WorldInApple) is a Swift wrapper for World Vocoder
+WorldInApple (https://github.com/fuziki/WorldInApple) is a Swift wrapper for World Vocoder.
+
+DotnetWorld (https://github.com/yamachu/DotnetWorld) is a C# wrapper for WORLD.
 
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
 
