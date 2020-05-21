@@ -157,13 +157,11 @@ void histc(const double *x, int x_length, const double *edges,
 void interp1(const double *x, const double *y, int x_length, const double *xi,
     int xi_length, double *yi) {
   double *h = new double[x_length - 1];
-  double *p = new double[xi_length];
   double *s = new double[xi_length];
   int *k = new int[xi_length];
 
   for (int i = 0; i < x_length - 1; ++i) h[i] = x[i + 1] - x[i];
   for (int i = 0; i < xi_length; ++i) {
-    p[i] = i;
     k[i] = 0;
   }
 
@@ -177,7 +175,6 @@ void interp1(const double *x, const double *y, int x_length, const double *xi,
 
   delete[] k;
   delete[] s;
-  delete[] p;
   delete[] h;
 }
 
