@@ -674,7 +674,7 @@ static void RemoveUnreliableCandidates(int f0_length, int number_of_candidates,
   double **tmp_f0_candidates = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i)
     tmp_f0_candidates[i] = new double[number_of_candidates];
-  for (int i = 1; i < f0_length - 1; ++i)
+  for (int i = 0; i < f0_length; ++i)
     for (int j = 0; j < number_of_candidates; ++j)
       tmp_f0_candidates[i][j] = f0_candidates[i][j];
 
