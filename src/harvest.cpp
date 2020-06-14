@@ -712,7 +712,10 @@ static void FixStep1(const double *f0_base, int f0_length,
   f0_step1[0] = f0_step1[1] = 0.0;
   double reference_f0;
   for (int i = 2; i < f0_length; ++i) {
-    if (f0_base[i] == 0.0) continue;
+    if (f0_base[i] == 0.0) {
+      f0_step1[i] = 0.0;
+      continue;
+    }
     reference_f0 = f0_base[i - 1] * 2 - f0_base[i - 2];
     f0_step1[i] =
       fabs((f0_base[i] - reference_f0) / reference_f0) > allowed_range &&
