@@ -674,7 +674,7 @@ static void RemoveUnreliableCandidates(int f0_length, int number_of_candidates,
   double **tmp_f0_candidates = new double *[f0_length];
   for (int i = 0; i < f0_length; ++i)
     tmp_f0_candidates[i] = new double[number_of_candidates];
-  for (int i = 1; i < f0_length - 1; ++i)
+  for (int i = 0; i < f0_length; ++i)
     for (int j = 0; j < number_of_candidates; ++j)
       tmp_f0_candidates[i][j] = f0_candidates[i][j];
 
@@ -709,7 +709,7 @@ static void SearchF0Base(const double * const *f0_candidates,
 //-----------------------------------------------------------------------------
 static void FixStep1(const double *f0_base, int f0_length,
     double allowed_range, double *f0_step1) {
-  f0_step1[0] = f0_step1[1] = 0.0;
+  for (int i = 0; i < f0_length; ++i) f0_step1[i] = 0.0;
   double reference_f0;
   for (int i = 2; i < f0_length; ++i) {
     if (f0_base[i] == 0.0) continue;
