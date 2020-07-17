@@ -328,7 +328,7 @@ int main(int argc, char *argv[])
     out_spectrogram.write(reinterpret_cast<const char*>(&world_parameters.fs),
                  std::streamsize( sizeof(world_parameters.fs) ) );
 
-    // write the sampling frequency
+    // write the frame period
     out_spectrogram.write(reinterpret_cast<const char*>(&world_parameters.frame_period),
                  std::streamsize( sizeof(world_parameters.frame_period) ) );
 
