@@ -1222,14 +1222,11 @@ int GetSamplesForHarvest(int fs, int x_length, double frame_period) {
 
 void Harvest(const double *x, int x_length, int fs,
     const HarvestOption *option, double *temporal_positions, double *f0) {
-  // Several parameters will be controllable for debug.
-  double target_fs = 8000.0;
-  int dimension_ratio = matlab_round(fs / target_fs);
-  double channels_in_octave = 40;
+  int dimension_ratio = matlab_round(fs / option->target_fs);
 
   if (option->frame_period == 1.0) {
     HarvestGeneralBody(x, x_length, fs, 1, option->f0_floor,
-        option->f0_ceil, channels_in_octave, dimension_ratio,
+        option->f0_ceil, option->channels_in_octave, dimension_ratio,
         temporal_positions, f0);
     return;
   }
@@ -1240,7 +1237,7 @@ void Harvest(const double *x, int x_length, int fs,
   double *basic_f0 = new double[basic_f0_length];
   double *basic_temporal_positions = new double[basic_f0_length];
   HarvestGeneralBody(x, x_length, fs, basic_frame_period, option->f0_floor,
-      option->f0_ceil, channels_in_octave, dimension_ratio,
+      option->f0_ceil, option->channels_in_octave, dimension_ratio,
       basic_temporal_positions, basic_f0);
 
   int f0_length = GetSamplesForHarvest(fs, x_length, option->frame_period);
@@ -1259,4 +1256,6 @@ void InitializeHarvestOption(HarvestOption *option) {
   option->f0_ceil = world::kCeilF0;
   option->f0_floor = world::kFloorF0;
   option->frame_period = 5;
+  option->target_fs = 8000;
+  option->channels_in_octave = 40;
 }

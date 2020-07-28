@@ -17,6 +17,8 @@ typedef struct {
   double f0_floor;
   double f0_ceil;
   double frame_period;
+  double target_fs;
+  double channels_in_octave;
 } HarvestOption;
 
 //-----------------------------------------------------------------------------
