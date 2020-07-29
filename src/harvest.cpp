@@ -1143,18 +1143,15 @@ static int HarvestGeneralBodySub(const double *boundary_f0_list,
 // HarvestGeneralBody() estimates the F0 contour based on Harvest.
 //-----------------------------------------------------------------------------
 static void HarvestGeneralBody(const double *x, int x_length, int fs,
-    int frame_period, double f0_floor, double f0_ceil,
-    double channels_in_octave, int speed, double *temporal_positions,
+    int frame_period, const HarvestOption *option, int speed, double *temporal_positions,
     double *f0) {
-  double adjusted_f0_floor = f0_floor * 0.9;
-  double adjusted_f0_ceil = f0_ceil * 1.1;
   int number_of_channels =
-    1 + static_cast<int>(log(adjusted_f0_ceil / adjusted_f0_floor) /
-    world::kLog2 * channels_in_octave);
+    1 + static_cast<int>(log(option->adjusted_f0_ceil / option->adjusted_f0_floor) /
+    world::kLog2 * option->channels_in_octave);
   double *boundary_f0_list = new double[number_of_channels];
   for (int i = 0; i < number_of_channels; ++i)
     boundary_f0_list[i] =
-    adjusted_f0_floor * pow(2.0, (i + 1) / channels_in_octave);
+            option->adjusted_f0_floor * pow(2.0, (i + 1) / option->channels_in_octave);
 
   // normalization
   int decimation_ratio = MyMaxInt(MyMinInt(speed, 12), 1);
@@ -1188,11 +1185,11 @@ static void HarvestGeneralBody(const double *x, int x_length, int fs,
 
   int number_of_candidates = HarvestGeneralBodySub(boundary_f0_list,
     number_of_channels, f0_length, actual_fs, y_length, temporal_positions,
-    y_spectrum, fft_size, f0_floor, f0_ceil, max_candidates, f0_candidates) *
+    y_spectrum, fft_size, option->f0_floor, option->f0_ceil, max_candidates, f0_candidates) *
     overlap_parameter;
 
   RefineF0Candidates(y, y_length, actual_fs, temporal_positions, f0_length,
-      number_of_candidates, f0_floor, f0_ceil, f0_candidates,
+      number_of_candidates, option->f0_floor, option->f0_ceil, f0_candidates,
       f0_candidates_score);
   RemoveUnreliableCandidates(f0_length, number_of_candidates,
       f0_candidates, f0_candidates_score);
@@ -1225,8 +1222,7 @@ void Harvest(const double *x, int x_length, int fs,
   int dimension_ratio = matlab_round(fs / option->target_fs);
 
   if (option->frame_period == 1.0) {
-    HarvestGeneralBody(x, x_length, fs, 1, option->f0_floor,
-        option->f0_ceil, option->channels_in_octave, dimension_ratio,
+    HarvestGeneralBody(x, x_length, fs, 1, option, dimension_ratio,
         temporal_positions, f0);
     return;
   }
@@ -1236,8 +1232,7 @@ void Harvest(const double *x, int x_length, int fs,
     GetSamplesForHarvest(fs, x_length, basic_frame_period);
   double *basic_f0 = new double[basic_f0_length];
   double *basic_temporal_positions = new double[basic_f0_length];
-  HarvestGeneralBody(x, x_length, fs, basic_frame_period, option->f0_floor,
-      option->f0_ceil, option->channels_in_octave, dimension_ratio,
+  HarvestGeneralBody(x, x_length, fs, basic_frame_period, option, dimension_ratio,
       basic_temporal_positions, basic_f0);
 
   int f0_length = GetSamplesForHarvest(fs, x_length, option->frame_period);
@@ -1255,6 +1250,8 @@ void InitializeHarvestOption(HarvestOption *option) {
   // You can change default parameters.
   option->f0_ceil = world::kCeilF0;
   option->f0_floor = world::kFloorF0;
+  option->adjusted_f0_ceil = world::kCeilF0 * 1.1;
+  option->adjusted_f0_floor = world::kFloorF0 * 0.9;
   option->frame_period = 5;
   option->target_fs = 8000;
   option->channels_in_octave = 40;

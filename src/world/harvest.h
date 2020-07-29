@@ -16,6 +16,8 @@ WORLD_BEGIN_C_DECLS
 typedef struct {
   double f0_floor;
   double f0_ceil;
+  double adjusted_f0_floor;
+  double adjusted_f0_ceil;
   double frame_period;
   double target_fs;
   double channels_in_octave;
