@@ -6,6 +6,10 @@ project(${PROJECT_NAME})
 
 FILE(GLOB SRCS "src/*.cpp" "src/*.c")
 
-add_library(${PROJECT_NAME} SHARED ${SRCS})
+FILE(GLOB HEADERS "src/world/*.h" "src/world/*.hpp")
+
+add_library(${PROJECT_NAME} SHARED ${SRCS} ${HEADERS})
 
 target_include_directories(${PROJECT_NAME} PUBLIC "src")
+
+install(TARGETS ${PROJECT_NAME})
