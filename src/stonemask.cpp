@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //
 // F0 estimation based on instantaneous frequency.
 // This method is carried out by using the output of Dio().

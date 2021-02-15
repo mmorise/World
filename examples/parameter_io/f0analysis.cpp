@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2017 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/03/12
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //
 // Summary:
 // This example estimates F0 from an audio file and saves it to a file.

@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/02/01
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //-----------------------------------------------------------------------------
 #ifndef WORLD_DIO_H_
 #define WORLD_DIO_H_

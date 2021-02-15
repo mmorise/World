@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2019/04/11
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //
 // This header file only defines constant numbers used for several function.
 //-----------------------------------------------------------------------------

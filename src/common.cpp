@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/04/29
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //
 // common.cpp includes functions used in at least two files.
 // (1) Common functions

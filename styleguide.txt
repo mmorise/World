@@ -1,8 +1,5 @@
 WORLD follows the Google C++ Style Guide
-Japanese:
-http://www.textdrop.net/google-styleguide-ja/cppguide.xml
-English:
-http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml
+https://github.com/google/styleguide
 
 However, there are several exceptions about variable names.
 Since these names are generally used in the acoustic signal processing,

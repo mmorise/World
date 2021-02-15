@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2017/05/09
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //-----------------------------------------------------------------------------
 #ifndef WORLD_SYNTHESISREALTIME_H_
 #define WORLD_SYNTHESISREALTIME_H_

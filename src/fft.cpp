@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
-// Author: mmorise [at] yamanashi.ac.jp (Masanori Morise)
-// Last update: 2018/01/21
+// Author: mmorise [at] meiji.ac.jp (Masanori Morise)
+// Last update: 2021/02/15
 //
 // This file represents the functions about FFT (Fast Fourier Transform)
 // implemented by Mr. Ooura, and wrapper functions implemented by M. Morise.
