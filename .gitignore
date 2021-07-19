@@ -5,13 +5,31 @@ build/
 *.wav
 
 # Visual Studio
-visualstudio/.vs/
-visualstudio/Debug/
-visualstudio/Release/
-visualstudio/win.VC.VC.opendb
-visualstudio/win.VC.db
-visualstudio/win/Debug/
-visualstudio/win/Release/
+visualstudio2015/.vs/
+visualstudio2015/Debug/
+visualstudio2015/Release/
+visualstudio2015/win.v11.suo
+visualstudio2015/win.VC.VC.opendb
+visualstudio2015/win.VC.db
+visualstudio2015/win/Debug/
+visualstudio2015/win/Release/
+visualstudio2015/win/win.vcxproj.user
+visualstudio2015/win/x64/Debug/
+visualstudio2015/win/x64/Release/
+visualstudio2015/x64/Debug/
+visualstudio2015/x64/Release/
+
+visualstudio2019/.vs/
+visualstudio2019/Debug/
+visualstudio2019/Release/
+visualstudio2019/win.v11.suo
+visualstudio2019/win/Debug/
+visualstudio2019/win/Release/
+visualstudio2019/win/win.vcxproj.user
+visualstudio2019/win/x64/Debug/
+visualstudio2019/win/x64/Release/
+visualstudio2019/x64/Debug/
+visualstudio2019/x64/Release/
 
 # IntelliJ project files
 .idea
