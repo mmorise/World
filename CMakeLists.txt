@@ -1,4 +1,3 @@
-#
 # CMake build system design considerations:
 # - Include directories:
 #   + Do not define include directories globally using the include_directories
@@ -9,8 +8,6 @@
 #     directories. That way, a target linking to a library (using the
 #     target_link_librairies command) inherits from the library PUBLIC include
 #     directories and not from the PRIVATE ones.
-#
-#
 
 cmake_minimum_required(VERSION 3.0)
 
