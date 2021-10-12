@@ -11,6 +11,9 @@
 
 cmake_minimum_required(VERSION 3.0)
 
+# Build Options
+option(WORLD_BUILD_TESTS "Set to ON to build tests" OFF)
+
 # use git version as library version
 find_package(Git QUIET)
 if (Git_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
@@ -98,3 +101,15 @@ install(EXPORT world-export
         )
 export(TARGETS world world_tool NAMESPACE world::
         FILE ${PROJECT_BINARY_DIR}/world-targets.cmake)
+
+if (WORLD_BUILD_TESTS)
+    add_executable(tests test/test.cpp)
+    target_link_libraries(tests
+            PRIVATE world
+            PRIVATE world_tool
+            )
+    target_include_directories(tests
+            PRIVATE src
+            PRIVATE tools
+            )
+endif ()
