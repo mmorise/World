@@ -13,6 +13,7 @@ cmake_minimum_required(VERSION 3.0)
 
 # Build Options
 option(WORLD_BUILD_TESTS "Set to ON to build tests" OFF)
+option(WORLD_BUILD_EXAMPLES "Set to ON to build examples" ON)
 
 # use git version as library version
 find_package(Git QUIET)
@@ -113,3 +114,7 @@ if (WORLD_BUILD_TESTS)
             PRIVATE tools
             )
 endif ()
+
+if(WORLD_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
