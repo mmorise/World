@@ -1,4 +1,3 @@
-#
 # CMake build system design considerations:
 # - Include directories:
 #   + Do not define include directories globally using the include_directories
@@ -9,10 +8,12 @@
 #     directories. That way, a target linking to a library (using the
 #     target_link_librairies command) inherits from the library PUBLIC include
 #     directories and not from the PRIVATE ones.
-#
-#
 
 cmake_minimum_required(VERSION 3.0)
+
+# Build Options
+option(WORLD_BUILD_TESTS "Set to ON to build tests" OFF)
+option(WORLD_BUILD_EXAMPLES "Set to ON to build examples" ON)
 
 # use git version as library version
 find_package(Git QUIET)
@@ -65,11 +66,18 @@ add_library(world_tool STATIC
 
 add_library(world::core ALIAS world)
 add_library(world::tool ALIAS world_tool)
+
 target_link_libraries(world_tool PUBLIC world)
 
 foreach (lib world world_tool)
     target_include_directories(${lib} PUBLIC $<INSTALL_INTERFACE:include>
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> PRIVATE src)
+    set_target_properties(${lib}
+            PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+            RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+            )
 endforeach ()
 
 include(GNUInstallDirs)
@@ -101,3 +109,19 @@ install(EXPORT world-export
         )
 export(TARGETS world world_tool NAMESPACE world::
         FILE ${PROJECT_BINARY_DIR}/world-targets.cmake)
+
+if (WORLD_BUILD_TESTS)
+    add_executable(tests test/test.cpp)
+    target_link_libraries(tests
+            PRIVATE world
+            PRIVATE world_tool
+            )
+    target_include_directories(tests
+            PRIVATE src
+            PRIVATE tools
+            )
+endif ()
+
+if(WORLD_BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
