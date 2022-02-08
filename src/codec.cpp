@@ -175,7 +175,7 @@ static void GetParametersForCoding(double floor_frequency,
   weight[0][0] /= sqrt(2.0);
 
   // Generate the frequency axis on mel scale
-  for (int i = 0; i < max_dimension; ++i)
+  for (int i = 0; i <= max_dimension; ++i)
     frequency_axis[i] = FrequencyToMel(static_cast<double>(i) * fs / fft_size);
 }
 
