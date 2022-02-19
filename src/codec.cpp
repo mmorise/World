@@ -301,7 +301,6 @@ void DecodeSpectralEnvelope(const double * const *coded_spectral_envelope,
     double **spectrogram) {
   double *mel_axis = new double[fft_size / 2 + 2];
   double *frequency_axis = new double[fft_size / 2 + 1];
-  double *tmp_spectrum = new double[fft_size / 2 + 1];
   fft_complex *weight = new fft_complex[fft_size / 2];
 
   // Generation of the required parameters
@@ -320,7 +319,6 @@ void DecodeSpectralEnvelope(const double * const *coded_spectral_envelope,
 
   DestroyInverseComplexFFT(&inverse_complex_fft);
   delete[] weight;
-  delete[] tmp_spectrum;
   delete[] frequency_axis;
   delete[] mel_axis;
 }
