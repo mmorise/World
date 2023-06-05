@@ -24,7 +24,7 @@ WorldInApple (https://github.com/fuziki/WorldInApple) is a Swift wrapper for Wor
 
 DotnetWorld (https://github.com/yamachu/DotnetWorld) is a C# wrapper for WORLD.
 
-JA-World (https://gitlab.com/f-matano44/world-for-java) is an independent Java port of WORLD vocoder.
+JA-WORLD (https://gitlab.com/f-matano44/world-for-java) is an independent Java port of WORLD vocoder.
 
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
 
