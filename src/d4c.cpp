@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] meiji.ac.jp (Masanori Morise)
-// Last update: 2021/02/15
+// Last update: 2024/09/13
 //
 // Band-aperiodicity estimation on the basis of the idea of D4C.
 //-----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ static void GetWindowedWaveform(const double *x, int x_length, int fs,
   // F0-adaptive windowing
   for (int i = 0; i <= half_window_length * 2; ++i)
     waveform[i] =
-      x[safe_index[i]] * window[i] + randn() * world::kMySafeGuardMinimum;
+      x[safe_index[i]] * window[i] + randn() * world::kSafeGuardD4C;
 
   double tmp_weight1 = 0;
   double tmp_weight2 = 0;
