@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Copyright 2012 Masanori Morise
 // Author: mmorise [at] meiji.ac.jp (Masanori Morise)
-// Last update: 2021/02/15
+// Last update: 2024/09/13
 //
 // This header file only defines constant numbers used for several function.
 //-----------------------------------------------------------------------------
@@ -36,6 +36,7 @@ namespace world {
   const double kUpperLimit = 15000.0;
   const double kThreshold = 0.85;
   const double kFloorF0D4C = 47.0;
+  const double kSafeGuardD4C = 0.000001;
 
   // for Codec (Mel scale)
   // S. Stevens & J. Volkmann,
