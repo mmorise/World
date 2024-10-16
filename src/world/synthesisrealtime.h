@@ -8,6 +8,7 @@
 
 #include "world/common.h"
 #include "world/macrodefinitions.h"
+#include "world/matlabfunctions.h"
 
 WORLD_BEGIN_C_DECLS
 
@@ -66,6 +67,8 @@ typedef struct {
   int *number_of_pulses;
 
   double *impulse_response;
+
+  RandnState randn_state;
 
   // FFT
   MinimumPhaseAnalysis minimum_phase;

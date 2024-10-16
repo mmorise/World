@@ -17,10 +17,10 @@
 namespace {
 
 static void GetNoiseSpectrum(int noise_size, int fft_size,
-    const ForwardRealFFT *forward_real_fft) {
+    const ForwardRealFFT *forward_real_fft, RandnState *randn_state) {
   double average = 0.0;
   for (int i = 0; i < noise_size; ++i) {
-    forward_real_fft->waveform[i] = randn();
+    forward_real_fft->waveform[i] = randn(randn_state);
     average += forward_real_fft->waveform[i];
   }
 
@@ -39,8 +39,9 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
     const double *spectrum, const double *aperiodic_ratio, double current_vuv,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
-    const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response) {
-  GetNoiseSpectrum(noise_size, fft_size, forward_real_fft);
+    const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response,
+    RandnState *randn_state) {
+  GetNoiseSpectrum(noise_size, fft_size, forward_real_fft, randn_state);
 
   if (current_vuv != 0.0)
     for (int i = 0; i <= minimum_phase->fft_size / 2; ++i)
@@ -187,7 +188,7 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
     const MinimumPhaseAnalysis *minimum_phase, const double *dc_remover,
-    double *response) {
+    double *response, RandnState* randn_state) {
   double *aperiodic_response = new double[fft_size];
   double *periodic_response = new double[fft_size];
 
@@ -206,7 +207,7 @@ static void GetOneFrameSegment(double current_vuv, int noise_size,
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, fft_size, spectral_envelope,
       aperiodic_ratio, current_vuv, forward_real_fft,
-      inverse_real_fft, minimum_phase, aperiodic_response);
+      inverse_real_fft, minimum_phase, aperiodic_response, randn_state);
 
   double sqrt_noise_size = sqrt(static_cast<double>(noise_size));
   for (int i = 0; i < fft_size; ++i)
@@ -338,7 +339,8 @@ static void GetDCRemover(int fft_size, double *dc_remover) {
 void Synthesis(const double *f0, int f0_length,
     const double * const *spectrogram, const double * const *aperiodicity,
     int fft_size, double frame_period, int fs, int y_length, double *y) {
-  randn_reseed();
+  RandnState randn_state = {};
+  randn_reseed(&randn_state);
 
   double *impulse_response = new double[fft_size];
 
@@ -373,7 +375,7 @@ void Synthesis(const double *f0, int f0_length,
         spectrogram, fft_size, aperiodicity, f0_length, frame_period,
         pulse_locations[i], pulse_locations_time_shift[i], fs,
         &forward_real_fft, &inverse_real_fft, &minimum_phase, dc_remover,
-        impulse_response);
+        impulse_response, &randn_state);
     offset = pulse_locations_index[i] - fft_size / 2 + 1;
     lower_limit = MyMaxInt(0, -offset);
     upper_limit = MyMinInt(fft_size, y_length - offset);
