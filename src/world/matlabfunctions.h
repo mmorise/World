@@ -6,6 +6,8 @@
 #ifndef WORLD_MATLABFUNCTIONS_H_
 #define WORLD_MATLABFUNCTIONS_H_
 
+#include <stdint.h>
+
 #include "world/common.h"
 #include "world/macrodefinitions.h"
 
@@ -125,19 +127,26 @@ void diff(const double *x, int x_length, double *y);
 void interp1Q(double x, double shift, const double *y, int x_length,
   const double *xi, int xi_length, double *yi);
 
+typedef struct {
+  uint32_t g_randn_x;
+  uint32_t g_randn_y;
+  uint32_t g_randn_z;
+  uint32_t g_randn_w;
+} RandnState;
+
 //-----------------------------------------------------------------------------
 // randn() generates pseudorandom numbers based on xorshift method.
 //
 // Output:
 //   A generated pseudorandom number
 //-----------------------------------------------------------------------------
-double randn(void);
+double randn(RandnState *state);
 
 //-----------------------------------------------------------------------------
 // randn_reseed() forces to seed the pseudorandom generator using initial
 // values.
 //-----------------------------------------------------------------------------
-void randn_reseed(void);
+void randn_reseed(RandnState *state);
 
 //-----------------------------------------------------------------------------
 // fast_fftfilt() carries out the convolution on the frequency domain.

@@ -234,38 +234,31 @@ void interp1Q(double x, double shift, const double *y, int x_length,
   delete[] delta_y;
 }
 
-// You must not use these variables.
-// Note:
-// I have no idea to implement the randn() and randn_reseed() without the
-// global variables. If you have a good idea, please give me the information.
-static uint32_t g_randn_x = 123456789;
-static uint32_t g_randn_y = 362436069;
-static uint32_t g_randn_z = 521288629;
-static uint32_t g_randn_w = 88675123;
-
-void randn_reseed() {
-    g_randn_x = 123456789;
-    g_randn_y = 362436069;
-    g_randn_z = 521288629;
-    g_randn_w = 88675123;
+void randn_reseed(RandnState *state) {
+    state->g_randn_x = 123456789;
+    state->g_randn_y = 362436069;
+    state->g_randn_z = 521288629;
+    state->g_randn_w = 88675123;
 }
 
-double randn(void) {
+double randn(RandnState *state) {
   uint32_t t;
-  t = g_randn_x ^ (g_randn_x << 11);
-  g_randn_x = g_randn_y;
-  g_randn_y = g_randn_z;
-  g_randn_z = g_randn_w;
-  g_randn_w = (g_randn_w ^ (g_randn_w >> 19)) ^ (t ^ (t >> 8));
+  t = state->g_randn_x ^ (state->g_randn_x << 11);
+  state->g_randn_x = state->g_randn_y;
+  state->g_randn_y = state->g_randn_z;
+  state->g_randn_z = state->g_randn_w;
+  state->g_randn_w
+    = (state->g_randn_w ^ (state->g_randn_w >> 19)) ^ (t ^ (t >> 8));
 
-  uint32_t tmp = g_randn_w >> 4;
+  uint32_t tmp = state->g_randn_w >> 4;
   for (int i = 0; i < 11; ++i) {
-    t = g_randn_x ^ (g_randn_x << 11);
-    g_randn_x = g_randn_y;
-    g_randn_y = g_randn_z;
-    g_randn_z = g_randn_w;
-    g_randn_w = (g_randn_w ^ (g_randn_w >> 19)) ^ (t ^ (t >> 8));
-    tmp += g_randn_w >> 4;
+    t = state->g_randn_x ^ (state->g_randn_x << 11);
+    state->g_randn_x = state->g_randn_y;
+    state->g_randn_y = state->g_randn_z;
+    state->g_randn_z = state->g_randn_w;
+    state->g_randn_w
+      = (state->g_randn_w ^ (state->g_randn_w >> 19)) ^ (t ^ (t >> 8));
+    tmp += state->g_randn_w >> 4;
   }
   return tmp / 268435456.0 - 6.0;
 }

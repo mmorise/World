@@ -26,10 +26,10 @@
 namespace {
 
 static void GetNoiseSpectrum(int noise_size, int fft_size,
-    const ForwardRealFFT *forward_real_fft) {
+    const ForwardRealFFT *forward_real_fft, RandnState* randn_state) {
   double average = 0.0;
   for (int i = 0; i < noise_size; ++i) {
-    forward_real_fft->waveform[i] = randn();
+    forward_real_fft->waveform[i] = randn(randn_state);
     average += forward_real_fft->waveform[i];
   }
 
@@ -48,8 +48,9 @@ static void GetAperiodicResponse(int noise_size, int fft_size,
     const double *spectrum, const double *aperiodic_ratio, double current_vuv,
     const ForwardRealFFT *forward_real_fft,
     const InverseRealFFT *inverse_real_fft,
-    const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response) {
-  GetNoiseSpectrum(noise_size, fft_size, forward_real_fft);
+    const MinimumPhaseAnalysis *minimum_phase, double *aperiodic_response,
+    RandnState* randn_state) {
+  GetNoiseSpectrum(noise_size, fft_size, forward_real_fft, randn_state);
 
   if (current_vuv != 0.0)
     for (int i = 0; i <= minimum_phase->fft_size / 2; ++i)
@@ -264,7 +265,8 @@ static void GetOneFrameSegment(int noise_size, int current_location,
   // Synthesis of the aperiodic response
   GetAperiodicResponse(noise_size, synth->fft_size, spectral_envelope,
       aperiodic_ratio, current_vuv, &synth->forward_real_fft,
-      &synth->inverse_real_fft, &synth->minimum_phase, aperiodic_response);
+      &synth->inverse_real_fft, &synth->minimum_phase, aperiodic_response,
+      &synth->randn_state);
 
   double sqrt_noise_size = sqrt(static_cast<double>(noise_size));
   for (int i = 0; i < synth->fft_size; ++i)
@@ -536,6 +538,7 @@ void RefreshSynthesizer(WorldSynthesizer *synth) {
   for (int i = 0; i < synth->buffer_size * 2 + synth->fft_size; ++i)
     synth->buffer[i] = 0;
   GetDCRemover(synth->fft_size / 2, synth->dc_remover);
+  randn_reseed(&synth->randn_state);
 }
 
 void DestroySynthesizer(WorldSynthesizer *synth) {
