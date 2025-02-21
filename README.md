@@ -6,7 +6,7 @@ It can estimate Fundamental frequency (F0), aperiodicity and spectral envelope a
 This source code is released under the modified-BSD license.
 There is no patent in all algorithms in WORLD.
 
-## Introduction of WORLD family (2023/06/05)
+## Introduction of WORLD family (2025/02/21)
 
 I introduce useful software in WORLD. If you want to introduce your project in WORLD, please contact me.
 
