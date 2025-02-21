@@ -26,6 +26,22 @@ DotnetWorld (https://github.com/yamachu/DotnetWorld) is a C# wrapper for WORLD.
 
 JA-WORLD (https://gitlab.com/f-matano44/world-for-java) is an independent Java port of WORLD vocoder.
 
+The Speech Signal Processing Toolkit ([SPTK](https://github.com/sp-nitech/SPTK)) wraps WORLD as UNIX-like commands.
+- DIO and Harvest -> `pitch`
+  - https://sp-nitech.github.io/sptk/4.3/main/pitch.html
+- D4C -> `ap`
+  - https://sp-nitech.github.io/sptk/4.3/main/ap.html
+- CheapTrick -> `pitch_spec`
+  - https://sp-nitech.github.io/sptk/4.3/main/pitch_spec.html
+- Synthesis -> `world_synth`
+  - https://sp-nitech.github.io/sptk/4.3/main/world_synth.html
+
+[diffsptk](https://github.com/sp-nitech/diffsptk) implements some of the WORLD components within the PyTorch framework.
+- D4C -> `Aperiodicity`
+  - https://sp-nitech.github.io/diffsptk/2.5.0/modules/ap.html
+- CheapTrick -> `PitchAdaptiveSpectralAnalysis`
+  - https://sp-nitech.github.io/diffsptk/2.5.0/modules/pitch_spec.html
+
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
 
 ## References
