@@ -42,6 +42,10 @@ The Speech Signal Processing Toolkit ([SPTK](https://github.com/sp-nitech/SPTK))
 - CheapTrick -> `PitchAdaptiveSpectralAnalysis`
   - https://sp-nitech.github.io/diffsptk/2.5.0/modules/pitch_spec.html
 
+WorldNet (https://github.com/routersys/WorldNet) ports the eleven source files of WORLD to C#.
+- NuGet: https://www.nuget.org/packages/WorldNet
+- Browser demo (nothing is installed or uploaded): https://lib.routersys.com/WorldNet/demo/
+
 Note: To avoid making the project complicated, I decided not to merge it to my repository and introduce your project here. The other reason is that I can't support some computer languages.
 
 ## References
